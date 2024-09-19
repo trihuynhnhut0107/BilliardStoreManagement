@@ -1,0 +1,26 @@
+# Global ignores
+node_modules/
+.DS_Store
+.env
+*.log
+*.lock
+
+# Back-end ignores
+Back-end/node_modules/
+Back-end/.env
+Back-end/.DS_Store
+Back-end/.pytest_cache/
+Back-end/__pycache__/
+Back-end/*.log
+
+# Front-end ignores
+Front-end/node_modules/
+Front-end/.env
+Front-end/.DS_Store
+Front-end/.nuxt/
+Front-end/dist/
+Front-end/*.log
+
+# Optional: Ignore IDE/editor specific settings (VSCode, JetBrains, etc.)
+.vscode/
+.idea/
