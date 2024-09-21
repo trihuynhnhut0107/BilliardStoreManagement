@@ -14,12 +14,19 @@ Back-end/__pycache__/
 Back-end/*.log
 
 # Front-end ignores
-Front-end/node_modules/
-Front-end/.env
-Front-end/.DS_Store
-Front-end/.nuxt/
-Front-end/dist/
-Front-end/*.log
+Front-end/Store-side/node_modules/
+Front-end/Store-side/.env
+Front-end/Store-side/.DS_Store
+Front-end/Store-side/.nuxt/
+Front-end/Store-side/dist/
+Front-end/Store-side/*.log
+
+Front-end/User-side/node_modules/
+Front-end/User-side/.env
+Front-end/User-side/.DS_Store
+Front-end/User-side/.nuxt/
+Front-end/User-side/dist/
+Front-end/User-side/*.log
 
 # Optional: Ignore IDE/editor specific settings (VSCode, JetBrains, etc.)
 .vscode/
