@@ -22,23 +22,24 @@
   <script setup></script>
   
   <style scoped>
-    .createaccount-container {
-      width: 100vw;
-      height: 90vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-  
-    h1 {
-      font-size: 36px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #3A6351;
-      text-align: center;
-    }
+  .createaccount-container {
+    width: 100vw;
+    max-width: 100%;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 36px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #3A6351;
+    text-align: center;
+  }
   
   form {
     align-self: center;

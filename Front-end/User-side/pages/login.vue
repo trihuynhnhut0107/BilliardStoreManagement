@@ -14,11 +14,11 @@
             <div class="button-login"> 
                 <input type="submit" value="Log in">
             </div>
-            <RouterLink class="rl-forgotpassword" to="/fotgotpassword">
+            <RouterLink class="rl-forgotpassword" to="/forgotpassword">
                 Forgot password?
             </RouterLink>
             <hr>
-            <button class="button-createnewaccount">Create new account</button>
+            <button class="button-createnewaccount"><RouterLink to="/createaccount">Create new account</RouterLink></button>
         </form>
     </div>
 </template>
@@ -34,7 +34,8 @@
         padding: 50px;
         height: 90vh;
         width: 100vw;
-        background-image: url(../assets/Image/img_1.jpg);
+        max-width: 100%;
+        background-image: url(../public/Image/img_1.jpg);
         background-repeat: no-repeat;
         background-size: cover;
     }
