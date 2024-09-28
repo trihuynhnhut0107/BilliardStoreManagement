@@ -1,91 +1,107 @@
 <template>
-  <div>
-    <header class="navbar">
-      <nav>
-        <div class="logo-icon">
-          <img src="../public/image/eye.png" alt="Logo" />
-        </div>
-        <ul class="nav-links">
-          <li> <NuxtLink to="/">Home</NuxtLink> </li>
-          <li> <NuxtLink to="/">Products</NuxtLink> </li>
-          <li> <NuxtLink to="/">To Contact</NuxtLink> </li>
-        </ul>
-        <div class="search-bar">
-          <input type="text" placeholder="Search....." />
-          <img src="../public/image/search.png">
-        </div>
-        <div class="cart-user"> 
-          <i class="icon-cart"> 
-            <img src="../public/image/seal-exclamation.png">  
-          </i>
-          <i class="icon-user"> <img src="../public/image/circle-user.png"> </i>
-        </div>
-      </nav>
-    </header>
+    <div>
+      <!-- Navbar -->
+      <header class="bg-green-400 p-6 flex justify-between items-center w-full">
+        <nav class="flex w-full items-center">
+          <div class="absolute w-10 h-10 left-24">
+            <img src="../public/image/eye.png" alt="Logo" />
+          </div>
+          <ul class="flex justify-around w-1/3 absolute left-1/4 space-x-8">
+            <li><NuxtLink to="/" class="text-xl font-bold text-green-900">Home</NuxtLink></li>
+            <li><NuxtLink to="/" class="text-xl font-bold text-green-900">Products</NuxtLink></li>
+            <li><NuxtLink to="/" class="text-xl font-bold text-green-900">To Contact</NuxtLink></li>
+          </ul>
+          <div class="flex items-center absolute right-1/4 p-1 bg-gray-100 border border-gray-300 rounded-md">
+            <input type="text" placeholder="Search....." class="p-1 outline-none" />
+            <img src="../public/image/search.png" class="w-5 h-5 ml-2">
+          </div>
+          <div class="flex gap-5 absolute right-10 cursor-pointer">
+            <i class="icon-cart">
+              <img src="../public/image/seal-exclamation.png" class="w-5 h-5">  
+            </i>
+            <i class="icon-user">
+              <img src="../public/image/circle-user.png" class="w-5 h-5"> 
+            </i>
+          </div>
+        </nav>
+      </header>
 
-    <div class="home-container">
-    <!-- Hero Section -->
-      <section class="header-img">
-        <h1 class="header-content">Your Ultimate Billiards Table Booking Hub</h1>
-        <img src="../public/image/img_1.jpg" class="image-after-content"/>
-      </section>
+      <!-- Home Container -->
+      <div class="home-container">
 
-      <!-- Features Section -->
-      <section class="features">
-        <div class="feature">
-          <i class="icon">🌐</i>
-          <p>Fast</p>
-        </div>
-        <div class="feature">
-          <i class="icon">✋</i>
-          <p>Convenient</p>
-        </div>
-        <div class="feature">
-          <i class="icon">🖱</i>
-          <p>Easy</p>
-        </div>
-      </section>
+        <!-- Hero Section -->
+        <section class="relative w-full">
+          <h1 class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/5 text-white text-2xl font-bold">Your Ultimate Billiards Table Booking Hub</h1>
+          <img src="../public/image/img_1.jpg" class="w-full object-cover">
+        </section>
 
-      <!-- Popular Collections -->
-      <section class="collections">
-        <h2>Popular Collections</h2>
-        <div class="collection-cards">
-          <div class="card">
-            <img src="../public/image/billard-table.jpg" alt="Billiard Table 1" />
-            <h1> Imperior </h1>
-            <p> Mô tả về bàn và các dịch vụ đi kèm </p>
-            <div class="price-add">
-              <h2> $10 </h2>
-              <button> <img src="../public/image/plus-small.png" /> </button>
+        <!-- Features Section -->
+        <section class="flex justify-around my-10 text-center">
+          <div class="text-xl">
+            <i class="text-4xl mb-2 block">🌐</i>
+            <p class="font-bold text-green-800">Fast</p>
+          </div>
+          <div class="text-xl">
+            <i class="text-4xl mb-2 block">✋</i>
+            <p class="font-bold text-green-800">Convenient</p>
+          </div>
+          <div class="text-xl">
+            <i class="text-4xl mb-2 block">🖱</i>
+            <p class="font-bold text-green-800">Easy</p>
+          </div>
+        </section>
+
+        <!-- Popular Collections -->
+        <section class="text-center py-8">
+          <h2 class="font-bold text-green-800 text-4xl mb-8">Popular Collections</h2>
+          <div class="flex justify-center flex-wrap gap-10">
+            <!-- Collection Card -->
+            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
+              <img src="../public/image/billard-table.jpg" alt="Billiard Table 1" class="w-full h-32 object-cover mb-4">
+              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
+              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
+              <div class="mt-4 flex justify-between items-center">
+                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
+                <button class="bg-green-800 text-white p-2 rounded-md">
+                  <img src="../public/image/plus-small.png" class="w-5 h-5">
+                </button>
+              </div>
+            </div>
+
+            <!-- Repeat the same for more cards -->
+            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
+              <img src="../public/image/billard-table.jpg" alt="Billiard Table 2" class="w-full h-32 object-cover mb-4">
+              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
+              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
+              <div class="mt-4 flex justify-between items-center">
+                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
+                <button class="bg-green-800 text-white p-2 rounded-md">
+                  <img src="../public/image/plus-small.png" class="w-5 h-5">
+                </button>
+              </div>
+            </div>
+
+            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
+              <img src="../public/image/billard-table.jpg" alt="Billiard Table 3" class="w-full h-32 object-cover mb-4">
+              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
+              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
+              <div class="mt-4 flex justify-between items-center">
+                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
+                <button class="bg-green-800 text-white p-2 rounded-md">
+                  <img src="../public/image/plus-small.png" class="w-5 h-5">
+                </button>
+              </div>
             </div>
           </div>
-          <div class="card">
-            <img src="../public/image/billard-table.jpg" alt="Billiard Table 2" />
-            <h1> Imperior </h1>
-            <p> Mô tả về bàn và các dịch vụ đi kèm </p>
-            <div class="price-add">
-              <h2> $10 </h2>
-              <button> <img src="../public/image/plus-small.png" /> </button>
-            </div>
-          </div>
-          <div class="card">
-            <img src="../public/image/billard-table.jpg" alt="Billiard Table 3" />
-            <h1> Imperior </h1>
-            <p> Mô tả về bàn và các dịch vụ đi kèm </p>
-            <div class="price-add">
-              <h2> $10 </h2>
-              <button> <img src="../public/image/plus-small.png" /> </button>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
+
+      <!-- Footer -->
+      <footer class="bg-gray-900 text-white text-center py-4 fixed bottom-0 w-full">
+        <p>&copy; End</p>
+      </footer>
+
     </div>
-
-    <footer>
-      <p>&copy; End</p>
-    </footer>
-
-  </div>
 </template>
 
 <script>
@@ -94,213 +110,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.navbar {
-  background-color: #f8f8f8;
-  padding: 10px;
-  display: inline-block;
-  justify-content: space-between;
-  align-items: center;
-  height: 50px;
-  width: 100%;
-  background-color: #16eba4;
-}
-
-.logo-icon {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  left : 100px;
-  top: 5px ;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  width: 30%;
-  position: absolute;
-  left: 20%;
-  flex-wrap: wrap;
-  gap: 20%;
-}
-
-.nav-links li {
-  display: inline;
-}
-
-.nav-links li a {
-  text-decoration: none;
-  color: #3A6351;
-  font-weight: bold;
-  font-size: 20px;
-}
-
-.search-bar {
-  display: flex;
-  position: absolute;
-  right: 25%;
-  top: 15px;
-  background-color: #f8f8f8;
-  padding: 2px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  align-items: center;
-  top: 10px;
-}
-
-.search-bar img {
-  width: 20px;
-  height: 20px;
-}
-
-.cart-user {
-  position: absolute;
-  display: flex;
-  right: 10%;
-  width: auto; 
-  cursor: pointer;
-  width: 80px;
-  gap: 20px; 
-}
-
-.cart-user img {
-  display: block;
-  margin-right: 0; 
-}
-
-
-/* Body */
-.home-container {
-  font-family: Arial, sans-serif;
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-
-.header-img {
-  position: relative;
-  width: 100%;
-  height: auto; 
-  display: block; 
-  object-fit: cover;
-}
-
-.header-content {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white; /* Change the text color as needed */
-  font-size: 24px; /* Adjust font size as needed */
-  font-weight: bold;
-}
-
-.hero h1 {
-  font-size: 36px;
-  font-weight: bold;
-  color: #3A6351;
-}
-
-/* Features Section */
-.features {
-  display: flex;
-  justify-content: space-around;
-  margin: 40px 0;
-  text-align: center;
-}
-
-.feature {
-  font-size: 24px;
-  color: #3a3a3a;
-}
-
-.feature p {
-  color: #3A6351;
-  font-weight: bold;
-}
-
-.icon {
-  font-size: 40px;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-/* Collections Section */
-.collections {
-  padding: 20px;
-  text-align: center;
-  font-weight: bold;
-  color: #3A6351;
-  font-size: 40px ;
-}
-
-.collection-cards {
-  display: flex;
-  justify-content: center;
-  margin: 10px;
-  flex-wrap: wrap;
-}
-
-.card {
-  width: 250px;
-  height: 400px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 50px;
-}
-
-.card img {
-  margin: 10px;
-  width: 90%;
-  height:  30%;
-}
-
-.card h1 {
-  font-size: 20px;
-  text-align: center;
-  margin-top: 30px;
-  font-weight: bold;
-  color: #000;
-} 
-
-.card p {
-  font-size: 16px;
-  text-align: center;
-  color: #000;
-}
-
-.card .price-add {
-  display: block; 
-}
-
-.card .price-add h2 {
-  display: inline-block;
-  font-size: 28px;
-  color: #3A6351;
-  font-weight: bold;
-  margin-top: 20px;
-  margin-right: 100px;
-} 
-
-.card .price-add button img {
-  position: flex;
-  display: inline;
-  height: 40px;
-  width: 40px;
-  padding: 5px 10px;
-  background-color: #3A6351;
-  border: solid 2px #000;
-  border-radius: 5px;
-}
-
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-</style>
