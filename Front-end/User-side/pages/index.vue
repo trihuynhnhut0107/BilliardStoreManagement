@@ -1,7 +1,9 @@
 <template>
-  <div></div>
+  <div>
+    <RouterLink to="/login">Login Page</RouterLink>
+  </div>
 </template>
 
-<script setup></script>
+<script></script>
 
-<style scoped></style>
+<style></style>
