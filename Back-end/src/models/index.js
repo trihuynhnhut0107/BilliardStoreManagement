@@ -1,27 +1,47 @@
 const sequelize = require("../configs/sequelize");
-const MenuItem = require("./MenuItems");
+const MenuItem = require("./MenuItem");
 const BilliardTable = require("./BilliardTable");
 const Staff = require("./Staff");
 const Account = require("./Account");
 const Bill = require("./Bill");
 const Customer = require("./Customer");
 const BillDetail = require("./BillDetail");
+const { UserExistError } = require("../core/error.response");
 
 // Set up relationships
-Account.hasMany(Customer, { foreignKey: "account_id" });
-Customer.belongsTo(Account, { foreignKey: "account_id" });
+Customer.hasOne(Account, {
+  foreignKey: "accountableId",
+  constraints: false,
+  scope: {
+    accountableType: "Customer", // Only link Customers
+  },
+});
 
-Account.hasMany(Staff, { foreignKey: "account_id" });
-Staff.belongsTo(Account, { foreignKey: "account_id" });
+Staff.hasOne(Account, {
+  foreignKey: "accountableId",
+  constraints: false,
+  scope: {
+    accountableType: "Staff", // Only link Staff
+  },
+});
 
-Customer.hasMany(Bill, { foreignKey: "customer_id" });
-Bill.belongsTo(Customer, { foreignKey: "customer_id" });
+Account.belongsTo(Customer, {
+  foreignKey: "accountableId",
+  constraints: false,
+  as: "Customer",
+});
 
-Bill.hasMany(BillDetail, { foreignKey: "bill_id" });
-BillDetail.belongsTo(Bill, { foreignKey: "bill_id" });
+Account.belongsTo(Staff, {
+  foreignKey: "accountableId",
+  constraints: false,
+  as: "Staff",
+});
 
-BilliardTable.hasMany(BillDetail, { foreignKey: "table_id" });
-BillDetail.belongsTo(BilliardTable, { foreignKey: "table_id" });
+Customer.hasMany(Bill);
+Bill.belongsTo(Customer);
+
+Bill.hasMany(BillDetail);
+BillDetail.belongsTo(Bill);
 
 // Sync models with database
 sequelize
