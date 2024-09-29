@@ -2,6 +2,11 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../configs/sequelize");
 
 const Bill = sequelize.define("Bill", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   table_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,

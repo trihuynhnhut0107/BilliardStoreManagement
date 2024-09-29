@@ -8,6 +8,7 @@ const sequelize = new Sequelize("billiard_store", "root", "root", {
   define: {
     freezeTableName: true,
   },
+  logging: console.log,
 });
 
 module.exports = sequelize;
