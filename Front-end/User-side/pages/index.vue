@@ -1,3 +1,4 @@
+<!-- Index can be the home page -->
 <template>
   <div>
     <RouterLink to="/login">Login Page</RouterLink>
