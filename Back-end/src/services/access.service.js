@@ -130,11 +130,11 @@ class CustomerAccessService {
       },
     });
     if (!foundCustomer) {
-      throw new Error("Customer account not found");
+      throw new AuthFailureError("Customer account not found");
     }
     const match = await bcrypt.compare(password, foundCustomer.password);
     if (!match) {
-      throw new Error("Invalid password");
+      throw new AuthFailureError("Invalid password");
     }
 
     return {

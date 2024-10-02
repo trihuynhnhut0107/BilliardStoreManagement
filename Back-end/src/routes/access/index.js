@@ -10,6 +10,10 @@ router.post(
   "/customer-site/signup",
   asyncHandler(AccessController.customerSignUp)
 );
+router.post(
+  "/customer-site/login",
+  asyncHandler(AccessController.customerLogin)
+);
 
 // Store-site API
 router.post("/store-site/signup", asyncHandler(AccessController.staffSignUp));
