@@ -34,6 +34,15 @@ class AccessController {
       },
     }).send(res);
   };
+  customerLogin = async (req, res, next) => {
+    new CREATED({
+      message: "Login OK!",
+      metadata: await CustomerAccessService.login(req.body),
+      options: {
+        limit: 10,
+      },
+    }).send(res);
+  };
 }
 
 module.exports = new AccessController();
