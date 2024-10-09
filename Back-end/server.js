@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 require("./src/models/index");
 
 const app = require("./src/app"); // Import app setup
+const socketAsyncHandler = require("./src/helpers/socketAsyncHandler");
 
 const server = http.createServer(app);
 

@@ -1,8 +1,10 @@
 module.exports = (socket) => {
-  socket.on("message", (msg) => {
-    console.log("Received message:", msg); // Log received message
-    socket.broadcast.emit("message", msg); // Broadcast the message to all clients except the sender
+  // Listen for messages
+  socket.on("message", (data) => {
+    console.log("Received message:", data);
+    socket.emit("message", `Socket id: ${socket.id} - ${data}`); // Send message back to the client
   });
+
   socket.on("joinChannel", (channel) => {
     socket.join(channel);
     console.log(`User joined channel: ${channel}`);

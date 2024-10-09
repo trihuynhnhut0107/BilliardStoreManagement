@@ -1,13 +1,15 @@
 const { Sequelize } = require("sequelize");
 
+require("dotenv").config();
+
 // Initialize Sequelize with your database credentials
 const sequelize = new Sequelize(
-  "freedb_billiard_store",
-  "freedb_trihuynhnhut0107",
-  "kxVm*ne79jGj$zJ",
+  process.env.LOCAL_DB_NAME,
+  process.env.LOCAL_DB_USER,
+  process.env.LOCAL_DB_PASSWORD,
   {
-    host: "sql.freedb.tech",
-    port: 3306,
+    host: process.env.LOCAL_DB_HOST,
+    port: process.env.LOCAL_DB_PORT,
     dialect: "mysql",
     timezone: "+07:00",
     define: {
