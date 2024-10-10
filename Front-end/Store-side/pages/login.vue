@@ -8,8 +8,10 @@
         <div>
           <input type="text" placeholder="Email address or phone number" class="w-[250px] h-[40px] p-[10px] border border-[#A4A4A4] rounded-md">
         </div>
-        <div>
-          <input type="password" placeholder="Password" class="w-[250px] h-[40px] p-[10px] border border-[#A4A4A4] rounded-md">
+        <div class="password-input">
+          <input :type="isPasswordVisible ? 'text' : 'password'"
+                 placeholder="Password" class="w-[250px] h-[40px] p-[10px] border border-[#A4A4A4] rounded-md">
+          <img src="../public/Icon/eye-close.png" @click.prevent={togglePassword}>
         </div>
         <div class="w-[250px] bg-[#3A6351] text-white rounded-md text-center p-[7px]">
           <input type="submit" value="Log in" class="w-full bg-transparent text-white cursor-pointer">
@@ -18,20 +20,37 @@
           Forgot password?
         </RouterLink>
         <hr class="w-[250px] border border-[#A4A4A4] p-0">
-        <button class="text-white bg-[#3A6351] w-[200px] p-[7px] rounded-md">
-          <RouterLink to="/createaccount">Create new account</RouterLink>
+        <button class="text-white bg-[#3A6351] w-[200px] p-[7px] rounded-md" onclick={togglePassword}>
+          <RouterLink >Create new account</RouterLink>
         </button>
       </form>
     </div>
   </template>
   
   <script setup>
-  
+    const isPasswordVisible = false
+
+    function togglePassword(){
+      // isPasswordVisible = !isPasswordVisible
+      alert("Hi")
+    }
   </script>
 
   <style>
   .bg-img {
     background-image: url(../public/Image/Login_page.png);
+  }
+
+  .password-input {
+    display: flex;
+    align-items: center;
+    
+  }
+
+  .password-input img{
+    width: 35px;
+    cursor: pointer;
+
   }
 </style>
   

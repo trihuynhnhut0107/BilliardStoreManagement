@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <RouterLink to="/login"></RouterLink>
+  </div>
 </template>
 
 <script setup></script>
