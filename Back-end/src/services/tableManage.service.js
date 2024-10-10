@@ -1,3 +1,4 @@
+"use strict";
 const BilliardTable = require("../models/BilliardTable");
 
 class tableManageService {

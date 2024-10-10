@@ -7,7 +7,7 @@ const Bill = sequelize.define("Bill", {
     primaryKey: true,
     autoIncrement: true,
   },
-  table_quantity: {
+  item_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
