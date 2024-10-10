@@ -10,9 +10,15 @@ module.exports = (io) => {
     });
 
     socket.on("change-availability", async (itemID) => {
-      await BilliardTable.update({ status: "Busy" }, { where: { id: itemID } });
-      const tableList = await BilliardTable.findAll();
-      socket.emit("availability-changed", itemID);
+      const [numberOfAffectedRows] = await BilliardTable.update(
+        { status: "Busy" },
+        { where: { id: itemID } }
+      );
+      if (numberOfAffectedRows === 0) {
+        socket.emit("availability-changed", -1);
+      } else {
+        socket.emit("availability-changed", itemID);
+      }
     });
     // require("../routes/message")(socket);
     socket.on("disconnect", () => {
