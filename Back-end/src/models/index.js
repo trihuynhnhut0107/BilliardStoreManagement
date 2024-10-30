@@ -7,6 +7,8 @@ const Bill = require("./Bill");
 const Customer = require("./Customer");
 const BillDetail = require("./BillDetail");
 const { UserExistError } = require("../core/error.response");
+const Conversation = require("./Conversation");
+const Message = require("./Message");
 
 // Set up relationships
 Customer.hasOne(Account, {
@@ -42,6 +44,12 @@ Bill.belongsTo(Customer);
 
 Bill.hasMany(BillDetail);
 BillDetail.belongsTo(Bill);
+
+Conversation.belongsTo(Customer, { foreignKey: "customerID" });
+
+Conversation.belongsTo(Staff, { foreignKey: "staffID", allowNull: true });
+
+Message.belongsTo(Conversation, { foreignKey: "conversationID" });
 
 // Sync models with database
 sequelize

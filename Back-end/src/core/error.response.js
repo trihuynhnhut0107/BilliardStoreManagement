@@ -62,6 +62,15 @@ class UserExistError extends ErrorResponse {
   }
 }
 
+class ServerError extends ErrorResponse {
+  constructor(
+    message = ReasonPhrases.INTERNAL_SERVER_ERROR,
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+  ) {
+    super(message, statusCode);
+  }
+}
+
 module.exports = {
   ConflictRequestError,
   BadRequestError,
@@ -69,4 +78,5 @@ module.exports = {
   NotFoundError,
   ForbiddenError,
   UserExistError,
+  ServerError,
 };
