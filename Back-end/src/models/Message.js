@@ -1,33 +1,32 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../configs/sequelize");
 
-const BilliardTable = sequelize.define("BilliardTable", {
+const Message = sequelize.define("Message", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  table_type: {
+  conversationID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  senderType: {
+    type: DataTypes.ENUM("customer", "staff"),
+    allowNull: false,
+  },
+  senderID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  isRead: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  messageText: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  stick_quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  ball_quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  price: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM("available", "busy"),
-    allowNull: false,
-    defaultValue: "available",
-  },
 });
 
-module.exports = BilliardTable;
+module.exports = Message;

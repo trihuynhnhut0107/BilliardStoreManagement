@@ -64,11 +64,11 @@ class StaffAccessService {
       },
     });
     if (!foundStaff) {
-      throw new Error("Staff account not found");
+      throw new AuthFailureError("Staff account not found");
     }
     const match = await bcrypt.compare(password, foundStaff.password);
     if (!match) {
-      throw new Error("Invalid password");
+      throw new AuthFailureError("Invalid password");
     }
 
     return {
