@@ -44,7 +44,7 @@
         if (data.value.status === 201) {
           const user = data.value.metadata.user
           console.log('Registered User Successfully:', user)
-          navigateTo("/login")
+          navigateTo("/userlogin")
         }
       } catch (err) {
         console.error(err)
