@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <slot />
-  </div>
+  <div></div>
 </template>
 
 <script setup></script>
 
-<style></style>
+<style scoped></style>
