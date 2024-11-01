@@ -1,5 +1,6 @@
 <template>
     <div>
+      <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Navbar -->
       <header class="bg-green-400 p-6 flex justify-between items-center w-full">
         <nav class="flex w-full items-center">
@@ -25,10 +26,10 @@
           </div>
         </nav>
       </header>
+      <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
 
       <!-- Home Container -->
       <div class="home-container">
-
         <!-- Hero Section -->
         <section class="relative w-full">
           <h1 class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-2/5 text-white text-2xl font-bold">Your Ultimate Billiards Table Booking Hub</h1>
@@ -56,57 +57,81 @@
           <h2 class="font-bold text-green-800 text-4xl mb-8">Popular Collections</h2>
           <div class="flex justify-center flex-wrap gap-10">
             <!-- Collection Card -->
-            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
-              <img src="../public/image/billard-table.jpg" alt="Billiard Table 1" class="w-full h-32 object-cover mb-4">
-              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
-              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
+            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5" v-for="(table, index) in tables" :key="index">
+              <img :src="table.image" :alt="table.name" class="w-full h-32 object-cover mb-4">
+              <h1 class="text-xl font-bold text-black mb-2">{{ table.name }}</h1>
+              <p class="text-base text-black">{{ table.description }}</p>
               <div class="mt-4 flex justify-between items-center">
-                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
-                <button class="bg-green-800 text-white p-2 rounded-md">
-                  <img src="../public/image/plus-small.png" class="w-5 h-5">
-                </button>
-              </div>
-            </div>
-
-            <!-- Repeat the same for more cards -->
-            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
-              <img src="../public/image/billard-table.jpg" alt="Billiard Table 2" class="w-full h-32 object-cover mb-4">
-              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
-              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
-              <div class="mt-4 flex justify-between items-center">
-                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
-                <button class="bg-green-800 text-white p-2 rounded-md">
-                  <img src="../public/image/plus-small.png" class="w-5 h-5">
-                </button>
-              </div>
-            </div>
-
-            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5">
-              <img src="../public/image/billard-table.jpg" alt="Billiard Table 3" class="w-full h-32 object-cover mb-4">
-              <h1 class="text-xl font-bold text-black mb-2">Imperior</h1>
-              <p class="text-base text-black">Mô tả về bàn và các dịch vụ đi kèm</p>
-              <div class="mt-4 flex justify-between items-center">
-                <h2 class="text-green-800 font-bold text-2xl">$10</h2>
-                <button class="bg-green-800 text-white p-2 rounded-md">
+                <h2 class="text-green-800 font-bold text-2xl">${{ table.price }}</h2>
+                <button @click="openModal(table)" class="bg-green-800 text-white p-2 rounded-md">
                   <img src="../public/image/plus-small.png" class="w-5 h-5">
                 </button>
               </div>
             </div>
           </div>
         </section>
-      </div>
+        
+      <!-- Booking Modal -->
+      <BookingModal v-if="isModalOpen" :table="selectedTable" @close="closeModal" />
 
+    </div>
+
+      <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Footer -->
       <footer class="bg-gray-900 text-white text-center py-4 fixed bottom-0 w-full">
         <p>&copy; End</p>
       </footer>
+      <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
 
     </div>
 </template>
 
-<script>
-export default {
-  name: 'Home',
-};
+<script setup>
+  import BookingModal from './bookingmodal.vue';
+
+  const isModalOpen = ref(false)
+  const selectedTable = ref(null)
+
+  // Sample table data
+  const tables = ref([
+    {
+      name: 'Imperior 1',
+      key: '1',
+      description: 'Mô tả về bàn và các dịch vụ đi kèm',
+      price: 10,
+      image: '../public/Image/billard-table.jpg',
+    },
+    {
+      name: 'Imperior 2',
+      key: '2',
+      description: 'Mô tả về bàn và các dịch vụ đi kèm',
+      price: 10,
+      image: '../public/Image/billard-table.jpg',
+    },
+    {
+      name: 'Imperior 3',
+      key: '3',
+      description: 'Mô tả về bàn và các dịch vụ đi kèm',
+      price: 10,
+      image: '../public/Image/billard-table.jpg',
+    },
+  ]);
+  // Opens the booking modal with the selected table
+  const openModal = (table) => {
+    selectedTable.value = table
+    isModalOpen.value = true
+  }
+
+  // Closes the modal
+  const closeModal = () => {
+    isModalOpen.value = false
+  }
+
 </script>
+
+<style scoped>
+.home-container {
+  position: relative; 
+}
+</style>
 
