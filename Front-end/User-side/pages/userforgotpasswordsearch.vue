@@ -1,4 +1,5 @@
 <template>
+  <DefaultLayout>
     <div class="forgotpassword-container">
       <header>
         <h1>app name</h1>
@@ -32,10 +33,11 @@
         </div>
       </form>
     </div>
-    <footer></footer>
-  </template>
+  </DefaultLayout>
+</template>
   
   <script setup>
+    import DefaultLayout from '~/layout/default.vue'
     const userEmail = "example@gmail.com"
   </script>
   
@@ -124,7 +126,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+justify-content: center;
     }
     
     .email-image{
@@ -168,4 +170,3 @@
     }
 
   </style>
-  
