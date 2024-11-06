@@ -39,20 +39,22 @@ interface Message {
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
 
-const { data, error } = await useFetch(
-  "http://localhost:8080/v1/api/message/get-conversation/3"
-);
-console.log(data.value);
+const fetchMessages = async () => {
+  const { data, error } = await useFetch(
+    "http://localhost:8080/v1/api/message/get-conversation/3"
+  );
+  console.log(data.value);
 
-if (data.value) {
-  const fetchedMessage = data.value.metadata.map((msg: any) => ({
-    text: msg.messageText,
-    isOwn: msg.senderType === "customer" ? true : false,
-  }));
-  messages.value.push(...fetchedMessage);
-} else if (error.value) {
-  console.error("Failed to fetch messages:", error.value);
-}
+  if (data.value) {
+    const fetchedMessage = data.value.metadata.map((msg: any) => ({
+      text: msg.messageText,
+      isOwn: msg.senderType === "customer" ? true : false,
+    }));
+    messages.value = fetchedMessage; // Directly assign the fetched messages
+  } else if (error.value) {
+    console.error("Failed to fetch messages:", error.value);
+  }
+};
 
 const sendMessage = async () => {
   const { data } = await useFetch(
@@ -60,7 +62,7 @@ const sendMessage = async () => {
     {
       method: "POST",
       body: JSON.stringify({
-        conversationId: null, // or the existing conversation ID
+        conversationId: 3, // Use the existing conversation ID
         senderType: "customer",
         senderId: 1, // Assuming this is a valid customer ID
         receiverId: 1,
@@ -72,9 +74,10 @@ const sendMessage = async () => {
   console.log(data.value);
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchMessages(); // Ensure messages are fetched before setting up socket events
+
   socket.emit("joinConversation", { conversationID: 3 });
-  // Assuming `socket` is your Socket.IO client instance
   socket.on("newMessage", (message) => {
     const newMessage = {
       text: message.messageText,

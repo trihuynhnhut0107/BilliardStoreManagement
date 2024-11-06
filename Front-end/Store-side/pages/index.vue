@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <Conversation />
+  </div>
 </template>
 
 <script setup></script>
