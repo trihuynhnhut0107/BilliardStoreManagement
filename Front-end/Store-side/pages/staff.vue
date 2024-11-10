@@ -1,15 +1,13 @@
 <template>
-    <div>
-    </div>
+  <div></div>
 </template>
 
-<script>
+<script setup>
 definePageMeta({
-    layout: 'sidebar'
-})
+  layout: "sidebar",
+});
 
 //  const staff = ref()
 </script>
-
 
 <style></style>
