@@ -4,30 +4,22 @@
       <h2 class="text-2xl font-bold text-nowrap">Table List</h2>
       <div class="flex items-center w-max rounded-2xl border px-3">
         <!-- Search Input -->
-        <input
-          v-model="searchQuery"
-          placeholder="Search"
-          class="outline-none border-none bg-transparent pr-20 text-xs"
+        <input v-model="searchQuery" placeholder="Search" class="outline-none border-none bg-transparent pr-20 text-xs"
           @keydown="filterTables" />
         <img src="/Search.svg" class="w-3 cursor-pointer" />
       </div>
       <div class="flex gap-4">
-        <button
-          @click="handleToggleCreatetable"
+        <button @click="handleToggleCreatetable"
           class="cursor-pointer bg-[#3A6351] text-white rounded text-xs text-nowrap text-center px-2 font-bold">
           Add Table
         </button>
-        <img
-          @click="deleteSelectedTable"
-          src="/Trash.svg"
-          class="w-4 cursor-pointer" />
+        <img @click="deleteSelectedTable" src="/Trash.svg" class="w-4 cursor-pointer" />
       </div>
     </div>
     <div class="relative bg-white">
       <div class="max-h-[300px] overflow-y-auto">
         <table class="w-full border-collapse border-none">
-          <thead
-            class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
+          <thead class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
             <tr>
               <th class="p-2 w-[50px]"></th>
               <th class="p-2 w-[80px]">ID</th>
@@ -39,14 +31,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(table, index) in filteredTables"
-              :key="index"
+            <tr v-for="(table, index) in filteredTables" :key="index"
               class="hover:bg-gray-50 border-b border-[#ECF0F2] last:border-none">
               <td class="p-2 w-[50px] text-center align-middle">
-                <input
-                  type="checkbox"
-                  v-model="table.selected"
+                <input type="checkbox" v-model="table.selected"
                   class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
@@ -58,26 +46,18 @@
               <td class="p-2 w-[100px] text-center align-middle">
                 {{ table.price }}
               </td>
-              <td
-                class="p-2 w-[100px] text-center align-middle"
-                :class="{
-                  'text-[#00229D]': table.status === 'Repairing',
-                  'text-[#FF0000]': table.status === 'Unavailable',
-                  'text-[#0CB000]': table.status === 'Available',
-                }">
+              <td class="p-2 w-[100px] text-center align-middle" :class="{
+                'text-[#00229D]': table.status === 'Repairing',
+                'text-[#FF0000]': table.status === 'Unavailable',
+                'text-[#0CB000]': table.status === 'Available',
+              }">
                 {{ table.status }}
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
-                <img
-                  @click="editTable(table.id)"
-                  src="/Edit.svg"
-                  class="cursor-pointer w-4 mx-auto" />
+                <img @click="editTable(table.id)" src="/Edit.svg" class="cursor-pointer w-4 mx-auto" />
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
-                <img
-                  @click="deleteTable(table.id)"
-                  src="/Trash.svg"
-                  class="cursor-pointer w-4 mx-auto" />
+                <img @click="deleteTable(table.id)" src="/Trash.svg" class="cursor-pointer w-4 mx-auto" />
               </td>
             </tr>
           </tbody>
