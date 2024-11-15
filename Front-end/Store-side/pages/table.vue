@@ -1,257 +1,646 @@
 <template>
-    <div class="flex gap-10 bg-[#D9D9D9] w-screen h-screen p-20">            
-        <div class="bg-white text-nowrap rounded-md py-6 pl-10 pr-[150px] w-fit h-fit">
-            <h1 class="text-[#3A6351] text-2xl mb-6">Manage</h1>
-            <ul class="flex flex-col gap-6">
-                <div class="flex gap-4">
-                    <img src="../public/User.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/staff" >Staff Information</NuxtLink>
-                </div>
-                <div class="flex gap-4">
-                    <img src="../public/Table.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/table" >Table</NuxtLink>
-                </div>
-                <div class="flex gap-4">
-                    <img src="../public/Menu.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/menu" >Menu</NuxtLink>
-                </div>
-                <div class="flex gap-4">
-                    <img src="../public/Bill.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/bill" >Bill</NuxtLink>
-                </div>
-                <div class="flex gap-4">
-                    <img src="../public/Setting.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/setting" >Setting</NuxtLink>
-                </div>
-                <div class="flex gap-4">
-                    <img src="../public/Logout.svg" alt="." class="w-4">
-                    <NuxtLink class="text-[#3A6351] text-sm" to="/login" >Logout</NuxtLink>
-                </div>
-            </ul>
-        </div>
+    <div class="flex flex-col gap-6 flex-1">
 
-        <div class="flex flex-col gap-6 flex-1">
-            <div class="flex justify-between bg-white px-10 py-2">
-                <h2 class="text-2xl font-bold text-nowrap">Table List</h2>
-                <div class="flex items-center w-max rounded-2xl border px-3">
-                    <input placeholder="Search" v-model="searchQuery" class="outline-none border-none bg-transparent pr-20 text-xs">
-                    <img src="../public/Search.svg" class="w-3 cursor-pointer">
-                </div>
-                <div class="flex gap-4">
-                    <button @click="addTable" class="cursor-pointer bg-[#3A6351] text-white rounded text-xs text-nowrap text-center px-2 font-bold">Add Table</button>
-                    <img src="../public/Trash.svg" class="w-4 cursor-pointer">
-                </div>
+        <!-- Search bar -->
+        <div class="flex justify-between bg-white px-10 py-2">
+            <h2 class="text-2xl font-bold text-nowrap">Table List</h2>
+            <div class="flex items-center w-max rounded-2xl border px-3">
+                <input placeholder="Search" v-model="searchQuery"
+                    class="outline-none border-none bg-transparent pr-20 text-xs">
+                <img src="../public/Search.svg" class="w-3 cursor-pointer">
             </div>
-                <!-- <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A6351]"></div>
-                </div> -->
-                <table class="w-full border-collapse border-none bg-white">
-                    <thead class="border-b border-[#ECF0F2] border-solid">
-                        <tr class="text-center">
-                            <th class="p-2">
-                                <input type="checkbox" @change="selectAll" v-model="selectAllChecked" class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4">
+            <div class="flex gap-4">
+                <button @click="handleToggleCreatetable"
+                    class="cursor-pointer bg-[#3A6351] text-white rounded text-xs text-nowrap text-center px-2 font-bold">Add
+                    Table</button>
+                <img @click="deleteSelectedTable" src="../public/Trash.svg" class="w-4 cursor-pointer">
+            </div>
+        </div>
+        <div class="relative bg-white">
+            <div class="max-h-[300px] overflow-y-auto">
+                <table class="w-full border-collapse border-none">
+                    <!-- table header -->
+                    <thead class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
+                        <tr>
+                            <th class="p-2 w-[50px]">
+                                <input type="checkbox" @change="selectAll" v-model="selectAllChecked"
+                                    class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4">
                             </th>
-                            <th class="p-2">ID</th>
-                            <th class="p-2">Table Name</th>
-                            <th class="p-2">Type</th>
-                            <th class="p-2">Status</th>
-                            <th class="p-2">Edit</th>
-                            <th class="p-2">Delete</th>
+                            <th class="p-2 w-[80px]">ID</th>
+                            <th class="p-2 w-[150px]">Type</th>
+                            <th class="p-2 w-[100px]">Price</th>
+                            <th class="p-2 w-[100px]">Status</th>
+                            <th class="p-2 w-[80px]">Edit</th>
+                            <th class="p-2 w-[80px]">Delete</th>
                         </tr>
                     </thead>
+
+                    <!-- table row -->
                     <tbody>
-                        <tr v-for="(table, index) in filteredTables" :key="index" class="text-center  items-center">
-                            <td class="p-2">
-                                <input type="checkbox" v-model="table.selected" class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4">
+                        <tr v-for="(table, index) in filteredTables" :key="index"
+                            class="hover:bg-gray-50 border-b border-[#ECF0F2] last:border-none">
+                            <td class="p-2 w-[50px] text-center align-middle">
+                                <input type="checkbox" v-model="table.selected"
+                                    class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4">
                             </td>
-                            <td class="p-2">{{ table.id }}</td>
-                            <td class="p-2">{{ table.table_name }}</td>
-                            <td class="p-2">{{ table.table_type }}</td>
-                            <td class="p-2" :class="{
+                            <td class="p-2 w-[80px] text-center align-middle">{{ table.id }}</td>
+                            <td class="p-2 w-[150px] text-center align-middle">{{ table.table_type }}</td>
+                            <td class="p-2 w-[100px] text-center align-middle">{{ table.price }}</td>
+                            <td class="p-2 w-[100px] text-center align-middle" :class="{
                                 'text-[#00229D]': table.status === 'Repairing',
                                 'text-[#FF0000]': table.status === 'Unavailable',
                                 'text-[#0CB000]': table.status === 'Available',
                             }">
                                 {{ table.status }}
                             </td>
-                            <td class="p-2 pl-5">
-                                <img @click="editTable(table.id)" src="../public/Edit.svg" class="cursor-pointer w-4">
+                            <td class="p-2 w-[80px] text-center align-middle">
+                                <img @click="editTable(table.id)" src="../public/Edit.svg"
+                                    class="cursor-pointer w-4 mx-auto">
                             </td>
-                            <td class="p-2 flex">
-                                <img @click="deleteTable(table.id)" src="../public/Trash.svg" class="cursor-pointer w-4  justify-center items-center">
+                            <td class="p-2 w-[80px] text-center align-middle">
+                                <img @click="deleteTable(table.id)" src="../public/Trash.svg"
+                                    class="cursor-pointer w-4 mx-auto">
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                
-                <div v-if="addTableClicked" 
-                    class="fixed top-[1/5] left-1/3 flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity duration-300">
-                    <div class="bg-white p-8 rounded shadow-md max-w-md transform transition-transform duration-300">                        
-                        <form @submit.prevent class="flex flex-col gap-4">
-                            <h3 class="text-2xl font-bold">Create new table</h3>
-                            <hr>
-                            <div class="flex align-middle gap-4">
-                                <label class="font-bold">ID:</label>
-                                <label class="order border-gray-300">5</label>
-                            </div>
-                            <div class="flex align-middle gap-4">
-                                <label class="font-bold">Table name:</label>
-                                <label class="order border-gray-300">Table 5</label>
-                            </div>
-                            <div class="flex align-middle gap-4">
-                                <label for="type" class="font-bold">Type:</label>
-                                <select id="type" v-model="type">
-                                    <option value="Standard">Standard</option>
-                                    <option value="Premium">Premium</option>
-                                </select>
-                            </div>
-                            <div class="flex align-middle gap-4">
-                                <label for="status" class="font-bold">Status:</label>
-                                <select id="status" v-model="status">
-                                    <option value="Available">Available</option>
-                                    <option value="Repairing">Repairing</option>
-                                    <option value="Unavailable">Unavailable</option>
-                                </select>
-                            </div>
-                            <div class="flex align-middle justify-center gap-4">
-                                <label for="feature" class="font-bold">Feature:</label>
-                                <textarea placeholder="Feature descriptions"></textarea>
-                            </div>
-                            <hr>
-                            <div class="flex justify-end">
-                                <button type="button" @click="closePopup"
-                                class="bg-white text-[#3A6351] font-bold py-2 px-4 rounded transition duration-300ease-in-out ml-4">Cancel</button>
-                                <button type="button" @click="closePopup"
-                                class="bg-[#3A6351] text-white font-bold py-2 px-4 rounded transition duration-300ease-in-out ml-4">Create</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <!-- <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                {{ error }}
-            </div> -->
+            </div>
         </div>
-    </div>   
-   </template>
-     
-   <script setup>
-   import { ref, onMounted, computed } from 'vue'
-   
-   //Setup
-   onBeforeMount(() => {
-    getData()
-   })
+    </div>
+
+    <!-- Create table form -->
+    <div>
+        <Transition name="nested">
+            <div v-if="addTableClicked" name="outer" class="absolute top-[10%] right-1/2">
+                <hr>
+                <form @submit.prevent
+                    class="w-full max-w-sm flex flex-col justify-center gap-2 rounded-lg shadow-[0px_0px_5px_green] bg-white p-4 px-11">
+                    <h2 class="text-center font-bold text-xl text-[#3A6351]">Create new table</h2>
+                    <hr>
+                    <label class="font-bold underline text-lg text-[#3A6351]">TableID: {{ newTableId(tables) }}</label>
+                    <div class="flex justify-between gap-6 w-full max-w-sm">
+                        <div>
+                            <label for="stick_quantity" class="font-semibold">Stick quantity</label>
+                            <div>
+                                <input v-model="createTableData.stick_quantity" id="stick_quantity" type="text"
+                                    placeholder="Stick quantity"
+                                    class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="ball_quantity" class="font-semibold">Ball quantity</label>
+                            <div>
+                                <input v-model="createTableData.ball_quantity" id="ball_quantity" type="text"
+                                    placeholder="Ball quantity"
+                                    class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="table_type" class="font-semibold">Table type</label>
+                        <div>
+                            <input v-model="createTableData.table_type" id="table_type" type="text"
+                                placeholder="Table type" class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="price" class="font-semibold">Price</label>
+                        <div>
+                            <input v-model="createTableData.price" id="price" type="text" placeholder="Price"
+                                class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="status" class="font-semibold block">Status</label>
+                        <select v-model="createTableData.status" name="status" id="status" class="p-1 font-semibold"
+                            :class="{
+                                'text-[#00229D]': createTableData.status === 'Repairing',
+                                'text-[#FF0000]': createTableData.status === 'Unavailable',
+                                'text-[#0CB000]': createTableData.status === 'Available',
+                            }">
+                            <option class="text-[#0CB000]" value="Available" selected>Available</option>
+                            <option class="text-[#FF0000]" value="Unavailable">Unavailable</option>
+                            <option class="text-[#00229D]" value="Repairing">Repairing</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-4">
+                        <button @click="handleToggleCreatetable"
+                            class="max-w-64 text-[#3A6351] border border-[#3A6351] bg-white font-medium rounded-md text-center py-2 px-6">Cancel</button>
+                        <button @click="handleCreateTable(newTableId(tables))"
+                            class="max-w-64 bg-[#3A6351] text-white font-medium rounded-md text-center py-2 px-6">Create</button>
+                    </div>
+                </form>
+            </div>
+        </Transition>
+    </div>
 
 
-   // Load data when component mounts
-   onMounted(() => {
-       getData()
-   })
+    <!-- Edit table form -->
+    <div>
+        <Transition name="nested">
+            <div v-if="editTableClicked" name="outer" class="absolute top-1/5 right-0">
+                <hr>
+                <form @submit.prevent
+                    class="w-full max-w-sm flex flex-col justify-center gap-2 rounded-lg shadow-[0px_0px_5px_green] bg-white p-4 px-11">
+                    <h2 class="text-center font-bold text-xl text-[#3A6351]">Edit table</h2>
+                    <hr>
+                    <label class="font-bold underline text-lg text-[#3A6351]">Table ID: {{ currentEditTableId }}</label>
+                    <div class="flex justify-between gap-6 w-full max-w-sm">
+                        <div>
+                            <label for="stick_quantity" class="font-semibold">Stick quantity</label>
+                            <div>
+                                <input v-model="editTableData.stick_quantity" id="stick_quantity" type="text"
+                                    placeholder="Stick quantity"
+                                    class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="ball_quantity" class="font-semibold">Ball quantity</label>
+                            <div>
+                                <input v-model="editTableData.ball_quantity" id="ball_quantity" type="text"
+                                    placeholder="Ball quantity"
+                                    class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="table_type" class="font-semibold">Table type</label>
+                        <div>
+                            <input v-model="editTableData.table_type" id="table_type" type="text"
+                                placeholder="Table type" class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="price" class="font-semibold">Price</label>
+                        <div>
+                            <input v-model="editTableData.price" id="price" type="text" placeholder="Price"
+                                class="w-full rounded-md indent-1 border border-gray-700 h-9">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="status" class="font-semibold block">Status</label>
+                        <select v-model="editTableData.status" name="status" id="status" class="p-1 font-semibold"
+                            :class="{
+                                'text-[#00229D]': editTableData.status === 'Repairing',
+                                'text-[#FF0000]': editTableData.status === 'Unavailable',
+                                'text-[#0CB000]': editTableData.status === 'Available',
+                            }">
+                            <option class="text-[#0CB000]" value="Available" selected>Available</option>
+                            <option class="text-[#FF0000]" value="Unavailable">Unavailable</option>
+                            <option class="text-[#00229D]" value="Repairing">Repairing</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-4">
+                        <button @click="handleToggleEdittable"
+                            class="max-w-64 text-[#3A6351] border border-[#3A6351] bg-white font-medium rounded-md text-center py-2 px-6">Cancel</button>
+                        <button @click="handleEditTable"
+                            class="max-w-64 bg-[#3A6351] text-white font-medium rounded-md text-center py-2 px-6">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </Transition>
+    </div>
+</template>
 
-   const addTableClicked = ref(false)
+<script setup>
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css'
+import { ref, computed, onMounted } from "vue";
 
-   const uppercaseFirst = (a) => {
-    return a.charAt(0).toUpperCase() + a.slice(1)
-   }
+definePageMeta({
+    layout: 'sidebar'
+})
 
-   const selectAllChecked = ref(false)
-   const tables = ref([])
-//    const loading = ref(false)
-//    const error = ref(null)
-   const searchQuery = ref('')
+const tables = ref([])
+const searchQuery = ref('')
 
-   const filteredTables = computed(() => {
-       if (!searchQuery.value) return tables.value
-       const query = searchQuery.value.toLowerCase()
-       return tables.value.filter(table => 
-           table.table_name.toLowerCase().includes(query) ||
-           table.table_type.toLowerCase().includes(query) ||
-           table.status.toLowerCase().includes(query)
-       )
-   })
+const { data, error, status } = useFetch(
+    "http://localhost:8080/v1/api/table-manage/get-all-tables"
+);
 
-   const getData = async() => {
-       try {
-           const {data, error} = await useFetch('http://localhost:8080/v1/api/table-manage/get-all-tables', {
-               method: 'GET',
-           })
-           if (data.value.status !== 201) {
-            console.log(error.value)
-           }
-           tables.value = data.value.metadata.map(item => ({
-               id: item.id,
-               table_name: `Table ${item.id}`,
-               table_type: uppercaseFirst(item.table_type),
-               stick_quantity: item.stick_quantity,
-               ball_quantity: item.ball_quantity,
-               price: item.price,
-               status: uppercaseFirst(item.status),
-               createdAt: item.createdAt,
-               updatedAt: item.updatedAt,
-               selected: false
-           }))
-       } catch (err) {
-           console.error('Error fetching table data:', err)
-   }}
+onMounted(() => {
+    if (data.value && data.value.status === 201) {
+        tables.value = data.value.metadata.map((item) => ({
+            id: item.id,
+            table_name: `Table ${item.id}`,
+            table_type: uppercaseFirst(item.table_type),
+            stick_quantity: item.stick_quantity,
+            ball_quantity: item.ball_quantity,
+            price: item.price,
+            status: uppercaseFirst(String(item.status)),
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            selected: false,
+        }));
+        console.log(tables.value);
+    } else {
+        console.error("Error fetching table data:", error.value);
+    }
+});
 
-   const selectAll = () => {
-       const isSelected = selectAllChecked.value
-       tables.value.forEach(table => {
-           table.selected = isSelected
-       })
-   }
-   
-   const editTable = async(id) => {
-       // Implement edit functionality
-       console.log('Edit table:', id)
-   }
-   
-   const deleteTable = async(id) => {
-       // Implement delete functionality
-        const {data, error} = await useFetch('http://localhost:8080/v1/api/table-manage/delete-table',{
+// Function to refetch data
+const refetchData = async () => {
+    const { data: newData, error } = await useFetch(
+        "http://localhost:8080/v1/api/table-manage/get-all-tables"
+    );
+
+    if (newData.value && newData.value.status === 201) {
+        tables.value = newData.value.metadata.map((item) => ({
+            id: item.id,
+            table_type: uppercaseFirst(item.table_type),
+            stick_quantity: item.stick_quantity,
+            ball_quantity: item.ball_quantity,
+            price: item.price,
+            status: uppercaseFirst(item.status),
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            selected: false,
+        }));
+    } else {
+        console.error("Error fetching table data:", error.value);
+    }
+};
+
+// Helper function to uppercase first letter
+const uppercaseFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+// Computed property to filter tables based on search query
+const filteredTables = computed(() => {
+    return tables.value.filter((table) => {
+        return (
+            table.id.toString().includes(searchQuery.value) ||
+            table.table_type
+                .toLowerCase()
+                .includes(searchQuery.value.toLowerCase()) ||
+            table.price.toString().includes(searchQuery.value) ||
+            table.status.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    });
+});
+
+const selectAllChecked = ref(false)
+
+const selectAll = () => {
+    const isSelected = selectAllChecked.value
+    tables.value.forEach(table => {
+        table.selected = isSelected
+    })
+}
+
+const deleteSelectedTable = async () => {
+    try {
+        const selectedTables = tables.value.filter(table => table.selected)
+
+        if (selectedTables.length === 0) {
+            alert("Please select at least one table to delete")
+            return
+        }
+
+        const confirmDelete = confirm(`Are you sure you want to delete ${selectedTables.length} selected table(s)?`)
+        if (!confirmDelete) return
+
+        for (const table of selectedTables) {
+            const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/delete-table', {
+                method: 'POST',
+                body: JSON.stringify({
+                    table_id: table.id
+                }),
+            })
+
+            if (data.value.status !== 201) {
+                console.log(`Error deleting table ${table.id}:`, error)
+            }
+        }
+
+        toast.success("Selected tables deleted successfully", {
+            autoClose: 3000,
+        })
+        selectAllChecked.value = false
+        // Refetch data after deletion
+        refetchData()
+    } catch (err) {
+        toast.error("Error deleting selected tables", {
+            autoClose: 3000,
+        })
+        console.error('Error deleting selected tables:', err)
+    }
+}
+
+const deleteTable = async (id) => {
+    try {
+        const confirmDelete = confirm(`Are you sure you want to delete table ${id}?`)
+        if (!confirmDelete) return
+
+        const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/delete-table', {
             method: 'POST',
             body: JSON.stringify({
                 table_id: id
-            }),    
+            }),
         })
-        console.log(error)
-        console.log(data.value )
-       try {
-        if (data.value){
-            // console.log(data.value)
-            // console.log(error.value)
+
+        if (data.value.status !== 201) {
+            console.log("Delete table error !")
+            return
         }
-        //rerender list
-        await getData();
-       } catch(err){
-        console.log(err)
-       }
-    }
 
-   const addTable = () => {
-    addTableClicked.value = true
-   }
-
-   const closePopup = () => {
-    addTableClicked.value = false
-   }
-   
-   const createTableData = ref([])
-   const createTable = async() => {
-    try {
-        const {data, error} = await useFetch('http://localhost:8080/v1/api/table-manage/create-new-table', {
-            method: 'POST',
-            body: JSON.stringify(
-
-            )
+        toast.success(`Delete table ${id} successful`, {
+            autoClose: 3000,
         })
-    } catch (err){
+        console.log("Delete table successful")
+        // Refetch data after deletion
+        refetchData()
+    } catch (err) {
+        toast.error("Error deleting table", {
+            autoClose: 3000,
+        })
         console.log(err)
     }
-   }
+}
 
+//Create table
+const addTableClicked = ref(false)
 
-   </script>
-   
-   <style>
-   </style>
+const handleToggleCreatetable = () => {
+    addTableClicked.value = !addTableClicked.value;
+    createTableData.value = {
+        table_type: '',
+        stick_quantity: '',
+        ball_quantity: '',
+        price: '',
+        status: 'Available',
+    };
+}
+
+const validateNumber = (number) => {
+    let re = /^[0-9]{1,2}$/
+    return re.test(number);
+}
+
+const validatePrice = (price) => {
+    let re = /^[0-9]{1,10}$/
+    return re.test(price);
+}
+
+const isValidCreateInput = () => {
+    if (!createTableData.value.ball_quantity) {
+        toast.error("Ball quantity is required");
+        return false;
+    }
+    if (!createTableData.value.stick_quantity) {
+        toast.error("Stick quantity is required");
+        return false;
+    }
+    if (!createTableData.value.price) {
+        toast.error("Price is required");
+        return false;
+    }
+    if (!createTableData.value.status) {
+        toast.error("Status is required");
+        return false;
+    }
+    if (!createTableData.value.table_type) {
+        toast.error("Table type is required");
+        return false;
+    }
+    if (!validateNumber(createTableData.value.ball_quantity)) {
+        toast.error("Please enter a valid ball quantity");
+        return false;
+    }
+    if (!validateNumber(createTableData.value.stick_quantity)) {
+        toast.error("Please enter a valid stick quantity");
+        return false;
+    }
+    if (!validatePrice(createTableData.value.price)) {
+        toast.error("Please enter a valid price");
+        return false;
+    }
+    return true
+}
+
+const createTableData = ref({
+    table_type: '',
+    stick_quantity: '',
+    ball_quantity: '',
+    price: '',
+    status: 'Available',
+});
+
+const newTableId = (tables) => {
+    if (!tables.length)
+        return 0;
+    return tables.at(-1).id + 1;
+}
+
+const handleCreateTable = async (id) => {
+    let check = isValidCreateInput();
+    if (!check) {
+        return
+    }
+
+    try {
+        const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/create-new-table', {
+            method: 'POST',
+            body: JSON.stringify(createTableData.value),
+        })
+
+        if (data.value.status !== 201) {
+            console.log("Create table error !")
+            return
+        }
+
+        toast.success(`Create table ${id} successful`, {
+            autoClose: 3000,
+        })
+        console.log(`Create table ${id} successful`)
+        // Refetch data after creation
+        refetchData()
+    } catch (err) {
+        toast.error(`Create table ${id} error`, {
+            autoClose: 3000,
+        })
+        console.log(err)
+    } finally {
+        handleToggleCreatetable();
+    }
+}
+
+//Edit table 
+const editTableClicked = ref(false)
+const currentEditTableId = ref(0)
+
+const editTableData = ref({
+    table_type: '',
+    stick_quantity: '',
+    ball_quantity: '',
+    price: '',
+    status: 'Available',
+})
+
+const handleToggleEdittable = () => {
+    editTableClicked.value = !editTableClicked.value;
+    if (!editTableClicked.value) {
+        // Reset form when closing
+        editTableData.value = {
+            table_type: '',
+            stick_quantity: '',
+            ball_quantity: '',
+            price: '',
+            status: 'Available',
+        };
+    }
+}
+
+const editTable = async (id) => {
+    // Find the table data
+    const tableToEdit = tables.value.find(table => table.id === id)
+    if (!tableToEdit) {
+        toast.error("Table not found")
+        return
+    }
+
+    // Set the current edit ID
+    currentEditTableId.value = id
+
+    // Populate the form with current values
+    editTableData.value = {
+        table_type: tableToEdit.table_type,
+        stick_quantity: tableToEdit.stick_quantity,
+        ball_quantity: tableToEdit.ball_quantity,
+        price: tableToEdit.price,
+        status: tableToEdit.status,
+    }
+
+    // Show the edit form
+    editTableClicked.value = true
+}
+
+const isValidEditInput = () => {
+    if (!editTableData.value.ball_quantity) {
+        toast.error("Ball quantity is required");
+        return false;
+    }
+    if (!editTableData.value.stick_quantity) {
+        toast.error("Stick quantity is required");
+        return false;
+    }
+    if (!editTableData.value.price) {
+        toast.error("Price is required");
+        return false;
+    }
+    if (!editTableData.value.status) {
+        toast.error("Status is required");
+        return false;
+    }
+    if (!editTableData.value.table_type) {
+        toast.error("Table type is required");
+        return false;
+    }
+    if (!validateNumber(editTableData.value.ball_quantity)) {
+        toast.error("Please enter a valid ball quantity");
+        return false;
+    }
+    if (!validateNumber(editTableData.value.stick_quantity)) {
+        toast.error("Please enter a valid stick quantity");
+        return false;
+    }
+    if (!validatePrice(editTableData.value.price)) {
+        toast.error("Please enter a valid price");
+        return false;
+    }
+    return true
+}
+
+const handleEditTable = async () => {
+    if (!isValidEditInput()) {
+        return
+    }
+
+    try {
+        const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/update-table', {
+            method: 'POST',
+            body: JSON.stringify({
+                table_id: currentEditTableId.value,
+                ...editTableData.value
+            }),
+        })
+
+        if (data.value.status !== 201) {
+            toast.error("Error updating table")
+            return
+        }
+
+        toast.success(`Table ${currentEditTableId.value} updated successfully`, {
+            autoClose: 3000,
+        })
+        handleToggleEdittable() // Close the form
+        // Refetch data after update
+        refetchData()
+    } catch (err) {
+        toast.error("Error updating table")
+        console.error('Error updating table:', err)
+    }
+}
+
+</script>
+
+<style>
+.outer,
+.inner {
+    background: #eee;
+    padding: 30px;
+    min-height: 100px;
+}
+
+.inner {
+    background: #ccc;
+}
+
+.nested-enter-active,
+.nested-leave-active {
+    transition: all 0.3s ease-in-out;
+}
+
+.nested-leave-active {
+    transition-delay: 0.25s;
+}
+
+.nested-enter-from,
+.nested-leave-to {
+    transform: translateY(30px);
+    opacity: 0;
+}
+
+.nested-enter-active .inner,
+.nested-leave-active .inner {
+    transition: all 0.3s ease-in-out;
+}
+
+.nested-enter-active .inner {
+    transition-delay: 0.25s;
+}
+
+.nested-enter-from .inner,
+.nested-leave-to .inner {
+    transform: translateX(30px);
+    opacity: 0.001;
+}
+
+/* Custom scrollbar styles */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #3A6351;
+    border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #2a4a3c;
+}
+</style>
