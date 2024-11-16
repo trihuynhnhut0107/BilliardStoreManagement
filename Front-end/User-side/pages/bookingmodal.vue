@@ -23,14 +23,19 @@
                 <!-- Start Time -->
                 <div class="mb-4">
                     <label class="block font-semibold text-gray-700">Start time:</label>
-                    <input v-model="formData.startTime" type="time" class="border border-gray-300 p-2 rounded w-full"/>
+                    <input v-model="formData.startTime" type="time" class="border border-gray-300 p-2 rounded w-full" @change="validateTimes" placeholder="HH:MM (24-hour format)" />
+                    <small class="text-gray-500">Enter time (SA means [0-12:00], CH means [12:00-24:00])</small>
                 </div>
-                
-                <!-- End Time -->
+
+                <!-- End Time  -->
                 <div class="mb-4">
                     <label class="block font-semibold text-gray-700">End time:</label>
-                    <input v-model="formData.endTime" type="time" class="border border-gray-300 p-2 rounded w-full"/>
+                    <input v-model="formData.endTime" type="time" class="border border-gray-300 p-2 rounded w-full" @change="validateTimes" placeholder="HH:MM (24-hour format)" />
+                    <small class="text-gray-500">Enter time (SA means [0-12:00], CH means [12:00-24:00])</small>
                 </div>
+
+                <p v-if="error" style="color: red;">{{ error }}</p>
+
                 
                 <!-- Billiard Sticks -->
                 <div class="flex items-center mb-4">
@@ -84,26 +89,26 @@
         endTime:('')
     });
 
-    const formattedStartTime = computed(() => {
-        if (formData.value.date && formData.value.startTime) {
-            return `${formData.value.date}T${formData.value.startTime}:00`;
-        }
-        return null;
-    });
+    const error = ref('')
 
-    const formattedEndTime = computed(() => {
-        if (formData.value.date && formData.value.endTime) {
-            return `${formData.value.date}T${formData.value.endTime}:00`;
+    const validateTimes = () => {
+        if (formData.value.startTime && formData.value.endTime && formData.value.startTime >= formData.value.endTime) {
+            error.value = 'Start time must be earlier than end time.';
+        } else {
+            error.value = '';
         }
-        return null;
-    });
+    }
 
     const confirmBooking = async () => {
-        // Extract values to avoid circular structure
-        const start_time = formattedStartTime.value;
-        const end_time = formattedEndTime.value;
+        validateTimes();
+        if (error.value) {
+            return;
+        }
 
-        console.log(start_time, end_time);
+        const start_time = formData.value.startTime;
+        const end_time = formData.value.endTime;
+
+        console.log(start_time, end_time, formData.value.date);
 
         try {
             const { data, error } = await useFetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
@@ -126,6 +131,8 @@
         } catch (err) {
             console.error(err);
         }
+
+        navigateTo('/checkout')
     };
 
 </script>
