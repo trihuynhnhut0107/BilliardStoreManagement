@@ -138,7 +138,7 @@
     <!-- Edit table form -->
     <div>
         <Transition name="nested">
-            <div v-if="editTableClicked" name="outer" class="absolute top-1/5 right-0">
+            <div v-if="editTableClicked" name="outer" class="absolute top-[10%] right-1/2">
                 <hr>
                 <form @submit.prevent
                     class="w-full max-w-sm flex flex-col justify-center gap-2 rounded-lg shadow-[0px_0px_5px_green] bg-white p-4 px-11">
@@ -219,23 +219,7 @@ const { data, error, status } = useFetch(
 );
 
 onMounted(() => {
-    if (data.value && data.value.status === 201) {
-        tables.value = data.value.metadata.map((item) => ({
-            id: item.id,
-            table_name: `Table ${item.id}`,
-            table_type: uppercaseFirst(item.table_type),
-            stick_quantity: item.stick_quantity,
-            ball_quantity: item.ball_quantity,
-            price: item.price,
-            status: uppercaseFirst(String(item.status)),
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            selected: false,
-        }));
-        console.log(tables.value);
-    } else {
-        console.error("Error fetching table data:", error.value);
-    }
+    refetchData()
 });
 
 // Function to refetch data
