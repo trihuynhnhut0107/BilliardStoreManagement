@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Conversation />
+    <Conversation :conversationID="3" />
   </div>
 </template>
 

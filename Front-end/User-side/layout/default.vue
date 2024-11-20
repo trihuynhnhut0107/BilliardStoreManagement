@@ -31,6 +31,7 @@
           </div>
         </nav>
       </header>
+
     <main>
       <slot />
     </main>
@@ -68,4 +69,5 @@
 </template>
 
 <script>
+import { NuxtLink } from "#build/components";
 </script>
