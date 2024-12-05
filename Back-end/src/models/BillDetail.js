@@ -9,6 +9,10 @@ const BillDetail = sequelize.define("BillDetail", {
     primaryKey: true,
     autoIncrement: true,
   },
+  bill_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   start_time: {
     type: DataTypes.DATE,
     allowNull: false,
