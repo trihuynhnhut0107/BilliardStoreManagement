@@ -15,6 +15,14 @@ const Bill = sequelize.define("Bill", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  customer_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  staff_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 module.exports = Bill;

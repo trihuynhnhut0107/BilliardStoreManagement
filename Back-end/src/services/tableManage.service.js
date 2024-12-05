@@ -24,9 +24,9 @@ class tableManageService {
     }
     const updatedTableList = tableList.map((table) => {
       if (unavailableTableIds.includes(table.id)) {
-        table.status = "unavailable";
+        table.status = "Unavailable";
       } else {
-        table.status = "available";
+        table.status = "Available";
       }
       return table;
     });
