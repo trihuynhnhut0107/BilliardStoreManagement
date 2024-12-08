@@ -15,7 +15,7 @@
         <button v-on:click="handleLogin" class="w-[250px] bg-[#3A6351] text-white rounded-md text-center p-[7px]">Log in</button>
         <NuxtLink class="text-[#3A6351] font-medium" to="/forgetpassword">Forgot password?</NuxtLink>
         <hr class="w-[250px] border border-[#A4A4A4] p-0">
-        <NuxtLink class="text-white bg-[#3A6351] text-center w-[200px] p-[7px] rounded-md" to="/createaccount" >Create new account</NuxtLink>
+        <NuxtLink class="text-white bg-[#3A6351] text-center w-[200px] p-[7px] rounded-md" to="/usercreateaccount" >Create new account</NuxtLink>
       </form>
     </div>
   </DefaultLayout>

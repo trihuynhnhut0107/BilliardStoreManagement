@@ -2,7 +2,7 @@
   <div>
       <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Navbar -->
-      <header class="bg-green-400 p-4 flex justify-between items-center w-full">
+      <header class="flex justify-between items-center w-full border-b border-gray-500 p-4">
         <nav class="flex w-full items-center relative">
           <!-- Logo -->
           <div class="w-10 h-10 ml-4 md:ml-24">
@@ -10,7 +10,7 @@
           </div>
         
           <!-- Navigation links (hide on small screens) -->
-          <ul class="hidden md:flex justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
+          <ul class="flex hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
             <li><NuxtLink to="/" class="text-lg font-bold text-green-900">Home</NuxtLink></li>
             <li><NuxtLink to="/" class="text-lg font-bold text-green-900">Products</NuxtLink></li>
             <li><NuxtLink to="/" class="text-lg font-bold text-green-900">Contact</NuxtLink></li>
@@ -24,12 +24,9 @@
         
           <!-- Icons (adjust position for small screens) -->
           <div class="flex gap-3 md:gap-5 ml-auto md:absolute md:right-10 cursor-pointer mr-4 md:mr-0">
-            <i class="icon-cart">
-              <img src="../public/image/seal-exclamation.png" class="w-5 h-5">  
-            </i>
-            <i class="icon-user">
-              <img src="../public/image/circle-user.png" class="w-5 h-5"> 
-            </i>
+            <button class="flex w-10 h-10" @click="handleUserInfo">
+              <img src="../public/image/user_logo.png"> 
+            </button>
           </div>
         </nav>
       </header>
@@ -64,7 +61,11 @@
           <h2 class="font-bold text-green-800 text-4xl mb-8">Popular Collections</h2>
           <div class="flex justify-center flex-wrap gap-10">
             <!-- Collection Card -->
-            <div class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5 mb-10" v-for="(table, index) in tables" :key="index">
+            <div 
+              class="w-60 h-96 border border-gray-300 rounded-lg shadow-lg p-5 mb-10" 
+              v-for="(table, index) in tables" 
+              :key="index"
+            >
               <img :src="table.image" :alt="table.name" class="w-full h-32 object-cover mb-4">
               <h1 class="text-xl font-bold text-black mb-2">{{ table.name }}</h1>
               <p class="text-base text-black">{{ table.description }}</p>
@@ -99,7 +100,7 @@
 
       <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Footer -->
-      <footer class="bg-white border-t border-gray-300 bottom-0 w-full">
+      <footer class="bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
         <!-- Top section with logo, description, and navigation -->
         <div class="container mx-auto px-4 py-6 flex justify-between items-start">
             <!-- Left side: Logo and description -->
@@ -107,20 +108,20 @@
                 <div class="flex items-center space-x-2">
                     <!-- Logo box -->
                     <div class="w-10 h-10 bg-gray-200"></div>
-                    <h2 class="text-2xl font-bold">Demo.</h2>
+                    <h2 class="text-2xl text-white font-bold">Demo.</h2>
                 </div>
-                <p class="text-gray-600 mt-2">
+                <p class="text-white mt-2">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
                 </p>
             </div>
             
             <!-- Right side: Navigation links -->
-            <div class="flex space-x-6 text-sm font-semibold">
-                <a href="#" class="text-gray-800 hover:text-gray-600">Products</a>
-                <a href="#" class="text-gray-800 hover:text-gray-600">Blog</a>
-                <a href="#" class="text-gray-800 hover:text-gray-600">About</a>
-                <a href="#" class="text-gray-800 hover:text-gray-600">Contacts</a>
+            <div class="flex space-x-6 text-sm font-semibold text-white">
+                <a href="#" class="hover:text-yellow-600">Products</a>
+                <a href="#" class="hover:text-yellow-600">Blog</a>
+                <a href="#" class="hover:text-yellow-600">About</a>
+                <a href="#" class="hover:text-yellow-600">Contacts</a>
             </div>
         </div>
         
@@ -148,51 +149,22 @@
     isMessageOpen.value = !isMessageOpen.value;
   };
 
-  // Sample table data
-  const tables = ref([
-    {
-      name: 'Imperior 1',
-      key: '1',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-    {
-      name: 'Imperior 2',
-      key: '2',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-    {
-      name: 'Imperior 3',
-      key: '3',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-    {
-      name: 'Imperior 4',
-      key: '4',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-    {
-      name: 'Imperior 5',
-      key: '5',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-    {
-      name: 'Imperior 6',
-      key: '6',
-      description: 'Mô tả về bàn và các dịch vụ đi kèm',
-      price: 10,
-      image: BilliardTable,
-    },
-  ]);
+   // Fetch data using useFetch
+   const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/get-all-tables');
+  
+  // Tables array populated from the API data
+  const tables = ref([]);
+
+  if (data.value && data.value.metadata) {
+    tables.value = data.value.metadata.map(table => ({
+      id: table.id,
+      name: `Imperior ${table.id}`, // Adjust table name if needed
+      description: `Description for table ${table.id}`,
+      price: table.price,
+      table_type: table.table_type,
+      image: BilliardTable, // Use a placeholder image or adjust based on data if available
+    }));
+  }
   // Opens the booking modal with the selected table
   const openModal = (table) => {
     selectedTable.value = table
@@ -202,6 +174,11 @@
   // Closes the modal
   const closeModal = () => {
     isModalOpen.value = false
+  }
+
+  const handleUserInfo = () => {
+    // Handle user information submission here
+    navigateTo("/userinfo");
   }
 
 </script>

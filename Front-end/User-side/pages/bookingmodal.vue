@@ -47,13 +47,9 @@
                 
                 <!-- Price and Booking Button -->
                 <div class="mt-4 flex justify-between items-center">
-                    <h2 class="text-grey font-bold text-2xl">$10</h2>
+                    <h2 class="text-grey font-bold text-2xl">{{ props.table.price }}$ / 1 Hour</h2>
                     <button v-on:click="confirmBooking" class="bg-green-800 text-white p-2 rounded-md">
                     Booking</button>
-                </div>
-
-
-                <div> 
                 </div>
 
             </div>
@@ -64,11 +60,13 @@
 <script setup>
     import { ref, computed } from 'vue'
     import { defineProps } from 'vue'
-    
+
+    const error = ref('');
+    const price = ref(10);
     const props = defineProps({
         table: {
             type: Object,
-            default: () => ({ name: 'Default Table', price: 0 })
+            default: () => ({ name: 'Default Table', price: 10, id: 1, type: 'Standard'}),
         }
     })
     
@@ -79,7 +77,17 @@
     const emit = defineEmits();
     const closeModal = () => {
         emit('close');
-    };  
+    }; 
+
+    // Calculate price based on duration
+    const calculatePrice = () => {
+        if (timeData.start_time && timeData.end_time) {
+            const durationInMilliseconds = timeData.end_time - timeData.start_time;
+            const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
+            price.value = Math.max(durationInHours * props.table.price, 0); // Ensure non-negative price
+        }
+    };
+    
     
     const formData = ref({
         itemType: "BilliardTable",
@@ -89,7 +97,38 @@
         endTime:('')
     });
 
-    const error = ref('')
+    let timeData = {
+        start_time: new Date(),
+        end_time: new Date(),
+    }
+
+    const setTime = (timeData) => {
+        if (formData.value.date && formData.value.startTime && formData.value.endTime) {
+            timeData.start_time = new Date(`${formData.value.date}T${formData.value.startTime}:00`);
+            timeData.end_time = new Date(`${formData.value.date}T${formData.value.endTime}:00`);
+        } 
+    }
+
+    const formatToCustomISO = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    };
+
+    const formatToCheckout = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+    };
 
     const validateTimes = () => {
         if (formData.value.startTime && formData.value.endTime && formData.value.startTime >= formData.value.endTime) {
@@ -101,38 +140,40 @@
 
     const confirmBooking = async () => {
         validateTimes();
+        setTime(timeData);
+        calculatePrice(); 
+
+        const formattedStartTime = formatToCustomISO(timeData.start_time);
+        const formattedEndTime = formatToCustomISO(timeData.end_time);
+        
+        console.log(formattedStartTime);
+        console.log(formattedEndTime);
+
         if (error.value) {
             return;
         }
-
-        const start_time = formData.value.startTime;
-        const end_time = formData.value.endTime;
-
-        console.log(start_time, end_time, formData.value.date);
-
         try {
             const { data, error } = await useFetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
                 method: 'POST',
                 body: JSON.stringify([{
                     itemType: "BilliardTable",
                     itemId: 1,
-                    item_quantity: 1,
-                    start_time: start_time,
-                    end_time: end_time
+                    start_time: formattedStartTime,
+                    end_time: formattedEndTime,
                 }])
             });
             if (error) {
                 console.log(error);
             }
             if (data.value) {
-                alert("Booking Successfully");
-                window.location.reload();
+                navigateTo(`/checkout?name=${props.table.name}&id=${props.table.id}&price=${price.value}
+                    &description=${props.table.description}&sticks=${sticks.value}&type=${props.table.table_type}&start_time=${formatToCheckout(timeData.start_time)}&end_time=${formatToCheckout(timeData.end_time)}`);
             }
         } catch (err) {
             console.error(err);
         }
 
-        navigateTo('/checkout')
+        
     };
 
 </script>

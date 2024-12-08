@@ -47,7 +47,9 @@
           navigateTo("/userlogin")
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
+        alert('Your account may be appeared. Error signing up. Please try again.');
+        window.location.reload();
       }
     }
 </script>
