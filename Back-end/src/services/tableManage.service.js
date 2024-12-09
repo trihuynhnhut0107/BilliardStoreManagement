@@ -1,13 +1,37 @@
 "use strict";
+const { Op } = require("sequelize");
 const BilliardTable = require("../models/BilliardTable");
+const BillDetail = require("../models/BillDetail");
+const getCurrentTime = require("../helpers/getCurrentTime");
 
 class tableManageService {
   static getTableList = async () => {
+    const currentTime = new Date().toISOString();
+    const bookedBillDetails = await BillDetail.findAll({
+      where: {
+        itemType: "BilliardTable", // Ensuring only billiard table bookings
+        start_time: { [Op.lte]: currentTime },
+        end_time: { [Op.gte]: currentTime },
+      },
+    });
+    console.log("Booked bill details:::", bookedBillDetails);
+    const unavailableTableIds = bookedBillDetails.map(
+      (detail) => detail.itemId
+    );
     const tableList = await BilliardTable.findAll();
     if (!tableList) {
       throw new Error("Table list not found");
     }
-    return tableList;
+    const updatedTableList = tableList.map((table) => {
+      if (unavailableTableIds.includes(table.id)) {
+        table.status = "Unavailable";
+      } else {
+        table.status = "Available";
+      }
+      return table;
+    });
+
+    return updatedTableList;
   };
 
   static createNewTable = async ({

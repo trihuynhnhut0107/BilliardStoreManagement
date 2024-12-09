@@ -39,11 +39,17 @@ Account.belongsTo(Staff, {
   as: "Staff",
 });
 
-Customer.hasMany(Bill);
-Bill.belongsTo(Customer);
+Staff.hasMany(Bill, {
+  foreignKey: "staff_id",
+});
 
-Bill.hasMany(BillDetail);
-BillDetail.belongsTo(Bill);
+Customer.hasMany(Bill, {
+  foreignKey: "customer_id",
+});
+
+Bill.hasMany(BillDetail, {
+  foreignKey: "bill_id",
+});
 
 Conversation.belongsTo(Customer, { foreignKey: "customerID" });
 

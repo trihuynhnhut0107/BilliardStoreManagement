@@ -54,15 +54,27 @@
                 <a href="#" class="hover:text-yellow-600">About</a>
                 <a href="#" class="hover:text-yellow-600">Contacts</a>
             </div>
+
         </div>
-        
-        <!-- Bottom section with copyright -->
-        <div class="border-t border-gray-300 py-4 text-center text-sm text-gray-600">
-            ©2024 Demo Inc. All rights reserved
+
+        <!-- Right side: Navigation links -->
+        <div class="flex space-x-6 text-sm font-semibold">
+          <a href="#" class="text-gray-800 hover:text-gray-600">Products</a>
+          <a href="#" class="text-gray-800 hover:text-gray-600">Blog</a>
+          <a href="#" class="text-gray-800 hover:text-gray-600">About</a>
+          <a href="#" class="text-gray-800 hover:text-gray-600">Contacts</a>
         </div>
-      </footer>
+      </div>
+
+      <!-- Bottom section with copyright -->
+      <div
+        class="border-t border-gray-300 py-4 text-center text-sm text-gray-600">
+        ©2024 Demo Inc. All rights reserved
+      </div>
+    </footer>
   </div>
 </template>
+
 
 <script>
   const handleUserInfo = () => {
@@ -70,3 +82,4 @@
     navigateTo("/userinfo");
   }
 </script>
+

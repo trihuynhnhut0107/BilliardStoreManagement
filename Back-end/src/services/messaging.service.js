@@ -15,72 +15,75 @@ class MessagingService {
     return messages;
   };
 
-  static findOrCreateConversation = async ({ customerId, staffId }) => {
-    console.log("customer ID:::", customerId);
-    const existingConversation = await Conversation.findOne({
-      where: {
-        customerId: customerId,
-        staffId: staffId,
-      },
-    });
+  // Function to find or create a conversation
+  static findOrCreateConversation = async ({
+    senderType,
+    senderId,
+    receiverId,
+  }) => {
+    let conversation;
 
-    if (existingConversation) {
-      return existingConversation;
+    if (senderType === "customer") {
+      // Find an existing conversation where the customer is the sender and staff is assigned
+      conversation = await Conversation.findOne({
+        where: {
+          customerId: senderId,
+          staffId: { [Op.ne]: null }, // Staff must be assigned
+        },
+      });
+
+      // If no conversation is found, create a new one for the customer
+      if (!conversation) {
+        conversation = await Conversation.create({
+          customerID: senderId,
+          staffID: null, // No staff assigned initially
+          updatedAt: new Date(),
+        });
+      }
+    } else {
+      // If sender is staff, look for a conversation with the specified customer
+      conversation = await Conversation.findOne({
+        where: {
+          customerID: receiverId, // Assume receiverId is customerId
+        },
+      });
+
+      // If conversation exists but has null staffId, update it with sender's staffId
+      if (conversation && !conversation.staffID) {
+        await conversation.update({ staffId: senderId, updatedAt: new Date() });
+      }
     }
 
-    const conversation = await Conversation.create({
-      customerID: customerId,
-      staffId: staffId || null, // Ensure staffId can be null if not provided
-      updatedAt: new Date(),
-    });
+    // If no conversation exists and sender is not a customer, throw an error
+    if (!conversation && senderType !== "customer") {
+      throw new BadRequestError("No existing conversation found");
+    }
 
-    if (!conversation) throw new ServerError("Cannot create new conversation");
     return conversation;
   };
 
+  // Function to send a message
   static sendMessage = async ({
     senderType,
     senderId,
     receiverId,
     messageText,
   }) => {
-    let conversation;
-    if (senderType === "customer") {
-      conversation = await Conversation.findOne({
-        where: {
-          customerId: senderId,
-          staffId: { [Op.ne]: null }, // Ensure staffId is not null for existing conversations
-        },
-      });
-    } else {
-      // If it's staff, look for any existing conversation they have with the customer
-      conversation = await Conversation.findOne({
-        where: {
-          customerId: receiverId, // Assume receiverId is the customerId in this case
-          staffId: senderId,
-        },
-      });
-    }
-    // If no conversation found, create a new one
-    if (!conversation && senderType === "customer") {
-      // This means the customer is sending the first message and no conversation exists
-      conversation = await Conversation.create({
-        customerId: senderId,
-        staffId: null, // First message can't have a staffId yet
-        updatedAt: new Date(),
-      });
-    } else if (!conversation) {
-      throw new BadRequestError("No existing conversation found");
-    }
+    // Find or create a conversation
+    const conversation = await this.findOrCreateConversation({
+      senderType,
+      senderId,
+      receiverId,
+    });
 
-    // Ensure that conversation ID and sender ID are not null
+    // Ensure that conversation ID and sender ID are valid
     if (!conversation.id)
       throw new BadRequestError("Conversation ID cannot be null");
     if (!senderId) throw new BadRequestError("Sender ID cannot be null");
 
     // Create the message
     const message = await Message.create({
-      conversationID: conversation.id, // Use the ID of the conversation
+      conversationID: conversation.id,
       senderType,
       senderID: senderId,
       messageText,
@@ -91,6 +94,8 @@ class MessagingService {
 
     // Update the conversation's last activity timestamp
     await conversation.update({ updatedAt: new Date() });
+
+    // Emit the new message to the conversation's room via Socket.IO
     const newMessageData = {
       conversationID: conversation.id,
       senderType: senderType,
