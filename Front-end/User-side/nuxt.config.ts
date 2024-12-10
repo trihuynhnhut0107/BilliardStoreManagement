@@ -8,5 +8,6 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  modules: ["@nuxt/test-utils/module"],
   css: ["~/assets/css/main.css"],
 });

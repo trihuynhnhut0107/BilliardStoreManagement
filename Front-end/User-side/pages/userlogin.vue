@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+import { useLogin } from "~/composables/useLogin";
 import DefaultLayout from "~/layout/default.vue";
 
 const formData = ref({
@@ -52,23 +53,24 @@ const formData = ref({
 });
 
 const handleLogin = async () => {
-  try {
-    const { data, error } = await useFetch(
-      "http://localhost:8080/v1/api/access/customer-site/login",
-      {
-        method: "POST",
-        body: JSON.stringify(formData.value),
-      }
-    );
-    if (error) {
-      console.log(error);
-    }
-    if (data.value.status === 201) {
-      console.log("Login Successfully:");
-      navigateTo("/userhome");
-    }
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   const { data, error } = await useFetch(
+  //     "http://localhost:8080/v1/api/access/customer-site/login",
+  //     {
+  //       method: "POST",
+  //       body: JSON.stringify(formData.value),
+  //     }
+  //   );
+  //   if (error) {
+  //     console.log(error);
+  //   }
+  //   if (data.value.status === 201) {
+  //     console.log("Login Successfully:");
+  //     navigateTo("/userhome");
+  //   }
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  await useLogin(formData.value);
 };
 </script>

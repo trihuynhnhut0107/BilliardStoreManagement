@@ -27,5 +27,11 @@
     "sequelize": "^6.37.3",
     "socket.io": "^4.7.5",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.3",
+    "mocha": "^11.0.1",
+    "nyc": "^17.1.0",
+    "supertest": "^7.0.0"
   }
 }
