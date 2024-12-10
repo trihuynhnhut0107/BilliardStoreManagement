@@ -26,6 +26,8 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+module.exports = server; // Export server for testing
+
 // Graceful shutdown function
 function gracefulShutdown() {
   console.log("Received shutdown signal, shutting down gracefully...");
