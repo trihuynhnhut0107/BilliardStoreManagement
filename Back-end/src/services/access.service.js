@@ -4,9 +4,15 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const Staff = require("../models/Staff");
 const Account = require("../models/Account");
-const { AuthFailureError } = require("../core/error.response");
+const {
+  AuthFailureError,
+  UserExistError,
+  BadRequestError,
+} = require("../core/error.response");
 const { getInfoData } = require("../utils");
 const Customer = require("../models/Customer");
+const validator = require("validator");
+const isValidPhoneNumber = require("../helpers/phoneNumberValidation");
 
 const RoleUser = {
   ADMIN: "admin",
@@ -23,9 +29,28 @@ class StaffAccessService {
     phone_number,
     role,
   }) => {
+    if (!email || !username || !password || !name || !phone_number || !role) {
+      throw new BadRequestError("Please fill all the required fields");
+    }
+
+    if (!validator.isEmail(email)) {
+      throw new BadRequestError("Invalid email format");
+    }
+
+    if (username.length < 8) {
+      throw new BadRequestError("Username needs to be at least 8 characters");
+    }
+    if (password.length < 8) {
+      throw new BadRequestError("Password needs to be at least 8 characters");
+    }
+    if (!isValidPhoneNumber(phone_number)) {
+      throw new BadRequestError(
+        "Phone numbers need to be started with a 0 and have 10 or 11 characters"
+      );
+    }
     const holderStaff = await Account.findOne({ where: { email: email } });
     if (holderStaff) {
-      throw new Error("Email already exists");
+      throw new UserExistError("Email already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const newStaff = await Staff.create({
@@ -57,6 +82,9 @@ class StaffAccessService {
     };
   };
   static login = async ({ username, password }) => {
+    if (!username || !password) {
+      throw new BadRequestError("Please fill all the required fields");
+    }
     const foundStaff = await Account.findOne({
       where: {
         username: username,
@@ -81,17 +109,16 @@ class StaffAccessService {
 }
 
 class CustomerAccessService {
-  static signUp = async ({
-    email,
-    username,
-    password,
-    name,
-    phone_number,
-    role,
-  }) => {
+  static signUp = async ({ email, username, password, name, phone_number }) => {
+    if (!email || !username || !password || !name || !phone_number) {
+      throw new BadRequestError("Please fill all the required fields");
+    }
+    if (!validator.isEmail(email)) {
+      throw new AuthFailureError("Invalid email format");
+    }
     const holderCustomer = await Account.findOne({ where: { email: email } });
     if (holderCustomer) {
-      throw new Error("Email already exists");
+      throw new UserExistError("Email already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const newCustomer = await Customer.create({
@@ -123,6 +150,9 @@ class CustomerAccessService {
     };
   };
   static login = async ({ username, password }) => {
+    if (!username || !password) {
+      throw new BadRequestError("Please fill all the required fields");
+    }
     const foundCustomer = await Account.findOne({
       where: {
         username: username,

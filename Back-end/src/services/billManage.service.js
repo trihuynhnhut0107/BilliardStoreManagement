@@ -7,6 +7,8 @@ const BilliardTable = require("../models/BilliardTable");
 const MenuItem = require("../models/MenuItem");
 const menuManageService = require("./menuManage.service");
 const sequelize = require("../configs/sequelize");
+const { ServerError, BadRequestError } = require("../core/error.response");
+const Customer = require("../models/Customer");
 
 class billManageService {
   static createBill = async ({ customer_id, staff_id, bill_details }) => {
@@ -24,9 +26,8 @@ class billManageService {
         { transaction: transaction }
       );
       if (!newBill) {
-        throw new Error("Bill not created");
+        throw new ServerError("Bill not created");
       }
-      console.log("Bill ID:::", newBill.id);
 
       for (const item of bill_details) {
         if (item.itemType === "MenuItem") {
@@ -35,7 +36,7 @@ class billManageService {
             transaction,
           });
           if (!foundedMenuItem || item.quantity > foundedMenuItem.quantity) {
-            throw new Error("Insufficient quantity");
+            throw new BadRequestError("Insufficient quantity");
           }
 
           await menuManageService.updateMenuItem(
@@ -64,7 +65,7 @@ class billManageService {
             transaction: transaction,
           });
           if (!foundedBilliardTable) {
-            throw new Error("BilliardTable not found");
+            throw new BadRequestError("BilliardTable not found");
           }
 
           const timeDifferenceInMinutes =
@@ -86,7 +87,7 @@ class billManageService {
             { transaction: transaction }
           );
         } else {
-          throw new Error("Invalid item type");
+          throw new BadRequestError("Invalid item type");
         }
       }
 
@@ -98,6 +99,17 @@ class billManageService {
       newBill.total_price = total_price;
       await newBill.save({ transaction: transaction });
 
+      const addedPoint = Math.round(total_price / 1000);
+
+      const currentCustomer = await Customer.findOne({
+        where: { id: customer_id },
+        transaction: transaction,
+      });
+      if (!currentCustomer) {
+        throw new BadRequestError("Customer not found");
+      }
+      currentCustomer.points += addedPoint;
+      await currentCustomer.save({ transaction: transaction });
       await transaction.commit();
       return "Bill created successfully";
     } catch (error) {
