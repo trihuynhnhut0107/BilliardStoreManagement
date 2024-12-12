@@ -9,7 +9,7 @@ const {
 class AccessController {
   staffSignUp = async (req, res, next) => {
     new CREATED({
-      message: "Registered OK!",
+      message: "Signup success",
       metadata: await StaffAccessService.signUp(req.body),
       options: {
         limit: 10,
@@ -18,7 +18,7 @@ class AccessController {
   };
   staffLogin = async (req, res, next) => {
     new CREATED({
-      message: "Login OK!",
+      message: "Login successfully",
       metadata: await StaffAccessService.login(req.body),
       options: {
         limit: 10,

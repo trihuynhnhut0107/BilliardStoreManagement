@@ -1,5 +1,6 @@
 "use strict";
 
+const { BadRequestError, ServerError } = require("../core/error.response");
 const Bill = require("../models/Bill");
 const Customer = require("../models/Customer");
 
@@ -7,7 +8,7 @@ class customerManageService {
   static getAllCustomer = async () => {
     const foundedCustomer = await Customer.findAll();
     if (!foundedCustomer) {
-      throw new Error("Customer not found");
+      throw new BadRequestError("Customer not found");
     }
     return foundedCustomer;
   };
@@ -16,7 +17,7 @@ class customerManageService {
       where: { id: customer_id },
     });
     if (!foundedCustomer) {
-      throw new Error("Customer not found");
+      throw new BadRequestError("Customer not found");
     }
     return foundedCustomer;
   };
@@ -26,16 +27,19 @@ class customerManageService {
       include: Bill,
     });
     if (!foundedCustomer) {
-      throw new Error("Customer not found");
+      throw new BadRequestError("Customer not found");
     }
     return foundedCustomer;
   };
   static updateCustomer = async ({ customer_id, name, phone, email }) => {
+    if (!customer_id) {
+      throw new BadRequestError("Customer ID is required");
+    }
     const foundCustomer = await Customer.findOne({
       where: { id: customer_id },
     });
     if (!foundCustomer) {
-      throw new Error("Customer not found");
+      throw new BadRequestError("Customer not found");
     }
     // Create an object with only the fields that are passed and not undefined
     const updatedFields = {
@@ -50,7 +54,7 @@ class customerManageService {
     });
 
     if (numberOfAffectedRows === 0) {
-      throw new Error("Customer not updated");
+      throw new ServerError("Customer not updated");
     }
     return "Customer updated successfully";
   };
