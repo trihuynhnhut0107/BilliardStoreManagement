@@ -57,26 +57,13 @@ const formData = ref({
   role: "manager",
 });
 
-
-    const handleSignUp = async () => {
-      try {
-        const { data, error } = await useFetch('http://localhost:8080/v1/api/access/customer-site/signup', {
-          method: 'POST',
-          body: JSON.stringify(formData.value),
-        })
-        if (error){
-          console.log(error)
-        }
-        if (data.value.status === 201) {
-          const user = data.value.metadata.user
-          console.log('Registered User Successfully:', user)
-          navigateTo("/userlogin")
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Your account may be appeared. Error signing up. Please try again.');
-        window.location.reload();
-
+const handleSignUp = async () => {
+  try {
+    const { data, error } = await useFetch(
+      "http://localhost:8080/v1/api/access/customer-site/signup",
+      {
+        method: "POST",
+        body: JSON.stringify(formData.value),
       }
     );
     if (error) {
@@ -89,6 +76,16 @@ const formData = ref({
     }
   } catch (err) {
     console.error(err);
+    alert("Your account may be appeared. Error signing up. Please try again.");
+    window.location.reload();
+  }
+  if (error) {
+    console.log(error);
+  }
+  if (data.value.status === 201) {
+    const user = data.value.metadata.user;
+    console.log("Registered User Successfully:", user);
+    navigateTo("/userlogin");
   }
 };
 </script>
