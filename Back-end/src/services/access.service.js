@@ -53,23 +53,23 @@ class StaffAccessService {
       throw new UserExistError("Email already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const newStaff = await Staff.create({
-      name,
-      phone_number,
-      role,
-    });
-    if (!newStaff) {
-      throw new AuthFailureError("Staff not created");
-    }
     const newStaffAccount = await Account.create({
       username,
       email,
       password: passwordHash,
-      accountableId: newStaff.id,
       accountableType: "Staff",
     });
     if (!newStaffAccount) {
       throw new AuthFailureError("Account not created");
+    }
+    const newStaff = await Staff.create({
+      name,
+      phone_number,
+      role,
+      accountID: newStaffAccount.id,
+    });
+    if (!newStaff) {
+      throw new AuthFailureError("Staff not created");
     }
     return {
       code: 201,
@@ -85,25 +85,32 @@ class StaffAccessService {
     if (!username || !password) {
       throw new BadRequestError("Please fill all the required fields");
     }
-    const foundStaff = await Account.findOne({
+    const foundStaffAccount = await Account.findOne({
       where: {
         username: username,
         accountableType: "Staff",
       },
     });
-    if (!foundStaff) {
+    if (!foundStaffAccount) {
       throw new AuthFailureError("Staff account not found");
     }
-    const match = await bcrypt.compare(password, foundStaff.password);
+    const match = await bcrypt.compare(password, foundStaffAccount.password);
     if (!match) {
       throw new AuthFailureError("Invalid password");
     }
 
+    const foundStaff = await Staff.findOne({
+      where: {
+        accountID: foundStaffAccount.id,
+      },
+    });
+
     return {
-      user: getInfoData({
-        fields: ["username", "accountableType"],
-        object: foundStaff,
-      }),
+      // user: getInfoData({
+      //   fields: ["username", "accountableType"],
+      //   object: foundStaffAccount,
+      // }),
+      staffID: foundStaff.id,
     };
   };
 }
@@ -121,23 +128,23 @@ class CustomerAccessService {
       throw new UserExistError("Email already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const newCustomer = await Customer.create({
-      name,
-      phone_number,
-      email,
-    });
-    if (!newCustomer) {
-      throw new AuthFailureError("Customer not created");
-    }
     const newCustomerAccount = await Account.create({
       username,
       email,
       password: passwordHash,
-      accountableId: newCustomer.id,
       accountableType: "Customer",
     });
     if (!newCustomerAccount) {
       throw new AuthFailureError("Account not created");
+    }
+    const newCustomer = await Customer.create({
+      name,
+      phone_number,
+      email,
+      accountID: newCustomerAccount.id,
+    });
+    if (!newCustomer) {
+      throw new AuthFailureError("Customer not created");
     }
     return {
       code: 201,
@@ -153,25 +160,32 @@ class CustomerAccessService {
     if (!username || !password) {
       throw new BadRequestError("Please fill all the required fields");
     }
-    const foundCustomer = await Account.findOne({
+    const foundCustomerAccount = await Account.findOne({
       where: {
         username: username,
         accountableType: "Customer",
       },
     });
-    if (!foundCustomer) {
+    if (!foundCustomerAccount) {
       throw new AuthFailureError("Customer account not found");
     }
-    const match = await bcrypt.compare(password, foundCustomer.password);
+    const match = await bcrypt.compare(password, foundCustomerAccount.password);
     if (!match) {
       throw new AuthFailureError("Invalid password");
     }
 
+    const foundCustomer = await Customer.findOne({
+      where: {
+        accountID: foundCustomerAccount.id,
+      },
+    });
+
     return {
-      user: getInfoData({
-        fields: ["username", "accountableType"],
-        object: foundCustomer,
-      }),
+      // user: getInfoData({
+      //   fields: ["username", "accountableType"],
+      //   object: foundCustomer,
+      // }),
+      customerID: foundCustomer.id,
     };
   };
 }

@@ -2,7 +2,6 @@
 const { Op } = require("sequelize");
 const BilliardTable = require("../models/BilliardTable");
 const BillDetail = require("../models/BillDetail");
-const getCurrentTime = require("../helpers/getCurrentTime");
 const { BadRequestError, ServerError } = require("../core/error.response");
 
 class tableManageService {

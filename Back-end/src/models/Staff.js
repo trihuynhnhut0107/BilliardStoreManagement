@@ -19,6 +19,10 @@ const Staff = sequelize.define("Staff", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  accountID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 module.exports = Staff;

@@ -10,31 +10,31 @@ const { UserExistError } = require("../core/error.response");
 const Conversation = require("./Conversation");
 const Message = require("./Message");
 
-// Set up relationships
-Customer.hasOne(Account, {
-  foreignKey: "accountableId",
-  constraints: false,
-  scope: {
-    accountableType: "Customer", // Only link Customers
-  },
-});
+// // Set up relationships
+// Customer.hasOne(Account, {
+//   foreignKey: "accountableId",
+//   constraints: false,
+//   scope: {
+//     accountableType: "Customer", // Only link Customers
+//   },
+// });
 
-Staff.hasOne(Account, {
-  foreignKey: "accountableId",
-  constraints: false,
-  scope: {
-    accountableType: "Staff", // Only link Staff
-  },
-});
+// Staff.hasOne(Account, {
+//   foreignKey: "accountableId",
+//   constraints: false,
+//   scope: {
+//     accountableType: "Staff", // Only link Staff
+//   },
+// });
 
 Account.belongsTo(Customer, {
-  foreignKey: "accountableId",
+  foreignKey: "accountID",
   constraints: false,
   as: "Customer",
 });
 
 Account.belongsTo(Staff, {
-  foreignKey: "accountableId",
+  foreignKey: "accountID",
   constraints: false,
   as: "Staff",
 });
