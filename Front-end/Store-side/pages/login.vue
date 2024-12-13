@@ -29,14 +29,8 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css'
 
 definePageMeta({
-    layout: 'footnote'
+    layout: 'footer-layout'
 })
-
-// onMounted(
-//     () => toast.success('Registered User Successfully:', {
-//         autoClose: 3000,
-//     })
-// )
 
 const formData = ref({
     username: '',

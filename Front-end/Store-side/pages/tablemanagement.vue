@@ -4,36 +4,26 @@
     <div class="flex justify-between bg-white px-10 py-2">
       <h2 class="text-2xl font-bold text-nowrap">Table List</h2>
       <div class="flex items-center w-max rounded-2xl border px-3">
-        <input
-          placeholder="Search"
-          v-model="searchQuery"
+        <input placeholder="Search" v-model="searchQuery"
           class="outline-none border-none bg-transparent pr-20 text-xs" />
         <img src="../public/Search.svg" class="w-3 cursor-pointer" />
       </div>
       <div class="flex gap-4">
-        <button
-          @click="handleToggleCreatetable"
+        <button @click="handleToggleCreatetable"
           class="cursor-pointer bg-[#3A6351] text-white rounded text-xs text-nowrap text-center px-2 font-bold">
           Add Table
         </button>
-        <img
-          @click="deleteSelectedTable"
-          src="../public/Trash.svg"
-          class="w-4 cursor-pointer" />
+        <img @click="deleteSelectedTable" src="../public/Trash.svg" class="w-4 cursor-pointer" />
       </div>
     </div>
     <div class="relative bg-white">
       <div class="max-h-[300px] overflow-y-auto">
         <table class="w-full border-collapse border-none">
           <!-- table header -->
-          <thead
-            class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
+          <thead class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
             <tr>
               <th class="p-2 w-[50px]">
-                <input
-                  type="checkbox"
-                  @change="selectAll"
-                  v-model="selectAllChecked"
+                <input type="checkbox" @change="selectAll" v-model="selectAllChecked"
                   class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
               </th>
               <th class="p-2 w-[80px]">ID</th>
@@ -47,14 +37,10 @@
 
           <!-- table row -->
           <tbody>
-            <tr
-              v-for="(table, index) in filteredTables"
-              :key="index"
+            <tr v-for="(table, index) in filteredTables" :key="index"
               class="hover:bg-gray-50 border-b border-[#ECF0F2] last:border-none">
               <td class="p-2 w-[50px] text-center align-middle">
-                <input
-                  type="checkbox"
-                  v-model="table.selected"
+                <input type="checkbox" v-model="table.selected"
                   class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
@@ -66,26 +52,18 @@
               <td class="p-2 w-[100px] text-center align-middle">
                 {{ table.price }}
               </td>
-              <td
-                class="p-2 w-[100px] text-center align-middle"
-                :class="{
-                  'text-[#00229D]': table.status === 'Repairing',
-                  'text-[#FF0000]': table.status === 'Unavailable',
-                  'text-[#0CB000]': table.status === 'Available',
-                }">
+              <td class="p-2 w-[100px] text-center align-middle" :class="{
+                'text-[#00229D]': table.status === 'Repairing',
+                'text-[#FF0000]': table.status === 'Unavailable',
+                'text-[#0CB000]': table.status === 'Available',
+              }">
                 {{ table.status }}
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
-                <img
-                  @click="editTable(table.id)"
-                  src="../public/Edit.svg"
-                  class="cursor-pointer w-4 mx-auto" />
+                <img @click="editTable(table.id)" src="../public/Edit.svg" class="cursor-pointer w-4 mx-auto" />
               </td>
               <td class="p-2 w-[80px] text-center align-middle">
-                <img
-                  @click="deleteTable(table.id)"
-                  src="../public/Trash.svg"
-                  class="cursor-pointer w-4 mx-auto" />
+                <img @click="deleteTable(table.id)" src="../public/Trash.svg" class="cursor-pointer w-4 mx-auto" />
               </td>
             </tr>
           </tbody>
@@ -97,83 +75,52 @@
   <!-- Create table form -->
   <div>
     <Transition name="nested">
-      <div
-        v-if="addTableClicked"
-        name="outer"
-        class="absolute top-[10%] right-1/2">
+      <div v-if="addTableClicked" name="outer" class="absolute top-[10%] right-1/2">
         <hr />
-        <form
-          @submit.prevent
+        <form @submit.prevent
           class="w-full max-w-sm flex flex-col justify-center gap-2 rounded-lg shadow-[0px_0px_5px_green] bg-white p-4 px-11">
           <h2 class="text-center font-bold text-xl text-[#3A6351]">
             Create new table
           </h2>
           <hr />
-          <label class="font-bold underline text-lg text-[#3A6351]"
-            >TableID: {{ newTableId(tables) }}</label
-          >
+          <label class="font-bold underline text-lg text-[#3A6351]">TableID: {{ newTableId(tables) }}</label>
           <div class="flex justify-between gap-6 w-full max-w-sm">
             <div>
-              <label for="stick_quantity" class="font-semibold"
-                >Stick quantity</label
-              >
+              <label for="stick_quantity" class="font-semibold">Stick quantity</label>
               <div>
-                <input
-                  v-model="createTableData.stick_quantity"
-                  id="stick_quantity"
-                  type="text"
-                  placeholder="Stick quantity"
-                  class="w-full rounded-md indent-1 border border-gray-700 h-9" />
+                <input v-model="createTableData.stick_quantity" id="stick_quantity" type="text"
+                  placeholder="Stick quantity" class="w-full rounded-md indent-1 border border-gray-700 h-9" />
               </div>
             </div>
             <div>
-              <label for="ball_quantity" class="font-semibold"
-                >Ball quantity</label
-              >
+              <label for="ball_quantity" class="font-semibold">Ball quantity</label>
               <div>
-                <input
-                  v-model="createTableData.ball_quantity"
-                  id="ball_quantity"
-                  type="text"
-                  placeholder="Ball quantity"
-                  class="w-full rounded-md indent-1 border border-gray-700 h-9" />
+                <input v-model="createTableData.ball_quantity" id="ball_quantity" type="text"
+                  placeholder="Ball quantity" class="w-full rounded-md indent-1 border border-gray-700 h-9" />
               </div>
             </div>
           </div>
           <div>
             <label for="table_type" class="font-semibold">Table type</label>
             <div>
-              <input
-                v-model="createTableData.table_type"
-                id="table_type"
-                type="text"
-                placeholder="Table type"
+              <input v-model="createTableData.table_type" id="table_type" type="text" placeholder="Table type"
                 class="w-full rounded-md indent-1 border border-gray-700 h-9" />
             </div>
           </div>
           <div>
             <label for="price" class="font-semibold">Price</label>
             <div>
-              <input
-                v-model="createTableData.price"
-                id="price"
-                type="text"
-                placeholder="Price"
+              <input v-model="createTableData.price" id="price" type="text" placeholder="Price"
                 class="w-full rounded-md indent-1 border border-gray-700 h-9" />
             </div>
           </div>
           <div>
             <label for="status" class="font-semibold block">Status</label>
-            <select
-              v-model="createTableData.status"
-              name="status"
-              id="status"
-              class="p-1 font-semibold"
-              :class="{
-                'text-[#00229D]': createTableData.status === 'Repairing',
-                'text-[#FF0000]': createTableData.status === 'Unavailable',
-                'text-[#0CB000]': createTableData.status === 'Available',
-              }">
+            <select v-model="createTableData.status" name="status" id="status" class="p-1 font-semibold" :class="{
+              'text-[#00229D]': createTableData.status === 'Repairing',
+              'text-[#FF0000]': createTableData.status === 'Unavailable',
+              'text-[#0CB000]': createTableData.status === 'Available',
+            }">
               <option class="text-[#0CB000]" value="Available" selected>
                 Available
               </option>
@@ -186,13 +133,11 @@
             </select>
           </div>
           <div class="flex justify-end gap-4">
-            <button
-              @click="handleToggleCreatetable"
+            <button @click="handleToggleCreatetable"
               class="max-w-64 text-[#3A6351] border border-[#3A6351] bg-white font-medium rounded-md text-center py-2 px-6">
               Cancel
             </button>
-            <button
-              @click="handleCreateTable(newTableId(tables))"
+            <button @click="handleCreateTable(newTableId(tables))"
               class="max-w-64 bg-[#3A6351] text-white font-medium rounded-md text-center py-2 px-6">
               Create
             </button>
@@ -205,45 +150,27 @@
   <!-- Edit table form -->
   <div>
     <Transition name="nested">
-      <div
-        v-if="editTableClicked"
-        name="outer"
-        class="absolute top-1/5 right-0">
+      <div v-if="editTableClicked" name="outer" class="absolute top-1/5 right-0">
         <hr />
-        <form
-          @submit.prevent
+        <form @submit.prevent
           class="w-full max-w-sm flex flex-col justify-center gap-2 rounded-lg shadow-[0px_0px_5px_green] bg-white p-4 px-11">
           <h2 class="text-center font-bold text-xl text-[#3A6351]">
             Edit table
           </h2>
           <hr />
-          <label class="font-bold underline text-lg text-[#3A6351]"
-            >Table ID: {{ currentEditTableId }}</label
-          >
+          <label class="font-bold underline text-lg text-[#3A6351]">Table ID: {{ currentEditTableId }}</label>
           <div class="flex justify-between gap-6 w-full max-w-sm">
             <div>
-              <label for="stick_quantity" class="font-semibold"
-                >Stick quantity</label
-              >
+              <label for="stick_quantity" class="font-semibold">Stick quantity</label>
               <div>
-                <input
-                  v-model="editTableData.stick_quantity"
-                  id="stick_quantity"
-                  type="text"
-                  placeholder="Stick quantity"
-                  class="w-full rounded-md indent-1 border border-gray-700 h-9" />
+                <input v-model="editTableData.stick_quantity" id="stick_quantity" type="text"
+                  placeholder="Stick quantity" class="w-full rounded-md indent-1 border border-gray-700 h-9" />
               </div>
             </div>
             <div>
-              <label for="ball_quantity" class="font-semibold"
-                >Ball quantity</label
-              >
+              <label for="ball_quantity" class="font-semibold">Ball quantity</label>
               <div>
-                <input
-                  v-model="editTableData.ball_quantity"
-                  id="ball_quantity"
-                  type="text"
-                  placeholder="Ball quantity"
+                <input v-model="editTableData.ball_quantity" id="ball_quantity" type="text" placeholder="Ball quantity"
                   class="w-full rounded-md indent-1 border border-gray-700 h-9" />
               </div>
             </div>
@@ -251,37 +178,24 @@
           <div>
             <label for="table_type" class="font-semibold">Table type</label>
             <div>
-              <input
-                v-model="editTableData.table_type"
-                id="table_type"
-                type="text"
-                placeholder="Table type"
+              <input v-model="editTableData.table_type" id="table_type" type="text" placeholder="Table type"
                 class="w-full rounded-md indent-1 border border-gray-700 h-9" />
             </div>
           </div>
           <div>
             <label for="price" class="font-semibold">Price</label>
             <div>
-              <input
-                v-model="editTableData.price"
-                id="price"
-                type="text"
-                placeholder="Price"
+              <input v-model="editTableData.price" id="price" type="text" placeholder="Price"
                 class="w-full rounded-md indent-1 border border-gray-700 h-9" />
             </div>
           </div>
           <div>
             <label for="status" class="font-semibold block">Status</label>
-            <select
-              v-model="editTableData.status"
-              name="status"
-              id="status"
-              class="p-1 font-semibold"
-              :class="{
-                'text-[#00229D]': editTableData.status === 'Repairing',
-                'text-[#FF0000]': editTableData.status === 'Unavailable',
-                'text-[#0CB000]': editTableData.status === 'Available',
-              }">
+            <select v-model="editTableData.status" name="status" id="status" class="p-1 font-semibold" :class="{
+              'text-[#00229D]': editTableData.status === 'Repairing',
+              'text-[#FF0000]': editTableData.status === 'Unavailable',
+              'text-[#0CB000]': editTableData.status === 'Available',
+            }">
               <option class="text-[#0CB000]" value="Available" selected>
                 Available
               </option>
@@ -294,13 +208,11 @@
             </select>
           </div>
           <div class="flex justify-end gap-4">
-            <button
-              @click="handleToggleEdittable"
+            <button @click="handleToggleEdittable"
               class="max-w-64 text-[#3A6351] border border-[#3A6351] bg-white font-medium rounded-md text-center py-2 px-6">
               Cancel
             </button>
-            <button
-              @click="handleEditTable"
+            <button @click="handleEditTable"
               class="max-w-64 bg-[#3A6351] text-white font-medium rounded-md text-center py-2 px-6">
               Confirm
             </button>
@@ -317,7 +229,7 @@ import "vue3-toastify/dist/index.css";
 import { ref, computed, onMounted } from "vue";
 
 definePageMeta({
-  layout: "sidebar",
+  layout: "home-layout",
 });
 
 const tables = ref([]);

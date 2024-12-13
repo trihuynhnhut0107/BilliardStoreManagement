@@ -1,5 +1,5 @@
 <template>
-  <div class="h-svh w-svw max-h-full flex flex-col items-center gap-2 bg-[#ECF0F2]">
+  <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center pt-[10vh] gap-4">
     <div>
       <h1 class="text-4xl font-bold text-[#3A6351] text-center mt-10">Demo.</h1>
     </div>
@@ -31,7 +31,7 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css'
 
 definePageMeta({
-  layout: 'footnote'
+  layout: 'footer-layout'
 })
 
 const formData = ref({
