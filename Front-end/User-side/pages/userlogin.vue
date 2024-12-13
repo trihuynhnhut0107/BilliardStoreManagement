@@ -24,26 +24,18 @@
             class="w-[250px] h-[40px] p-[10px] border border-[#A4A4A4] rounded-md" />
           <!-- <img class="w-9 cursor-pointer" src="/Icon/eye-close.png" @click.prevent={togglePassword}> -->
         </div>
-        <button
-          v-on:click="handleLogin"
-          class="w-[250px] bg-[#3A6351] text-white rounded-md text-center p-[7px]">
-          Log in
-        </button>
-        <NuxtLink class="text-[#3A6351] font-medium" to="/forgetpassword"
-          >Forgot password?</NuxtLink
-        >
-        <hr class="w-[250px] border border-[#A4A4A4] p-0" />
-        <NuxtLink
-          class="text-white bg-[#3A6351] text-center w-[200px] p-[7px] rounded-md"
-          to="/createaccount"
-          >Create new account</NuxtLink
-        >
+
+        <button v-on:click="handleLogin" class="w-[250px] bg-[#3A6351] text-white rounded-md text-center p-[7px]">Log in</button>
+        <NuxtLink class="text-[#3A6351] font-medium" to="/forgetpassword">Forgot password?</NuxtLink>
+        <hr class="w-[250px] border border-[#A4A4A4] p-0">
+        <NuxtLink class="text-white bg-[#3A6351] text-center w-[200px] p-[7px] rounded-md" to="/usercreateaccount" >Create new account</NuxtLink>
       </form>
     </div>
   </DefaultLayout>
 </template>
 
 <script setup>
+import { useLogin } from "~/composables/useLogin";
 import DefaultLayout from "~/layout/default.vue";
 
 const formData = ref({
@@ -52,23 +44,24 @@ const formData = ref({
 });
 
 const handleLogin = async () => {
-  try {
-    const { data, error } = await useFetch(
-      "http://localhost:8080/v1/api/access/customer-site/login",
-      {
-        method: "POST",
-        body: JSON.stringify(formData.value),
-      }
-    );
-    if (error) {
-      console.log(error);
-    }
-    if (data.value.status === 201) {
-      console.log("Login Successfully:");
-      navigateTo("/userhome");
-    }
-  } catch (err) {
-    console.log(err);
-  }
+  // try {
+  //   const { data, error } = await useFetch(
+  //     "http://localhost:8080/v1/api/access/customer-site/login",
+  //     {
+  //       method: "POST",
+  //       body: JSON.stringify(formData.value),
+  //     }
+  //   );
+  //   if (error) {
+  //     console.log(error);
+  //   }
+  //   if (data.value.status === 201) {
+  //     console.log("Login Successfully:");
+  //     navigateTo("/userhome");
+  //   }
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  await useLogin(formData.value);
 };
 </script>

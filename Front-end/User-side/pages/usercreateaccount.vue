@@ -76,6 +76,16 @@ const handleSignUp = async () => {
     }
   } catch (err) {
     console.error(err);
+    alert("Your account may be appeared. Error signing up. Please try again.");
+    window.location.reload();
+  }
+  if (error) {
+    console.log(error);
+  }
+  if (data.value.status === 201) {
+    const user = data.value.metadata.user;
+    console.log("Registered User Successfully:", user);
+    navigateTo("/userlogin");
   }
 };
 </script>

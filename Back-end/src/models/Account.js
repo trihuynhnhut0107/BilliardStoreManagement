@@ -19,11 +19,6 @@ const Account = sequelize.define("Account", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  accountableId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-
   accountableType: {
     type: DataTypes.STRING,
     allowNull: false,

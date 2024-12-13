@@ -69,6 +69,7 @@ class MessagingService {
     receiverId,
     messageText,
   }) => {
+    if (!senderId) throw new BadRequestError("Sender ID cannot be null");
     // Find or create a conversation
     const conversation = await this.findOrCreateConversation({
       senderType,
@@ -79,7 +80,6 @@ class MessagingService {
     // Ensure that conversation ID and sender ID are valid
     if (!conversation.id)
       throw new BadRequestError("Conversation ID cannot be null");
-    if (!senderId) throw new BadRequestError("Sender ID cannot be null");
 
     // Create the message
     const message = await Message.create({
