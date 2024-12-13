@@ -19,6 +19,10 @@ const Customer = sequelize.define("Customer", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  accountID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   points: {
     type: DataTypes.INTEGER,
     allowNull: false,
