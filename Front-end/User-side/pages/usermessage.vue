@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-auto max-h-[50vh] p-6 bg-gray-100">
+  <div class="flex flex-col max-h-[50vh] p-6 bg-gray-100">
     <div class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">

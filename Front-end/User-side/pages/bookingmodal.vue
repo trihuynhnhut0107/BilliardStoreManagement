@@ -128,7 +128,11 @@ const props = defineProps({
 });
 
 // Get the user ID from localStorage
-const customerID = localStorage.getItem('customerID')
+const customerID = Number(localStorage.getItem('customerID') || 0); // Default to 0 if not set
+
+const tableId = props.table.id;
+
+
 
 const emit = defineEmits();
 const router = useRouter();
@@ -196,21 +200,26 @@ const calculatePrice = () => {
 const confirmBooking = async () => {
   validateTimes();
 
-  // Format time data
-  let startDate = new Date();
-  let endDate = new Date();
-  if (formData.value.date && formData.value.startTime && formData.value.endTime) {
-    startDate = new Date(`${formData.value.date}T${formData.value.startTime}:00`);
-    endDate = new Date(`${formData.value.date}T${formData.value.endTime}:00`);
-
-    timeData.value.start_time = startDate;
-    timeData.value.end_time = endDate;
+  // Check for missing data
+  if (!customerID) {
+    console.error("Customer ID is missing");
+    return;
   }
-  // Use the formatToCustomISO function to format the date objects
+  if (!tableId) {
+    console.error("Table ID is missing");
+    return;
+  }
+  if (!formData.value.date || !formData.value.startTime || !formData.value.endTime) {
+    console.error("Date, start time, or end time is missing");
+    return;
+  }
+
+  // Format time data
+  const startDate = new Date(`${formData.value.date}T${formData.value.startTime}:00`);
+  const endDate = new Date(`${formData.value.date}T${formData.value.endTime}:00`);
+
   const formattedStartTime = formatToCustomISO(startDate);
   const formattedEndTime = formatToCustomISO(endDate);
-
-  console.log(customerID, formattedStartTime, formattedEndTime, props.table.id);
 
   calculatePrice();
 
@@ -223,22 +232,20 @@ const confirmBooking = async () => {
       "http://localhost:8080/v1/api/booking/create-booking",
       {
         method: "POST",
-        body: JSON.stringify([
+        body: JSON.stringify(
           {
-            table_id: props.table.id,
+            table_id: tableId,
             customer_id: customerID,
             start_time: formattedStartTime,
             end_time: formattedEndTime,
           },
-        ]),
+        ),
       }
     );
+    
+    if (data && !fetchError) { // Adjust according to actual response
+      console.log("Navigating to checkout page...");
 
-    if (fetchError) {
-      console.log(fetchError);
-    }
-
-    if (data.value) {
       router.push(
         `/checkout?name=${props.table.name}&id=${props.table.id}&price=${
           price.value
@@ -249,10 +256,16 @@ const confirmBooking = async () => {
         )}&end_time=${formatToCheckout(timeData.end_time)}`
       );
     }
+    
+    if (fetchError) {
+      console.log(fetchError);
+    }
+
   } catch (err) {
     console.error(err);
   }
 };
+
 </script>
 
 <style scoped></style>
