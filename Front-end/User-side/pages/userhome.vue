@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col min-h-screen">
     <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
     <!-- Navbar -->
     <header
@@ -52,7 +52,7 @@
     <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
 
     <!-- Home Container -->
-    <div class="home-container">
+    <div class="flex-grow">
       <!-- Hero Section -->
       <section class="relative w-full">
         <h1
@@ -109,6 +109,14 @@
         </div>
       </section>
 
+      <!-- Booking Modal -->
+      <BookingModal
+        v-if="isModalOpen"
+        :table="selectedTable"
+        @close="closeModal"
+      />
+
+
       <!-- Button to toggle the message component -->
       <div class="fixed bottom-14 right-10">
         <button
@@ -125,7 +133,7 @@
 
       <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Footer -->
-      <footer class="bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
+      <footer class="flex-shrink-0 bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
         <!-- Top section with logo, description, and navigation -->
         <div
           class="container mx-auto px-4 py-6 flex justify-between items-start">
@@ -154,7 +162,7 @@
 
         <!-- Bottom section with copyright -->
         <div
-          class="border-t border-gray-300 py-4 text-center text-sm text-gray-600">
+          class="border-t border-gray-300 py-4 text-center text-sm text-gray-200">
           ©2024 Demo Inc. All rights reserved
         </div>
       </footer>

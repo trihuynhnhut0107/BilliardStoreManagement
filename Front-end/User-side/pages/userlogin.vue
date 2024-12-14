@@ -26,7 +26,7 @@
         </div>
 
         <button v-on:click="handleLogin" class="w-[250px] bg-[#3A6351] text-white rounded-md text-center p-[7px]">Log in</button>
-        <NuxtLink class="text-[#3A6351] font-medium" to="/forgetpassword">Forgot password?</NuxtLink>
+        <NuxtLink class="text-[#3A6351] font-medium" to="/userforgotpassword">Forgot password?</NuxtLink>
         <hr class="w-[250px] border border-[#A4A4A4] p-0">
         <NuxtLink class="text-white bg-[#3A6351] text-center w-[200px] p-[7px] rounded-md" to="/usercreateaccount" >Create new account</NuxtLink>
       </form>
@@ -37,31 +37,38 @@
 <script setup>
 import { useLogin } from "~/composables/useLogin";
 import DefaultLayout from "~/layout/default.vue";
+import { useRouter } from "vue-router"; 
 
 const formData = ref({
   username: "",
   password: "",
 });
 
+const isLoading = ref(false);
+const errorMessage = ref("");
+const router = useRouter();
+
 const handleLogin = async () => {
-  // try {
-  //   const { data, error } = await useFetch(
-  //     "http://localhost:8080/v1/api/access/customer-site/login",
-  //     {
-  //       method: "POST",
-  //       body: JSON.stringify(formData.value),
-  //     }
-  //   );
-  //   if (error) {
-  //     console.log(error);
-  //   }
-  //   if (data.value.status === 201) {
-  //     console.log("Login Successfully:");
-  //     navigateTo("/userhome");
-  //   }
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  await useLogin(formData.value);
+  isLoading.value = true;
+  errorMessage.value = ""; // Reset error message
+
+  const result = await useLogin(formData.value);
+
+  isLoading.value = false;
+
+  if (!result.success) {
+    // Display the error message from the response
+    errorMessage.value = result.message || "Login failed.";
+    console.error("Login Error:", result.message);
+  } else {
+    console.log("Login successful, Customer ID:", result.customerID);
+
+    // Store the customer ID in a global state or local storage if needed
+    localStorage.setItem("customerID", result.customerID);
+
+    // Navigate to the user home page
+    router.push("/userhome");
+  }
 };
+
 </script>
