@@ -2,6 +2,11 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../configs/sequelize");
 
 const MenuItem = sequelize.define("MenuItem", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
