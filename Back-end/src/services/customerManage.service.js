@@ -31,7 +31,12 @@ class customerManageService {
     }
     return foundedCustomer;
   };
-  static updateCustomer = async ({ customer_id, name, phone, email }) => {
+  static updateCustomer = async ({
+    customer_id,
+    name,
+    phone_number,
+    email,
+  }) => {
     if (!customer_id) {
       throw new BadRequestError("Customer ID is required");
     }
@@ -44,7 +49,7 @@ class customerManageService {
     // Create an object with only the fields that are passed and not undefined
     const updatedFields = {
       name: name ?? foundCustomer.name,
-      phone: phone ?? foundCustomer.phone,
+      phone_number: phone_number ?? foundCustomer.phone_number,
       email: email ?? foundCustomer.email,
     };
 
