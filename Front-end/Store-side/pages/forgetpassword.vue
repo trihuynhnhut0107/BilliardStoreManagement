@@ -1,7 +1,7 @@
 <template>
-  <div class="h-svh w-svw max-h-full flex flex-col items-center gap-2 bg-[#ECF0F2]">
+  <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center pt-[20vh] gap-4">
     <div>
-      <h1 class="text-4xl font-bold uppercase text-[#3A6351] text-center mt-10">app name</h1>
+      <h1 class="text-4xl font-bold uppercase text-[#3A6351] text-center">app name</h1>
     </div>
     <form @submit.prevent
       class="self-center w-fit flex flex-col items-center gap-3 rounded-lg shadow-[2px_2px_2px_#A4A4A4] p-4 px-11 bg-white">
@@ -21,7 +21,7 @@
         <button
           class="bg-[#3A6351] text-white rounded-md font-semibold text-center flex justify-center items-center w-full text-base whitespace-nowrap px-6 py-1.5 min-h-[34px]"
           v-on:click="handleSearch">
-          Search
+          Check
         </button>
       </div>
     </form>
@@ -30,7 +30,7 @@
 
 <script setup>
 definePageMeta({
-  layout: 'footnote'
+  layout: 'footer-layout'
 })
 
 const email = ref('')
