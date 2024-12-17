@@ -12,7 +12,7 @@
         <ul
           class="hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
           <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
+            <NuxtLink to="/userhome" class="text-lg font-bold text-green-900"
               >Home</NuxtLink
             >
           </li>
@@ -50,7 +50,7 @@
     <main>
       <slot />
     </main>
-    <footer class="flex bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
+    <footer class="flex bg-[#3A6351] border-t border-gray-300 w-full ">
         <!-- Top section with logo, description, and navigation -->
         <div
           class="container mx-auto px-4 py-6 flex justify-between items-start">

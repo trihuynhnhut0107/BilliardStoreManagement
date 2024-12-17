@@ -51,32 +51,52 @@
     </DefaultLayout>
   </template>
   
-  <script setup>
-  import DefaultLayout from '~/layout/default.vue'
-  import { useRoute } from 'vue-router';
+<script setup>
+  import DefaultLayout from "~/layout/default.vue";
+  import { ref, computed, onMounted } from "vue";
+  import { useRoute } from "vue-router";
 
   const route = useRoute();
-  
-  // Assuming you have these data in your component context
-  const customer = {
-    name: 'John Doe',
-    phone: '123-456-7890',
-  }
+  const customerID = localStorage.getItem("customerID");
 
+  // User info
+  const userInfo = ref(null);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await $fetch(`http://localhost:8080/v1/api/customer-manage/customer/${customerID}`);
+      userInfo.value = response.metadata; // Assign metadata
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  // Customer data
+  const customer = computed(() => {
+    return {
+      name: userInfo.value?.name || "Loading...",
+      phone: userInfo.value?.phone_number || "Loading...",
+    };
+  });
+
+  // Table data
   const table = {
-    name: route.query.name || 'Default Table',
+    name: route.query.name || "Default Table",
     id: route.query.id || 0,
     price: route.query.price || 0,
-    description: route.query.description || 'No description available',
+    description: route.query.description || "No description available",
     sticks: route.query.sticks || 2,
-    type: route.query.type || 'Standard',
+    type: route.query.type || "Nothing here yet",
     start_time: route.query.start_time,
     end_time: route.query.end_time,
   };
-  
+
   const handlePay = () => {
     alert("Booking Successfully");
     navigateTo("/userhome");
-  }
-  </script>
+  };
+
+  onMounted(fetchUserInfo);
+</script>
+
 

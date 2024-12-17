@@ -10,30 +10,54 @@
           </div>
           <div class="flex flex-col h-[40vh] text-xl font-weight-700 items-start space-y-[6vh]">
             <button class="hover:text-yellow-600">Account information</button>
-            <button class="hover:text-yellow-600">Change password</button>
-            <button class="hover:text-yellow-600">Logout</button>
+            <button @click="toggleChangeInfo" class="hover:text-yellow-600">
+              {{ isChangeInfoOpen ? "Close Change Info" : "Change information" }}
+            </button>
+            <button @click="logout" class="hover:text-yellow-600">Logout</button>
           </div>
         </div>
       </div>
 
-      <div class="flex h-[40vh] w-3/4 bg-white mt-[10vh] mr-[5vw] border-2 border-gray-300 rounded-xl shadow-md">
+      <div
+        v-if="!isChangeInfoOpen"
+        class="flex h-[40vh] w-3/4 bg-white mt-[10vh] mr-[5vw] border-2 border-gray-300 rounded-xl shadow-md"
+      >
         <div class="flex flex-col ml-[2vw] w-1/2">
-          <h2 class="flex text-3xl text-yellow-400 mt-[4vh] mb-[4vh] font-bold">{{ userInfo.metadata.name }}</h2>
-          <h3 class="mb-[4vh]">ID: {{ userInfo.metadata.id }}</h3>
-          <h3 class="mb-[4vh]">Email: {{ userInfo.metadata.email }}</h3>
-          <h3 class="mb-[4vh]">Phone number: {{ userInfo.metadata.phone_number }}</h3>
+          <h2 class="flex text-3xl text-yellow-400 mt-[4vh] mb-[4vh] font-bold">
+            {{ userInfo?.metadata?.name || "Loading..." }}
+          </h2>
+          <h3 class="mb-[4vh]">ID: {{ userInfo?.metadata?.id }}</h3>
+          <h3 class="mb-[4vh]">Email: {{ userInfo?.metadata?.email }}</h3>
+          <h3 class="mb-[4vh]">Phone number: {{ userInfo?.metadata?.phone_number }}</h3>
         </div>
         <div class="flex w-[20vw] h-[20vh] ml-[8vw] mt-[8vh]">
-          <img src="../public/Image/img_1.jpg" alt="User Avatar">
+          <img src="../public/Image/img_1.jpg" alt="User Avatar" />
         </div>
       </div>
-    </div>
+
+      </div>
+       <!-- ChangeInfo Component -->
+       <div v-if="isChangeInfoOpen" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+        <ChangeInfo @close="toggleChangeInfo" />
+      </div>
   </DefaultLayout>
 </template>
 
 <script setup>
 import DefaultLayout from '~/layout/default.vue'
 import { computed } from 'vue';
+import ChangeInfo from './changeinfo.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+// State for toggling ChangeInfo component
+const isChangeInfoOpen = ref(false);
+
+// Toggle function
+const toggleChangeInfo = () => {
+  isChangeInfoOpen.value = !isChangeInfoOpen.value;
+};
 
 // Get the user ID from localStorage
 const customerID = localStorage.getItem('customerID')

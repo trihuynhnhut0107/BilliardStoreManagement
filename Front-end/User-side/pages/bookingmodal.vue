@@ -177,25 +177,23 @@ const formatToCustomISO = (date) => {
   return `${hours}:${minutes}:${seconds} ${month}/${day}/${year} `;
 };
 
-
-
-const formatToCheckout = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-};
-
 const calculatePrice = () => {
-  if (timeData.start_time && timeData.end_time) {
-    const durationInMilliseconds = timeData.end_time - timeData.start_time;
+  if (formData.value.startTime && formData.value.endTime) {
+    const startDateTime = new Date(`${formData.value.date}T${formData.value.startTime}`);
+    const endDateTime = new Date(`${formData.value.date}T${formData.value.endTime}`);
+
+    // Calculate duration in hours
+    const durationInMilliseconds = endDateTime - startDateTime;
     const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
-    price.value = Math.max(durationInHours * props.table.price, 0); // Ensure non-negative price
+
+    // Calculate price
+    price.value = Math.max(durationInHours * props.table.price, 0);
+  } else {
+    console.error("Start time or end time is missing.");
+    price.value = 0;
   }
 };
+
 
 const confirmBooking = async () => {
   validateTimes();
@@ -243,20 +241,24 @@ const confirmBooking = async () => {
       }
     );
     
-    if (data && !fetchError) { // Adjust according to actual response
+    if (data) { // Adjust according to actual response
       console.log("Navigating to checkout page...");
 
-      router.push(
-        `/checkout?name=${props.table.name}&id=${props.table.id}&price=${
-          price.value
-        }&description=${props.table.description}&sticks=${sticks.value}&type=${
-          props.table.table_type
-        }&start_time=${formatToCheckout(
-          timeData.start_time
-        )}&end_time=${formatToCheckout(timeData.end_time)}`
-      );
+      router.push({
+        path: '/checkout',
+        query: {
+          name: props.table.name,
+          id: props.table.id,
+          price: price.value,
+          description: props.table.description || 'No description',
+          sticks: sticks.value,
+          type: props.table.type || 'Standard',
+          start_time: formattedStartTime,
+          end_time: formattedEndTime,
+        },
+      });
+
     }
-    
     if (fetchError) {
       console.log(fetchError);
     }
