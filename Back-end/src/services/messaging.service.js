@@ -14,6 +14,14 @@ class MessagingService {
     });
     return messages;
   };
+  static getOpenConversations = async () => {
+    const conversations = await Conversation.findAll({
+      where: {
+        status: "open",
+      },
+    });
+    return conversations;
+  };
 
   // Function to find or create a conversation
   static findOrCreateConversation = async ({
@@ -28,7 +36,7 @@ class MessagingService {
       conversation = await Conversation.findOne({
         where: {
           customerId: senderId,
-          staffId: { [Op.ne]: null }, // Staff must be assigned
+          status: "open",
         },
       });
 
@@ -45,12 +53,13 @@ class MessagingService {
       conversation = await Conversation.findOne({
         where: {
           customerID: receiverId, // Assume receiverId is customerId
+          status: "open",
         },
       });
 
       // If conversation exists but has null staffId, update it with sender's staffId
       if (conversation && !conversation.staffID) {
-        await conversation.update({ staffId: senderId, updatedAt: new Date() });
+        await conversation.update({ staffID: senderId, updatedAt: new Date() });
       }
     }
 
