@@ -1,6 +1,6 @@
 const chai = require("chai");
 const sinon = require("sinon");
-const { StaffAccessService } = require("../services/access.service");
+const { StaffAccessService } = require("../../services/access.service");
 const expect = chai.expect;
 
 describe("Staff Access - Signup Unit Tests", () => {

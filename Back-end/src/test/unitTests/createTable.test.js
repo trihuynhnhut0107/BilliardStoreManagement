@@ -1,7 +1,7 @@
 const chai = require("chai");
 const sinon = require("sinon");
 const expect = chai.expect;
-const tableManageService = require("../services/tableManage.service");
+const tableManageService = require("../../services/tableManage.service");
 
 describe("Table Management Service - createNewTable", () => {
   let createNewTable;

@@ -3,7 +3,7 @@ const sinon = require("sinon");
 const {
   StaffAccessService,
   CustomerAccessService,
-} = require("../services/access.service");
+} = require("../../services/access.service");
 
 const expect = chai.expect;
 
