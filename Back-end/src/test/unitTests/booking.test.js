@@ -3,7 +3,7 @@ const sinon = require("sinon");
 const { expect } = chai;
 
 // Import your service method
-const BookingService = require("../services/booking.service");
+const BookingService = require("../../services/booking.service");
 
 describe("BookingService - createBooking", () => {
   let mockCreateBooking;
