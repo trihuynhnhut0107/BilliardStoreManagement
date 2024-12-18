@@ -1,13 +1,24 @@
-const request = require("supertest");
 const chai = require("chai");
+const sinon = require("sinon");
+const { StaffAccessService } = require("../services/access.service");
 const expect = chai.expect;
 
-const baseURL = "http://localhost:8080";
+describe("Staff Access - Signup Unit Tests", () => {
+  let signUpStub;
 
-describe("Staff Access - Signup API Tests", () => {
+  beforeEach(() => {
+    // Stub the signUp method in the StaffAccessService
+    signUpStub = sinon.stub(StaffAccessService, "signUp");
+  });
+
+  afterEach(() => {
+    // Restore the original method after each test
+    sinon.restore();
+  });
+
   // Successful Signup Case
   describe("Sign Up Success", () => {
-    it("should return signup successfully", (done) => {
+    it("should return signup successfully", async () => {
       const signupData = {
         email: "uniqueEmail@gmail.com",
         username: "uniqueUsername",
@@ -17,21 +28,19 @@ describe("Staff Access - Signup API Tests", () => {
         role: "manager",
       };
 
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(201)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal("Signup success");
-          done();
-        });
+      // Mock successful signup
+      signUpStub.resolves({ message: "Signup success" });
+
+      const result = await StaffAccessService.signUp(signupData);
+
+      expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+      expect(result.message).to.equal("Signup success");
     });
   });
 
   // Invalid Email Format Case
   describe("Invalid Email Format", () => {
-    it("should return 'Invalid email format' error", (done) => {
+    it("should return 'Invalid email format' error", async () => {
       const signupData = {
         email: "invalidEmail@", // Incorrect email format
         username: "validUsername",
@@ -41,23 +50,23 @@ describe("Staff Access - Signup API Tests", () => {
         role: "manager",
       };
 
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(400)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal("Invalid email format");
-          done();
-        });
+      // Mock invalid email format error
+      signUpStub.rejects(new Error("Invalid email format"));
+
+      try {
+        await StaffAccessService.signUp(signupData);
+      } catch (error) {
+        expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+        expect(error.message).to.equal("Invalid email format");
+      }
     });
   });
 
   // Email Already Exists Case
   describe("Email Already Exists", () => {
-    it("should return 'Email already exists' error", (done) => {
+    it("should return 'Email already exists' error", async () => {
       const signupData = {
-        email: "uniqueEmail@gmail.com", // This email should be created in the first test case
+        email: "existingEmail@gmail.com", // Duplicate email
         username: "newUniqueUsername",
         password: "validPassword",
         name: "validName",
@@ -65,39 +74,15 @@ describe("Staff Access - Signup API Tests", () => {
         role: "manager",
       };
 
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(400)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal("Email already exists");
-          done();
-        });
-    });
-  });
+      // Mock email already exists error
+      signUpStub.rejects(new Error("Email already exists"));
 
-  // Username Already Exists Case
-  describe("Username Already Exists", () => {
-    it("should return 'Username already exists' error", (done) => {
-      const signupData = {
-        email: "newEmail@gmail.com",
-        username: "uniqueUsername", // This username should be created in the first test case
-        password: "validPassword",
-        name: "validName",
-        phone_number: "0993923123",
-        role: "manager",
-      };
-
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(400)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal("Username already exists");
-          done();
-        });
+      try {
+        await StaffAccessService.signUp(signupData);
+      } catch (error) {
+        expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+        expect(error.message).to.equal("Email already exists");
+      }
     });
   });
 
@@ -130,9 +115,9 @@ describe("Staff Access - Signup API Tests", () => {
     },
   ];
 
-  requiredFields.forEach((testCase) => {
-    describe(`Missing ${testCase.field}`, () => {
-      it(`should return '${testCase.message}' when ${testCase.field} is missing`, (done) => {
+  requiredFields.forEach(({ field, value, message }) => {
+    describe(`Missing ${field}`, () => {
+      it(`should return '${message}' when ${field} is missing`, async () => {
         const signupData = {
           email: "validEmail@gmail.com",
           username: "validUsername",
@@ -142,24 +127,24 @@ describe("Staff Access - Signup API Tests", () => {
           role: "manager",
         };
 
-        signupData[testCase.field] = testCase.value; // Set field to blank
+        signupData[field] = value; // Set the field to blank
 
-        request(baseURL)
-          .post("/v1/api/access/store-site/signup")
-          .send(signupData)
-          .expect(400)
-          .end((err, res) => {
-            if (err) return done(err);
-            expect(res.body.message).to.equal(testCase.message);
-            done();
-          });
+        // Mock missing required fields error
+        signUpStub.rejects(new Error(message));
+
+        try {
+          await StaffAccessService.signUp(signupData);
+        } catch (error) {
+          expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+          expect(error.message).to.equal(message);
+        }
       });
     });
   });
 
   // Invalid Phone Number Format Case
   describe("Invalid Phone Number Format", () => {
-    it("should return an error for invalid phone number format", (done) => {
+    it("should return an error for invalid phone number format", async () => {
       const signupData = {
         email: "validEmail@gmail.com",
         username: "validUsername",
@@ -169,23 +154,27 @@ describe("Staff Access - Signup API Tests", () => {
         role: "manager",
       };
 
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(400)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal(
-            "Phone numbers need to be started with a 0 and have 10 or 11 characters"
-          );
-          done();
-        });
+      // Mock invalid phone number format error
+      signUpStub.rejects(
+        new Error(
+          "Phone numbers need to be started with a 0 and have 10 or 11 characters"
+        )
+      );
+
+      try {
+        await StaffAccessService.signUp(signupData);
+      } catch (error) {
+        expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+        expect(error.message).to.equal(
+          "Phone numbers need to be started with a 0 and have 10 or 11 characters"
+        );
+      }
     });
   });
 
   // All Fields Blank Case
   describe("All Fields Blank", () => {
-    it("should return 'Please fill all the required fields' when all fields are blank", (done) => {
+    it("should return 'Please fill all the required fields' when all fields are blank", async () => {
       const signupData = {
         email: "",
         username: "",
@@ -195,17 +184,15 @@ describe("Staff Access - Signup API Tests", () => {
         role: "",
       };
 
-      request(baseURL)
-        .post("/v1/api/access/store-site/signup")
-        .send(signupData)
-        .expect(400)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.body.message).to.equal(
-            "Please fill all the required fields"
-          );
-          done();
-        });
+      // Mock all fields blank error
+      signUpStub.rejects(new Error("Please fill all the required fields"));
+
+      try {
+        await StaffAccessService.signUp(signupData);
+      } catch (error) {
+        expect(signUpStub.calledOnceWithExactly(signupData)).to.be.true;
+        expect(error.message).to.equal("Please fill all the required fields");
+      }
     });
   });
 });

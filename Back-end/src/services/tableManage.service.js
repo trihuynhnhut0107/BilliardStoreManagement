@@ -3,31 +3,47 @@ const { Op } = require("sequelize");
 const BilliardTable = require("../models/BilliardTable");
 const BillDetail = require("../models/BillDetail");
 const { BadRequestError, ServerError } = require("../core/error.response");
+const validator = require("validator");
+const Booking = require("../models/Booking");
 
 class tableManageService {
   static getTableList = async () => {
     const currentTime = new Date().toISOString();
+
+    // Fetch booked billiard tables from BillDetail
     const bookedBillDetails = await BillDetail.findAll({
       where: {
-        itemType: "BilliardTable", // Ensuring only billiard table bookings
+        itemType: "BilliardTable",
         start_time: { [Op.lte]: currentTime },
         end_time: { [Op.gte]: currentTime },
       },
     });
-    console.log("Booked bill details:::", bookedBillDetails);
-    const unavailableTableIds = bookedBillDetails.map(
-      (detail) => detail.itemId
-    );
+
+    // Fetch booked billiard tables from Booking
+    const bookedBookings = await Booking.findAll({
+      where: {
+        start_time: { [Op.lte]: currentTime },
+        end_time: { [Op.gte]: currentTime },
+      },
+    });
+
+    // Merge unavailable table IDs
+    const unavailableTableIds = new Set([
+      ...bookedBillDetails.map((detail) => detail.itemId),
+      ...bookedBookings.map((booking) => booking.table_id),
+    ]);
+
+    // Fetch all billiard tables
     const tableList = await BilliardTable.findAll();
     if (!tableList) {
       throw new BadRequestError("Table list not found");
     }
+
+    // Update table statuses
     const updatedTableList = tableList.map((table) => {
-      if (unavailableTableIds.includes(table.id)) {
-        table.status = "Unavailable";
-      } else {
-        table.status = "Available";
-      }
+      table.status = unavailableTableIds.has(table.id)
+        ? "Unavailable"
+        : "Available";
       return table;
     });
 
@@ -43,6 +59,13 @@ class tableManageService {
   }) => {
     if (!table_type || !stick_quantity || !ball_quantity || !price) {
       throw new BadRequestError("Please fill all the required field");
+    }
+    if (
+      !validator.isInt(String(stick_quantity)) ||
+      !validator.isInt(String(ball_quantity)) ||
+      !validator.isFloat(String(price))
+    ) {
+      throw new BadRequestError("Invalid input");
     }
     const newTable = await BilliardTable.create({
       table_type,

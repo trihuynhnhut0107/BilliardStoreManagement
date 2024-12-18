@@ -12,7 +12,7 @@ const Bill = sequelize.define("Bill", {
     allowNull: false,
   },
   total_price: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
   },
   customer_id: {
