@@ -24,7 +24,7 @@ const BilliardTable = sequelize.define("BilliardTable", {
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM("available", "busy"),
+    type: DataTypes.ENUM("available", "busy", "repairing"),
     allowNull: false,
     defaultValue: "available",
   },

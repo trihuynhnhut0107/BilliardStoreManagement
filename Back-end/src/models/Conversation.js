@@ -16,7 +16,7 @@ const Conversation = sequelize.define("Conversation", {
     allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM("open", "closed"),
+    type: DataTypes.ENUM("open", "handling", "closed"),
     allowNull: false,
     defaultValue: "open",
   },

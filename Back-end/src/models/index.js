@@ -55,6 +55,10 @@ Conversation.belongsTo(Customer, { foreignKey: "customerID" });
 
 Conversation.belongsTo(Staff, { foreignKey: "staffID", allowNull: true });
 
+// Conversation model
+Conversation.hasMany(Message, { foreignKey: "conversationID" });
+
+// Message model
 Message.belongsTo(Conversation, { foreignKey: "conversationID" });
 
 // Sync models with database
