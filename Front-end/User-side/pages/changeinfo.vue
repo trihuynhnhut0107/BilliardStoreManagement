@@ -100,7 +100,6 @@
   
   // Update customer info
   const updateCustomer = async () => {
-    console.log("Before change : ", form.value.phone)
     try {
       const payload = {
         customer_id: Number(customerID),
@@ -115,7 +114,9 @@
       });
   
       alert("Information updated successfully!");
-      router.push("/userhome"); // Redirect after update
+      router.push('/userhome').then(() => {
+        window.location.reload();
+      }); // Redirect after update
     } catch (error) {
       console.error("Error updating customer info:", error);
       alert("Failed to update information. Please try again.");

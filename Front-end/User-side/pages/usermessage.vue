@@ -42,7 +42,7 @@ interface Message {
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
 
-const conversationID = 1;
+const conversationID = 4;
 
 const { data, error } = await useFetch(
   `http://localhost:8080/v1/api/message/get-conversation/${conversationID}`

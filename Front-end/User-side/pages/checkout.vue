@@ -92,7 +92,7 @@
   };
 
   const handlePay = () => {
-    alert("Booking Successfully");
+    alert("Succeeded!");
     navigateTo("/userhome");
   };
 

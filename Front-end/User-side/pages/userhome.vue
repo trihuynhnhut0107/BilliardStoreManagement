@@ -19,12 +19,7 @@
             >
           </li>
           <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
-              >Products</NuxtLink
-            >
-          </li>
-          <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
+            <NuxtLink to="/contact" class="text-lg font-bold text-green-900"
               >Contact</NuxtLink
             >
           </li>
@@ -81,7 +76,7 @@
       <!-- Popular Collections -->
       <section class="text-center py-8">
         <h2 class="font-bold text-green-800 text-4xl mb-8">
-          Popular Collections
+          Available Tables
         </h2>
         <div class="flex justify-center flex-wrap gap-10">
           <!-- Collection Card -->

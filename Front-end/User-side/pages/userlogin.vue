@@ -59,7 +59,8 @@ const handleLogin = async () => {
   if (!result.success) {
     // Display the error message from the response
     errorMessage.value = result.message || "Login failed.";
-    console.error("Login Error:", result.message);
+    alert(errorMessage.value);
+    window.location.reload();
   } else {
     console.log("Login successful, Customer ID:", result.customerID);
 

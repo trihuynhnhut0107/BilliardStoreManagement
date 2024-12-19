@@ -10,19 +10,19 @@
 
         <!-- Navigation links (hide on small screens) -->
         <ul
-          class="hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
+          class="hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24 ">
           <li>
             <NuxtLink to="/userhome" class="text-lg font-bold text-green-900"
               >Home</NuxtLink
             >
           </li>
           <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
-              >Products</NuxtLink
+            <NuxtLink to="/userlogin" class="text-lg font-bold text-green-900"
+              >Login</NuxtLink
             >
           </li>
           <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
+            <NuxtLink to="/contact" class="text-lg font-bold text-green-900"
               >Contact</NuxtLink
             >
           </li>
@@ -90,7 +90,7 @@
 <script>
   const handleUserInfo = () => {
     // Handle user information submission here
-    navigateTo("/userinfo");
+    router.push("/userinfo");
   }
 </script>
 

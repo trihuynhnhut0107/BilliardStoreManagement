@@ -26,7 +26,7 @@ export const useLogin = async (loginData: LoginData): Promise<LoginResponse> => 
 
     if (data.value) {
       const { status, message, metadata } = data.value;
-      if (status === 201) {
+      if (status === 200 || status === 201) {
         return {
           success: true,
           message,
