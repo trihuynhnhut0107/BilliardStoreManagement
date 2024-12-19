@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const { BadRequestError, ServerError } = require("../core/error.response");
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
+const sequelize = require("../configs/sequelize");
 
 class MessagingService {
   static getConversation = async (conversationID) => {
@@ -15,19 +16,75 @@ class MessagingService {
     return messages;
   };
   static getOpenConversations = async () => {
-    const conversations = await Conversation.findAll({
+    const conversationsWithLatestMessages = await Conversation.findAll({
       where: {
         status: "open",
       },
+      include: [
+        {
+          model: Message,
+          attributes: ["id", "messageText", "createdAt"], // Fetch only necessary fields
+          limit: 1, // Fetch only the latest message
+          order: [["createdAt", "DESC"]], // Ensure it's the latest message
+        },
+      ],
     });
-    return conversations;
+    return conversationsWithLatestMessages.map((conversation) => {
+      const latestMessage = conversation.Messages[0]; // Messages is the included array
+      return {
+        id: conversation.id,
+        customerID: conversation.customerID,
+        latestMessage: latestMessage
+          ? {
+              id: latestMessage.id,
+              messageText: latestMessage.messageText,
+              createdAt: latestMessage.createdAt,
+            }
+          : null, // Handle case where no messages exist
+      };
+    });
+  };
+
+  static getConversationWithStaffID = async (staffID) => {
+    const conversationsWithLatestMessages = await Conversation.findAll({
+      where: { staffID: staffID },
+      include: [
+        {
+          model: Message,
+          attributes: ["id", "messageText", "createdAt"], // Fetch only necessary fields
+          limit: 1, // Fetch only the latest message
+          order: [["createdAt", "DESC"]], // Ensure it's the latest message
+        },
+      ],
+    });
+
+    if (!conversationsWithLatestMessages) {
+      throw new Error("No conversations found for the provided staffID.");
+    }
+
+    return conversationsWithLatestMessages.map((conversation) => {
+      const latestMessage = conversation.Messages[0]; // Messages is the included array
+      return {
+        id: conversation.id,
+        staffID: conversation.staffID,
+        customerID: conversation.customerID,
+        latestMessage: latestMessage
+          ? {
+              id: latestMessage.id,
+              messageText: latestMessage.messageText,
+              createdAt: latestMessage.createdAt,
+            }
+          : null, // Handle case where no messages exist
+      };
+    });
   };
 
   // Function to find or create a conversation
   static findOrCreateConversation = async ({
     senderType,
-    senderId,
-    receiverId,
+    senderID,
+    receiverID,
+    conversationID,
   }) => {
     let conversation;
 
@@ -35,7 +92,7 @@ class MessagingService {
       // Find an existing conversation where the customer is the sender and staff is assigned
       conversation = await Conversation.findOne({
         where: {
-          customerId: senderId,
+          customerId: senderID,
           status: "open",
         },
       });
@@ -43,7 +100,7 @@ class MessagingService {
       // If no conversation is found, create a new one for the customer
       if (!conversation) {
         conversation = await Conversation.create({
-          customerID: senderId,
+          customerID: senderID,
           staffID: null, // No staff assigned initially
           updatedAt: new Date(),
         });
@@ -52,14 +109,17 @@ class MessagingService {
       // If sender is staff, look for a conversation with the specified customer
       conversation = await Conversation.findOne({
         where: {
-          customerID: receiverId, // Assume receiverId is customerId
-          status: "open",
+          id: conversationID, // Assume receiverID is customerId
         },
       });
 
       // If conversation exists but has null staffId, update it with sender's staffId
       if (conversation && !conversation.staffID) {
-        await conversation.update({ staffID: senderId, updatedAt: new Date() });
+        await conversation.update({
+          staffID: senderID,
+          status: "handling",
+          updatedAt: new Date(),
+        });
       }
     }
 
@@ -74,16 +134,18 @@ class MessagingService {
   // Function to send a message
   static sendMessage = async ({
     senderType,
-    senderId,
-    receiverId,
+    senderID,
+    receiverID,
+    conversationID,
     messageText,
   }) => {
-    if (!senderId) throw new BadRequestError("Sender ID cannot be null");
+    if (!senderID) throw new BadRequestError("Sender ID cannot be null");
     // Find or create a conversation
     const conversation = await this.findOrCreateConversation({
       senderType,
-      senderId,
-      receiverId,
+      senderID,
+      receiverID,
+      conversationID,
     });
 
     // Ensure that conversation ID and sender ID are valid
@@ -94,7 +156,7 @@ class MessagingService {
     const message = await Message.create({
       conversationID: conversation.id,
       senderType,
-      senderID: senderId,
+      senderID: senderID,
       messageText,
       isRead: false,
     });
@@ -108,7 +170,7 @@ class MessagingService {
     const newMessageData = {
       conversationID: conversation.id,
       senderType: senderType,
-      senderID: senderId,
+      senderID: senderID,
       messageText,
       createdAt: message.createdAt,
       isRead: false,

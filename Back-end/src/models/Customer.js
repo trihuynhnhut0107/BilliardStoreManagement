@@ -28,6 +28,11 @@ const Customer = sequelize.define("Customer", {
     allowNull: false,
     defaultValue: 0,
   },
+  status: {
+    type: DataTypes.ENUM("Active", "Suspended", "Deactivated"),
+    allowNull: false,
+    defaultValue: "Active",
+  },
 });
 
 module.exports = Customer;

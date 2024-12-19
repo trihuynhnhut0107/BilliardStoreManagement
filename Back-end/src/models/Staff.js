@@ -23,6 +23,11 @@ const Staff = sequelize.define("Staff", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  status: {
+    type: DataTypes.ENUM("Active", "Terminated", "On leave", "Suspended"),
+    allowNull: false,
+    defaultValue: "Active",
+  },
 });
 
 module.exports = Staff;
