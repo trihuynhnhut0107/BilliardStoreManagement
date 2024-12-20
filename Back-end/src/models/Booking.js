@@ -23,6 +23,11 @@ const Booking = sequelize.define("Booking", {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  status: {
+    type: DataTypes.ENUM("booked", "cancelled", "completed"),
+    allowNull: false,
+    defaultValue: "booked",
+  },
 });
 
 module.exports = Booking;
