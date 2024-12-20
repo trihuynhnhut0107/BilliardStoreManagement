@@ -83,48 +83,33 @@ class MessagingService {
   static findOrCreateConversation = async ({
     senderType,
     senderID,
-    receiverID,
     conversationID,
   }) => {
-    let conversation;
-
     if (senderType === "customer") {
-      // Find an existing conversation where the customer is the sender and staff is assigned
-      conversation = await Conversation.findOne({
-        where: {
-          customerId: senderID,
-          status: "open",
-        },
-      });
-
-      // If no conversation is found, create a new one for the customer
-      if (!conversation) {
-        conversation = await Conversation.create({
+      const conversation =
+        (await Conversation.findOne({
+          where: { customerId: senderID, status: "open" }, // Find open conversation with customer ID
+        })) ||
+        (await Conversation.create({
+          // Create a new conversation if none exists
           customerID: senderID,
-          staffID: null, // No staff assigned initially
+          staffID: null,
           updatedAt: new Date(),
-        });
-      }
-    } else {
-      // If sender is staff, look for a conversation with the specified customer
-      conversation = await Conversation.findOne({
-        where: {
-          id: conversationID, // Assume receiverID is customerId
-        },
-      });
-
-      // If conversation exists but has null staffId, update it with sender's staffId
-      if (conversation && !conversation.staffID) {
-        await conversation.update({
-          staffID: senderID,
-          status: "handling",
-          updatedAt: new Date(),
-        });
-      }
+        }));
+      return conversation;
     }
 
-    // If no conversation exists and sender is not a customer, throw an error
-    if (!conversation && senderType !== "customer") {
+    const conversation = await Conversation.findOne({
+      where: { id: conversationID },
+    });
+
+    if (conversation && !conversation.staffID) {
+      await conversation.update({
+        staffID: senderID,
+        status: "handling",
+        updatedAt: new Date(),
+      });
+    } else if (!conversation) {
       throw new BadRequestError("No existing conversation found");
     }
 
@@ -140,47 +125,41 @@ class MessagingService {
     messageText,
   }) => {
     if (!senderID) throw new BadRequestError("Sender ID cannot be null");
-    // Find or create a conversation
-    const conversation = await this.findOrCreateConversation({
-      senderType,
-      senderID,
-      receiverID,
-      conversationID,
-    });
 
-    // Ensure that conversation ID and sender ID are valid
-    if (!conversation.id)
-      throw new BadRequestError("Conversation ID cannot be null");
+    const conversation = conversationID
+      ? await Conversation.findOne({ where: { id: conversationID } })
+      : await this.findOrCreateConversation({
+          senderType,
+          senderID,
+          conversationID,
+        });
 
-    // Create the message
+    if (!conversation)
+      throw new BadRequestError("Conversation not found or created");
+
     const message = await Message.create({
       conversationID: conversation.id,
       senderType,
-      senderID: senderID,
+      senderID,
       messageText,
       isRead: false,
     });
+    if (!message) throw new ServerError("Message not created");
 
-    if (!message) throw new ServerError("Message is not created!");
-
-    // Update the conversation's last activity timestamp
     await conversation.update({ updatedAt: new Date() });
 
-    // Emit the new message to the conversation's room via Socket.IO
-    const newMessageData = {
+    global.io.to(`conversation_${conversation.id}`).emit("newMessage", {
       conversationID: conversation.id,
-      senderType: senderType,
-      senderID: senderID,
+      senderType,
+      senderID,
       messageText,
       createdAt: message.createdAt,
       isRead: false,
+    });
+
+    return {
+      conversationID: conversation.id,
     };
-
-    global.io
-      .to(`conversation_${conversation.id}`)
-      .emit("newMessage", newMessageData);
-
-    return "Message sent successfully";
   };
 }
 

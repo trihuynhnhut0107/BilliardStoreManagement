@@ -4,7 +4,8 @@ const MessagingService = require("../services/messaging.service");
 class MessagingController {
   sendMessage = async (req, res, next) => {
     new CREATED({
-      message: await MessagingService.sendMessage(req.body),
+      message: "Message sent successfully",
+      metadata: await MessagingService.sendMessage(req.body),
     }).send(res);
   };
 
