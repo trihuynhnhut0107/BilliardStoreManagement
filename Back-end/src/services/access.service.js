@@ -48,9 +48,14 @@ class StaffAccessService {
         "Phone numbers need to be started with a 0 and have 10 or 11 characters"
       );
     }
-    const holderStaff = await Account.findOne({ where: { email: email } });
+    let holderStaff;
+    holderStaff = await Account.findOne({ where: { email: email } });
     if (holderStaff) {
-      throw new UserExistError("Email already exists");
+      throw new BadRequestError("Email already exists");
+    }
+    holderStaff = await Account.findOne({ where: { username: username } });
+    if (holderStaff) {
+      throw new BadRequestError("Username already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const newStaffAccount = await Account.create({

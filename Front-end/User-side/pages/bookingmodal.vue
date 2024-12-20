@@ -110,6 +110,11 @@ const formData = ref({
   endTime: "",
 });
 
+const timeData = ref({
+  start_time: null,
+  end_time: null,
+});
+
 const props = defineProps({
   table: {
     type: Object,
@@ -122,8 +127,16 @@ const props = defineProps({
   },
 });
 
+// Get the user ID from localStorage
+const customerID = Number(localStorage.getItem('customerID') || 0); // Default to 0 if not set
+
+const tableId = props.table.id;
+
+
+
 const emit = defineEmits();
 const router = useRouter();
+
 
 const closeModal = () => {
   emit("close");
@@ -148,57 +161,65 @@ const validateTimes = () => {
   }
 };
 
-const setTime = (timeData) => {
-  if (
-    formData.value.date &&
-    formData.value.startTime &&
-    formData.value.endTime
-  ) {
-    timeData.start_time = new Date(
-      `${formData.value.date}T${formData.value.startTime}:00`
-    );
-    timeData.end_time = new Date(
-      `${formData.value.date}T${formData.value.endTime}:00`
-    );
-  }
-};
+
 
 const formatToCustomISO = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-};
+  // Check if the date is valid before attempting to format
+  const day = String(date.getDate()).padStart(2, "0"); // Get day of the month (01-31)
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (01-12), note: months are 0-based
+  const year = date.getFullYear(); // Get full year (YYYY)
+  
+  const hours = String(date.getHours()).padStart(2, "0"); // Get hours (00-23)
+  const minutes = String(date.getMinutes()).padStart(2, "0"); // Get minutes (00-59)
+  const seconds = String(date.getSeconds()).padStart(2, "0"); // Get seconds (00-59)
 
-const formatToCheckout = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  // Return the formatted date in the format: DD/MM/YYYY HH:MM:SS
+  return `${hours}:${minutes}:${seconds} ${month}/${day}/${year} `;
 };
 
 const calculatePrice = () => {
-  if (timeData.start_time && timeData.end_time) {
-    const durationInMilliseconds = timeData.end_time - timeData.start_time;
+  if (formData.value.startTime && formData.value.endTime) {
+    const startDateTime = new Date(`${formData.value.date}T${formData.value.startTime}`);
+    const endDateTime = new Date(`${formData.value.date}T${formData.value.endTime}`);
+
+    // Calculate duration in hours
+    const durationInMilliseconds = endDateTime - startDateTime;
     const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
-    price.value = Math.max(durationInHours * props.table.price, 0); // Ensure non-negative price
+
+    // Calculate price
+    price.value = Math.max(durationInHours * props.table.price, 0);
+  } else {
+    console.error("Start time or end time is missing.");
+    price.value = 0;
   }
 };
 
+
 const confirmBooking = async () => {
   validateTimes();
-  setTime(timeData);
-  calculatePrice();
 
-  const formattedStartTime = formatToCustomISO(timeData.start_time);
-  const formattedEndTime = formatToCustomISO(timeData.end_time);
+  // Check for missing data
+  if (!customerID) {
+    console.error("Customer ID is missing");
+    return;
+  }
+  if (!tableId) {
+    console.error("Table ID is missing");
+    return;
+  }
+  if (!formData.value.date || !formData.value.startTime || !formData.value.endTime) {
+    console.error("Date, start time, or end time is missing");
+    return;
+  }
+
+  // Format time data
+  const startDate = new Date(`${formData.value.date}T${formData.value.startTime}:00`);
+  const endDate = new Date(`${formData.value.date}T${formData.value.endTime}:00`);
+
+  const formattedStartTime = formatToCustomISO(startDate);
+  const formattedEndTime = formatToCustomISO(endDate);
+
+  calculatePrice();
 
   if (error.value) {
     return;
@@ -206,39 +227,47 @@ const confirmBooking = async () => {
 
   try {
     const { data, error: fetchError } = await useFetch(
-      "http://localhost:8080/v1/api/bill-manage/create-bill",
+      "http://localhost:8080/v1/api/booking/create-booking",
       {
         method: "POST",
-        body: JSON.stringify([
+        body: JSON.stringify(
           {
-            itemType: "BilliardTable",
-            itemId: 1,
+            table_id: tableId,
+            customer_id: customerID,
             start_time: formattedStartTime,
             end_time: formattedEndTime,
           },
-        ]),
+        ),
       }
     );
+    
+    if (data) { // Adjust according to actual response
+      console.log("Navigating to checkout page...");
 
+      router.push({
+        path: '/checkout',
+        query: {
+          name: props.table.name,
+          id: props.table.id,
+          price: price.value,
+          description: props.table.description || 'No description',
+          sticks: sticks.value,
+          type: props.table.type || 'Standard',
+          start_time: formattedStartTime,
+          end_time: formattedEndTime,
+        },
+      });
+
+    }
     if (fetchError) {
       console.log(fetchError);
     }
 
-    if (data.value) {
-      router.push(
-        `/checkout?name=${props.table.name}&id=${props.table.id}&price=${
-          price.value
-        }&description=${props.table.description}&sticks=${sticks.value}&type=${
-          props.table.table_type
-        }&start_time=${formatToCheckout(
-          timeData.start_time
-        )}&end_time=${formatToCheckout(timeData.end_time)}`
-      );
-    }
   } catch (err) {
     console.error(err);
   }
 };
+
 </script>
 
 <style scoped></style>

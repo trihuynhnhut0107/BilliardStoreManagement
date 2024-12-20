@@ -1,14 +1,36 @@
 function stringToUTCDate(dateString) {
-  const [time, date] = dateString.split(" ");
-  const [hours, minutes, seconds] = time.split(":").map(Number);
-  const [day, month, year] = date.split("/").map(Number);
+  // Regular expression to validate and capture components in MM/DD/YYYY format
+  const regex = /^(\d{2}):(\d{2}):(\d{2}) (\d{2})\/(\d{2})\/(\d{4})$/;
 
-  // Create a date object in the local timezone
-  const localDate = new Date(year, month - 1, day, hours, minutes, seconds);
+  // Test the input string against the regex
+  const match = regex.exec(dateString);
+  if (!match) {
+    return false; // Return false if the format is invalid
+  }
 
-  // Convert the local timezone (assumed GMT+7) to UTC
-  const utcDate = new Date(localDate.getTime() - 7 * 60 * 60 * 1000);
+  // Extract time and date components from the regex match
+  const [, hours, minutes, seconds, month, day, year] = match.map(Number);
 
-  return utcDate;
+  // Validate the extracted components (ranges of values)
+  if (
+    hours > 23 ||
+    hours < 0 ||
+    minutes > 59 ||
+    minutes < 0 ||
+    seconds > 59 ||
+    seconds < 0 ||
+    day > 31 ||
+    day < 1 ||
+    month > 12 ||
+    month < 1
+  ) {
+    return false; // Return false if any component is out of range
+  }
+
+  // Create a Date object assuming GMT+7 (manual adjustment)
+  const localTime = Date.UTC(year, month - 1, day, hours, minutes, seconds);
+  const utcTime = localTime - 7 * 60 * 60 * 1000; // Subtract 7 hours for UTC
+
+  return new Date(utcTime); // Return as a UTC Date object
 }
 module.exports = stringToUTCDate;

@@ -24,11 +24,14 @@ class BookingService {
     start_time,
     end_time,
   }) => {
+    if (!table_id || !customer_id || !start_time || !end_time) {
+      throw new BadRequestError("Please fill all the required fields");
+    }
     const foundedTable = await BilliardTable.findOne({
       where: { id: table_id },
     });
     if (!foundedTable) {
-      throw new BadRequestError("Billiard Table id not found");
+      throw new BadRequestError("Invalid table ID");
     }
     const foundedCustomer = await Customer.findOne({
       where: { id: customer_id },
@@ -39,6 +42,10 @@ class BookingService {
 
     const startTime = stringToUTCDate(start_time);
     const endTime = stringToUTCDate(end_time);
+
+    if (startTime === false || endTime === false) {
+      throw new BadRequestError("Invalid date format");
+    }
 
     // Check if the table is available for the requested time span
     const existingBooking = await Booking.findOne({
@@ -73,6 +80,8 @@ class BookingService {
       start_time: startTime,
       end_time: endTime,
     });
+    global.io.emit("New booking");
+
     if (!newBooking) {
       throw new ServerError("Booking not created");
     }

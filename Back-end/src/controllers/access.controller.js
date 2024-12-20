@@ -1,6 +1,6 @@
 "use strict";
 
-const { CREATED } = require("../core/success.response");
+const { CREATED, OK } = require("../core/success.response");
 const {
   StaffAccessService,
   CustomerAccessService,
@@ -17,7 +17,7 @@ class AccessController {
     }).send(res);
   };
   staffLogin = async (req, res, next) => {
-    new CREATED({
+    new OK({
       message: "Login successfully",
       metadata: await StaffAccessService.login(req.body),
       options: {
@@ -35,7 +35,7 @@ class AccessController {
     }).send(res);
   };
   customerLogin = async (req, res, next) => {
-    new CREATED({
+    new OK({
       message: "Login OK!",
       metadata: await CustomerAccessService.login(req.body),
       options: {

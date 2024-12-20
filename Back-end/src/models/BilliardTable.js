@@ -20,11 +20,11 @@ const BilliardTable = sequelize.define("BilliardTable", {
     allowNull: false,
   },
   price: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM("available", "busy"),
+    type: DataTypes.ENUM("available", "busy", "repairing"),
     allowNull: false,
     defaultValue: "available",
   },
