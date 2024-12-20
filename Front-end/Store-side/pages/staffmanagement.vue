@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex justify-between items-center bg-white w-full py-2 px-10">
-            <h1 class="font-bold text-xl">Staff List</h1>
-            <div class="flex items-center w-max rounded-2xl border px-3 py-1">
+            <h1 class="line-clamp-1 font-bold text-xl">Staff List</h1>
+            <div class="flex items-center w-fit shrink rounded-2xl border px-3 py-1">
                 <input placeholder="Search" v-model="searchQuery"
                     class="outline-none border-none bg-transparent pr-20 text-xs" />
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16">
@@ -10,15 +10,16 @@
                         d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                 </svg>
             </div>
-            <div class="flex items-center w-max rounded-2xl border px-3 gap-2">
+            <!-- <div class="flex items-center w-max rounded-2xl border px-3 gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="#000" viewBox="0 0 16 16">
                     <path
                         d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z" />
                 </svg>
                 <p>Active</p>
-            </div>
+            </div> -->
             <div class="flex gap-2 items-center">
-                <NuxtLink to="/addstaff" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">Add
+                <NuxtLink to="/addstaff"
+                    class="line-clamp-1 w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">Add
                     staff</NuxtLink>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#ff0000" viewBox="0 0 16 16">
                     <path
@@ -87,7 +88,7 @@
 
         </div>
         <!-- Pagination -->
-        <div class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
+        <div class="flex justify-center items-center gap-2 w-full py-2 px-10 rounded bg-white">
             <button @click="currentPage > 1 && currentPage--"
                 :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }" class="px-3 py-2 rounded">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
@@ -121,11 +122,11 @@ definePageMeta({
 const tables = ref([]);
 const searchQuery = ref("");
 const currentPage = ref(1);
-const itemsPerPage = 4;
+const itemsPerPage = 6;
 
-onMounted(async () => {
-    await refetchData();
-});
+const toUpperCase = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 // Function to refetch data
 const refetchData = async () => {
@@ -136,15 +137,17 @@ const refetchData = async () => {
     if (newData.value && newData.value.status === 201) {
         tables.value = newData.value.metadata.map((item) => ({
             id: item.id,
-            name: item.name,
+            name: toUpperCase(item.name),
             phone_number: item.phone_number,
-            role: item.role,
+            role: toUpperCase(item.role),
             selected: false,
         }));
     } else {
         console.error("Error fetching table data:", error.value);
     }
 };
+
+refetchData();
 
 // Computed property to filter tables based on search query
 const filteredTables = computed(() => {
@@ -224,6 +227,7 @@ watch(searchQuery, () => {
 const editTable = (id) => {
     router.push(`/editstaff?id=${id}`);
 };
+
 </script>
 
 <style scoped></style>

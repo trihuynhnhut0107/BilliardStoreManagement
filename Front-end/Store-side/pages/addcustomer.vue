@@ -2,7 +2,7 @@
     <div class="flex flex-col gap-4">
         <div class="flex justify-between items-center bg-white w-full py-2 px-10 rounded"
             style="box-shadow: 0px 0px 3px #a4a4a4">
-            <h1 class="font-bold text-xl">Add New Staff</h1>
+            <h1 class="font-bold text-xl">Add New Customer</h1>
         </div>
         <form @submit.prevent class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between"
             style="box-shadow: 0px 0px 3px #a4a4a4">
@@ -17,11 +17,6 @@
                     </label>
                     <input id="phoneNumber" v-model="formData.phone_number" type="text" required
                         placeholder="Phone number" class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
-                </div>
-                <div class="flex items-center gap-2">
-                    <label for="role" class="text-base font-semibold w-full text-[#3A6351]">Role: </label>
-                    <input id="role" v-model="formData.role" type="text" required placeholder="Role"
-                        class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
                 <div class="flex items-center gap-2">
                     <label for="email" class="text-base font-semibold w-full text-[#3A6351]">Email: </label>
@@ -45,7 +40,7 @@
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <NuxtLink to="/staffmanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
                 Cancel</NuxtLink>
-            <button v-on:click="createStaff"
+            <button v-on:click="createCustomer"
                 class="w-fit text-[#3A6351] py-1 px-4 bg-white text-sm font-medium rounded border border-[#3A6351] box-border">Create</button>
         </div>
     </div>
@@ -65,7 +60,6 @@ const formData = ref({
     password: '',
     name: '',
     phone_number: '',
-    role: ''
 });
 
 const validateEmail = (email) => {
@@ -96,9 +90,6 @@ const isValidInput = () => {
     } if (!formData.value.username) {
         toast.error("Username is required");
         return false;
-    } if (!formData.value.role) {
-        toast.error("Role is required");
-        return false;
     } if (!validateEmail(formData.value.email)) {
         toast.error("Please enter a valid email address");
         return false;
@@ -113,12 +104,12 @@ const toUpperCase = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const createStaff = async () => {
+const createCustomer = async () => {
     let check = isValidInput();
     if (!check) {
         return
     }
-    const { data, error } = await useFetch('http://localhost:8080/v1/api/access/store-site/signup', {
+    const { data, error } = await useFetch('http://localhost:8080/v1/api/access/customer-site/signup', {
         method: 'POST',
         body: JSON.stringify({
             username: formData.value.username,
@@ -126,13 +117,12 @@ const createStaff = async () => {
             password: formData.value.password,
             name: formData.value.name,
             phone_number: formData.value.phone_number,
-            role: toUpperCase(formData.value.role) || 'Staff',
         }),
     })
     try {
         if (data.value.status === 201) {
-            console.log('Registered Staff Successfully:')
-            navigateTo("/staffmanagement")
+            console.log('Registered Customer Successfully:')
+            navigateTo("/customermanagement")
         }
     } catch (err) {
         toast.error("Email already exists", {

@@ -1,13 +1,13 @@
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex items-center bg-white w-full py-2 px-10 rounded gap-6" style="box-shadow: 0px 0px 3px #a4a4a4">
-            <NuxtLink to="/staffmanagement" class="text-[#3A6351] font-medium text-sm">
+            <NuxtLink to="/customermanagement" class="text-[#3A6351] font-medium text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
                         d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                 </svg>
             </NuxtLink>
-            <h1 class="font-bold text-xl">Staff {{ staffID }} Detail</h1>
+            <h1 class="font-bold text-xl">Customer {{ customerID }} Detail</h1>
         </div>
         <div class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between items-center"
             style="box-shadow: 0px 0px 3px #a4a4a4">
@@ -24,8 +24,8 @@
                         placeholder="Phone number" class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
                 <div class="flex items-center gap-2">
-                    <label for="role" class="text-base font-semibold w-full text-[#3A6351]">Role: </label>
-                    <input id="role" v-model="formData.role" type="text" required placeholder="Role"
+                    <label for="email" class="text-base font-semibold w-full text-[#3A6351]">Email: </label>
+                    <input id="email" v-model="formData.email" type="text" required placeholder="Email"
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
             </div>
@@ -33,7 +33,8 @@
         </div>
         <div class="flex justify-end items-center gap-2 bg-white w-full py-2 px-10 rounded"
             style="box-shadow: 0px 0px 3px #a4a4a4">
-            <NuxtLink to="/staffmanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
+            <NuxtLink to="/customermanagement"
+                class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
                 Cancel</NuxtLink>
             <button @click="editTable"
                 class="w-fit text-[#3A6351] py-1 px-4 bg-white text-sm font-medium rounded border border-[#3A6351] box-border">Submit</button>
@@ -49,16 +50,16 @@ definePageMeta({
     layout: 'home-layout'
 });
 
-let staffID = ref('');
+let customerID = ref('');
 
 const route = useRoute();
-staffID = route.query.id
+customerID = route.query.id
 
 const formData = ref({
-    id: staffID,
+    id: customerID,
     name: '',
     phone_number: '',
-    role: '',
+    email: '',
 })
 
 const toUpperCase = (str) => {
@@ -67,19 +68,13 @@ const toUpperCase = (str) => {
 
 const refetchData = async () => {
     const { data, error } = await useFetch(
-        `http://localhost:8080/v1/api/staff-manage/staff/${staffID}`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
+        `http://localhost:8080/v1/api/customer-manage/customer/${customerID}`
     );
 
     if (data.value && data.value.status === 201) {
         formData.value.name = toUpperCase(data.value.metadata.name);
         formData.value.phone_number = data.value.metadata.phone_number;
-        formData.value.role = toUpperCase(data.value.metadata.role);
+        formData.value.email = toUpperCase(data.value.metadata.email);
     } else {
         console.error("Error fetching table data:", error.value);
     }
@@ -88,19 +83,19 @@ const refetchData = async () => {
 refetchData();
 
 const editTable = async () => {
-    const { data, error } = await useFetch(`http://localhost:8080/v1/api/staff-manage/update-staff`, {
+    const { data, error } = await useFetch(`http://localhost:8080/v1/api/customer-manage/update-customer`, {
         method: 'POST',
         body: JSON.stringify({
-            staff_id: staffID,
+            customer_id: customerID,
             name: formData.value.name,
-            phone_number: formData.value.phone_number,
-            role: formData.value.role,
+            phone: formData.value.phone_number,
+            email: formData.value.email,
         }),
     })
 
     if (data.value && data.value.status === 201) {
-        toast.success('Edit staff successfully');
-        navigateTo('/staffmanagement');
+        toast.success('Edit customer successfully');
+        navigateTo('/customermanagement');
     } else {
         console.error("Error fetching table data:", error.value);
     }

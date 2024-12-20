@@ -63,8 +63,8 @@ const login = async () => {
             toast.success('Login Successfully', {
                 autoClose: 3000,
             })
-            console.log('Login Successfully:')
-            navigateTo("/staff")
+            localStorage.setItem('staffID', data.value.metadata.staffID)
+            navigateTo("/admininformation")
         }
     } catch (err) {
         toast.error('Login Fail', {

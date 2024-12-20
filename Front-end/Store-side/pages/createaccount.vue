@@ -40,7 +40,7 @@ const formData = ref({
   password: '',
   name: '',
   phone_number: '',
-  role: 'staff'
+  role: 'Staff'
 });
 
 const confirmPassword = ref('')
