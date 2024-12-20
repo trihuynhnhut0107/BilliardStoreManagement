@@ -1,118 +1,80 @@
 <template>
-  <div class="flex flex-col gap-6 flex-1">
-    <div class="flex justify-between bg-white px-10 py-2">
-      <h2 class="text-2xl font-bold text-nowrap">Table List</h2>
-      <div class="flex items-center w-max rounded-2xl border px-3">
-        <!-- Search Input -->
-        <input v-model="searchQuery" placeholder="Search" class="outline-none border-none bg-transparent pr-20 text-xs"
-          @keydown="filterTables" />
-        <img src="/Search.svg" class="w-3 cursor-pointer" />
-      </div>
-      <div class="flex gap-4">
-        <button @click="handleToggleCreatetable"
-          class="cursor-pointer bg-[#3A6351] text-white rounded text-xs text-nowrap text-center px-2 font-bold">
-          Add Table
-        </button>
-        <img @click="deleteSelectedTable" src="/Trash.svg" class="w-4 cursor-pointer" />
-      </div>
+    <div class="flex flex-col h-1/2 p-6 bg-gray-100">
+        <div class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+            <div v-for="(msg, index) in messages" :key="index" class="mb-2">
+                <div :class="msg.isOwn ? 'text-right' : 'text-left'">
+                    <p :class="msg.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                        " class="inline-block px-4 py-2 rounded-lg max-w-xs">
+                        {{ msg.text }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex">
+            <input v-model="newMessage" type="text" placeholder="Type a message"
+                class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
+            <button @click="sendMessage" class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
+                Send
+            </button>
+        </div>
     </div>
-    <div class="relative bg-white">
-      <div class="max-h-[300px] overflow-y-auto">
-        <table class="w-full border-collapse border-none">
-          <thead class="sticky top-0 bg-white border-b border-[#ECF0F2] border-solid">
-            <tr>
-              <th class="p-2 w-[50px]"></th>
-              <th class="p-2 w-[80px]">ID</th>
-              <th class="p-2 w-[150px]">Type</th>
-              <th class="p-2 w-[100px]">Price</th>
-              <th class="p-2 w-[100px]">Status</th>
-              <th class="p-2 w-[80px]">Edit</th>
-              <th class="p-2 w-[80px]">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(table, index) in filteredTables" :key="index"
-              class="hover:bg-gray-50 border-b border-[#ECF0F2] last:border-none">
-              <td class="p-2 w-[50px] text-center align-middle">
-                <input type="checkbox" v-model="table.selected"
-                  class="cursor-pointer rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
-              </td>
-              <td class="p-2 w-[80px] text-center align-middle">
-                {{ table.id }}
-              </td>
-              <td class="p-2 w-[150px] text-center align-middle">
-                {{ table.table_type }}
-              </td>
-              <td class="p-2 w-[100px] text-center align-middle">
-                {{ table.price }}
-              </td>
-              <td class="p-2 w-[100px] text-center align-middle" :class="{
-                'text-[#00229D]': table.status === 'Repairing',
-                'text-[#FF0000]': table.status === 'Unavailable',
-                'text-[#0CB000]': table.status === 'Available',
-              }">
-                {{ table.status }}
-              </td>
-              <td class="p-2 w-[80px] text-center align-middle">
-                <img @click="editTable(table.id)" src="/Edit.svg" class="cursor-pointer w-4 mx-auto" />
-              </td>
-              <td class="p-2 w-[80px] text-center align-middle">
-                <img @click="deleteTable(table.id)" src="/Trash.svg" class="cursor-pointer w-4 mx-auto" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from "vue";
+<script setup lang="ts">
+const { socket } = useSocket();
 
-const tables = ref([]);
-const searchQuery = ref("");
+interface Message {
+    text: string;
+    isOwn: boolean;
+}
+const messages = ref<Message[]>([]);
+const newMessage = ref<string>("");
 
-// Fetch data from API
-const { data, error, status } = useFetch(
-  "http://localhost:8080/v1/api/table-manage/get-all-tables"
+const conversationID = 1;
+
+const { data, error } = await useFetch(
+    `http://localhost:8080/v1/api/message/get-conversation/${conversationID}`
 );
 
-onMounted(() => {
-  if (data.value && data.value.status === 201) {
-    tables.value = data.value.metadata.map((item) => ({
-      id: item.id,
-      table_name: `Table ${item.id}`,
-      table_type: uppercaseFirst(item.table_type),
-      stick_quantity: item.stick_quantity,
-      ball_quantity: item.ball_quantity,
-      price: item.price,
-      status: uppercaseFirst(String(item.status)),
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      selected: false,
+if (data.value) {
+    const fetchedMessage = data.value.metadata.map((msg: any) => ({
+        text: msg.messageText,
+        isOwn: msg.senderType === "staff" ? true : false,
     }));
-    console.log(tables.value);
-  } else {
-    console.error("Error fetching table data:", error.value);
-  }
-});
+    messages.value.push(...fetchedMessage);
+} else if (error.value) {
+    console.error("Failed to fetch messages:", error.value);
+}
 
-// Helper function to uppercase first letter
-const uppercaseFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-
-// Computed property to filter tables based on search query
-const filteredTables = computed(() => {
-  return tables.value.filter((table) => {
-    return (
-      table.id.toString().includes(searchQuery.value) ||
-      table.table_type
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      table.price.toString().includes(searchQuery.value) ||
-      table.status.toLowerCase().includes(searchQuery.value.toLowerCase())
+const sendMessage = async () => {
+    const { data } = await useFetch(
+        "http://localhost:8080/v1/api/message/send-message",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                conversationId: conversationID, // or the existing conversation ID
+                senderType: "customer",
+                senderId: 1, // Assuming this is a valid customer ID
+                receiverId: 1,
+                messageText: newMessage.value,
+            }),
+        }
     );
-  });
+    newMessage.value = "";
+    console.log(data.value);
+};
+
+onMounted(() => {
+    socket.emit("joinConversation", { conversationID: conversationID });
+    // Assuming `socket` is your Socket.IO client instance
+    socket.on("newMessage", (message) => {
+        const newMessage = {
+            text: message.messageText,
+            isOwn: message.senderType === "staff",
+        };
+        messages.value = [...messages.value, newMessage];
+    });
 });
 </script>
 

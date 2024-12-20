@@ -29,14 +29,8 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css'
 
 definePageMeta({
-    layout: 'footnote'
+    layout: 'footer-layout'
 })
-
-// onMounted(
-//     () => toast.success('Registered User Successfully:', {
-//         autoClose: 3000,
-//     })
-// )
 
 const formData = ref({
     username: '',
@@ -69,8 +63,8 @@ const login = async () => {
             toast.success('Login Successfully', {
                 autoClose: 3000,
             })
-            console.log('Login Successfully:')
-            navigateTo("/staff")
+            localStorage.setItem('staffID', data.value.metadata.staffID)
+            navigateTo("/admininformation")
         }
     } catch (err) {
         toast.error('Login Fail', {
