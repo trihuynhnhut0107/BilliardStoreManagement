@@ -98,6 +98,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
 
 const error = ref("");
 const price = ref(10);
@@ -127,11 +128,14 @@ const props = defineProps({
   },
 });
 
-// Get the user ID from localStorage
-const customerID = Number(localStorage.getItem('customerID') || 0); // Default to 0 if not set
+// Get the user ID from Cookie
+const getCustomerID = () => {
+  const customerID = Cookies.get("customerID");
+  return customerID ? Number(customerID) : null; // Convert to Number, or return null if it doesn't exist
+};
+
 
 const tableId = props.table.id;
-
 
 
 const emit = defineEmits();
@@ -197,6 +201,8 @@ const calculatePrice = () => {
 
 const confirmBooking = async () => {
   validateTimes();
+
+  const customerID = getCustomerID();
 
   // Check for missing data
   if (!customerID) {

@@ -55,9 +55,16 @@
   import DefaultLayout from "~/layout/default.vue";
   import { ref, computed, onMounted } from "vue";
   import { useRoute } from "vue-router";
+  import Cookies from 'js-cookie';
 
   const route = useRoute();
-  const customerID = localStorage.getItem("customerID");
+  // Get the user ID from Cookie
+  const getCustomerID = () => {
+    const customerID = Cookies.get("customerID");
+    return customerID ? Number(customerID) : null; // Convert to Number, or return null if it doesn't exist
+  };
+  
+  const customerID = getCustomerID();
 
   // User info
   const userInfo = ref(null);
