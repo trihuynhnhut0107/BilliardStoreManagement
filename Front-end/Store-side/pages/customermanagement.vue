@@ -85,8 +85,8 @@
                     </tr>
                 </tbody>
             </table>
-
         </div>
+        
         <!-- Pagination -->
         <div class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
             <button @click="currentPage > 1 && currentPage--"

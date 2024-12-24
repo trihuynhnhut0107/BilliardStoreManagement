@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="flex justify-end mb-10">
-          <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded" @click="handlePay">
+          <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded pay" @click="handlePay">
             Pay
           </button>
         </div> 

@@ -1,7 +1,7 @@
 import { Selector, ClientFunction } from 'testcafe';
 
 fixture`User Info Page`
-    .page`http://localhost:3000/userlogin`; // Replace with your actual application URL
+    .page`http://localhost:3001/userlogin`; // Replace with your actual application URL
 
 // Helper selectors for login
 const usernameInput = Selector('input[placeholder="Username"]');
@@ -24,8 +24,8 @@ test('Customer login, double-click on user info button and open Change Info moda
 
     // Step 1: Log in
     await t
-        .typeText(usernameInput, 'testuser12345') // Replace with valid test credentials
-        .typeText(passwordInput, 'testuser12345')
+        .typeText(usernameInput, 'testuser1') // Replace with valid test credentials
+        .typeText(passwordInput, 'testuser1')
         .click(loginButton);
 
     // Step 2: Verify successful redirection to the home page
@@ -36,12 +36,12 @@ test('Customer login, double-click on user info button and open Change Info moda
     // Step 3: Verify the dashboard title is visible
     await t
         .expect(dashboardTitle.exists)
-        .ok('Dashboard title is not visible after login', { timeout: 4000 })
+        .ok('Dashboard title is not visible after login')
         .debug();
 
-    // Step 4: Double-click on the user info button to go to the user info page
+    // Step 4: Click on the user info button to go to the user info page
     await t
-        .doubleClick(userInfoButton)
+        .click(userInfoButton)
         .debug();
 
     // Step 5: Verify the Account Page elements

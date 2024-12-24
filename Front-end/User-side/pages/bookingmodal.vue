@@ -160,6 +160,7 @@ const validateTimes = () => {
     formData.value.startTime >= formData.value.endTime
   ) {
     error.value = "Start time must be earlier than end time.";
+    alert(error.value);
   } else {
     error.value = "";
   }
@@ -200,6 +201,7 @@ const calculatePrice = () => {
 
 
 const confirmBooking = async () => {
+  
   validateTimes();
 
   const customerID = getCustomerID();
@@ -248,7 +250,7 @@ const confirmBooking = async () => {
     );
     
     if (data) { // Adjust according to actual response
-      console.log("Navigating to checkout page...");
+      alert("Booking success. Navigating to checkout page...");
 
       router.push({
         path: '/checkout',

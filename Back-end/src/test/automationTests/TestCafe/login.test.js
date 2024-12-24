@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture `User Login Page Test`
-    .page `http://localhost:3000/userlogin`; // Update the URL as needed
+    .page `http://localhost:3001/userlogin`; // Update the URL as needed
 
 // Test 1: Verify that all essential elements exist on the page
 test('Verify page elements', async t => {

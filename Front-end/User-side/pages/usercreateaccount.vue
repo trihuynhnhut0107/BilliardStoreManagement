@@ -92,7 +92,7 @@ const handleSignUp = async () => {
     }
   } catch (err) {
     console.error(err);
-    alert("Your account may be appeared. Error signing up. Please try again.");
+    alert("Your account may be appeared or existed blank in form. Error signing up. Please try again.");
     window.location.reload();
   }
 };
