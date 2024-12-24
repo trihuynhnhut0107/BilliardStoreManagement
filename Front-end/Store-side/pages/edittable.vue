@@ -34,10 +34,15 @@
                     <input id="price" v-model="formData.price" type="text" required placeholder="Price"
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center">
                     <label for="status" class="text-base font-semibold w-full text-[#3A6351]">Status: </label>
-                    <input id="status" v-model="formData.status" type="text" required placeholder="Status"
-                        class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
+                    <select id="status" class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent"
+                        v-model="formData.status">
+                        <option value="">Choose a status</option>
+                        <option value="available">Available</option>
+                        <option value="busy">Busy</option>
+                        <option value="repairing">Repairing</option>
+                    </select>
                 </div>
             </div>
             <img src="https://placehold.co/150x200" />
@@ -66,58 +71,42 @@ const route = useRoute();
 tableID = route.query.id
 
 const formData = ref({
-    id: tableID,
+    table_id: tableID,
     table_type: '',
     stick_quantity: '',
     ball_quantity: '',
     price: '',
     status: '',
-})
+});
 
 const toUpperCase = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-const refetchData = async () => {
-    const { data, error } = await useFetch(
-        `http://localhost:8080/v1/api/table-manage/table/${tableID}`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-
-    if (data.value && data.value.status === 201) {
-        formData.value.name = toUpperCase(data.value.metadata.name);
-        formData.value.phone_number = data.value.metadata.phone_number;
-        formData.value.role = toUpperCase(data.value.metadata.role);
-    } else {
-        console.error("Error fetching table data:", error.value);
-    }
 };
 
-refetchData();
-
 const editTable = async () => {
+    // Iterate over the keys and reset those with null or empty string
+    Object.keys(formData.value).forEach(key => {
+        if (formData.value[key] === '' || formData.value[key] === null) {
+            formData.value[key] = undefined;
+        }
+    });
+
+    console.log(JSON.stringify(formData.value))
+
     const { data, error } = await useFetch(`http://localhost:8080/v1/api/table-manage/update-table`, {
         method: 'POST',
-        body: JSON.stringify({
-            table_id: tableID,
-            name: formData.value.name,
-            phone_number: formData.value.phone_number,
-            role: formData.value.role,
-        }),
-    })
+        body: JSON.stringify(formData.value),
+    });
 
-    if (data.value && data.value.status === 201) {
-        toast.success('Edit table successfully');
+    if (data.value && data.value.status === 200) {
+        toast.success('Edit table successfully', {
+            autoClose: 3000,
+        });
         navigateTo('/tablemanagement');
     } else {
-        console.error("Error fetching table data:", error.value);
-    }
-}
+        console.error("Request failed:", err);
+    };
+};
 
 </script>
 

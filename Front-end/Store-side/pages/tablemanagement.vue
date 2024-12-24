@@ -213,25 +213,17 @@ const deleteTable = async (id) => {
         }),
       }
     );
-
-    if (data.value.status !== 201) {
-      console.log("Delete table error !");
-      return;
-    }
-
+    await refetchData();
     toast.success(`Delete table ${id} successful`, {
       autoClose: 3000,
     });
-    console.log("Delete table successful");
     // Refetch data after deletion
-    refetchData();
   } catch (err) {
     toast.error("Error deleting table", {
       autoClose: 3000,
     });
     console.log(err);
   }
-  alert("Delete table " + id);
 };
 
 const editTable = (id) => {

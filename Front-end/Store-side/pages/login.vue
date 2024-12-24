@@ -27,15 +27,20 @@
 <script setup>
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css'
+import { useRouter } from 'vue-router';
 
 definePageMeta({
     layout: 'footer-layout'
 })
 
+const router = useRouter();
+
 const formData = ref({
     username: '',
     password: ''
 })
+
+
 
 const isValidInput = () => {
     if (!formData.value.username) {
@@ -59,7 +64,7 @@ const login = async () => {
         body: JSON.stringify(formData.value)
     })
     try {
-        if (data.value.status === 201) {
+        if (data.value.status === 200) {
             toast.success('Login Successfully', {
                 autoClose: 3000,
             })
