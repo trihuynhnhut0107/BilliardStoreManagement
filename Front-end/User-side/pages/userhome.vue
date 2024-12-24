@@ -20,11 +20,6 @@
           </li>
           <li>
             <NuxtLink to="/" class="text-lg font-bold text-green-900"
-              >Products</NuxtLink
-            >
-          </li>
-          <li>
-            <NuxtLink to="/" class="text-lg font-bold text-green-900"
               >Contact</NuxtLink
             >
           </li>
@@ -44,7 +39,7 @@
         <div
           class="flex gap-3 md:gap-5 ml-auto md:absolute md:right-10 cursor-pointer mr-4 md:mr-0">
           <button class="flex w-10 h-10" @click="handleUserInfo">
-            <img src="../public/image/user_logo.png" />
+            <img src="../public/image/user_logo.png" alt="account_info" />
           </button>
         </div>
       </nav>
@@ -102,7 +97,7 @@
               <button
                 @click="openModal(table)"
                 class="bg-green-800 text-white p-2 rounded-md">
-                <img src="../public/image/plus-small.png" class="w-5 h-5" />
+                <img src="../public/image/plus-small.png" class="w-5 h-5" alt="Booking" />
               </button>
             </div>
           </div>
@@ -110,7 +105,7 @@
       </section>
 
       <!-- Booking Modal -->
-      <BookingModal
+      <BookingModal class="booking-modal"
         v-if="isModalOpen"
         :table="selectedTable"
         @close="closeModal"
@@ -181,6 +176,8 @@ const isModalOpen = ref(false);
 const selectedTable = ref(null);
 const isMessageOpen = ref(false);
 
+const router = useRouter();
+
 // Function to toggle the message component
 const toggleMessage = () => {
   isMessageOpen.value = !isMessageOpen.value;
@@ -218,7 +215,7 @@ const closeModal = () => {
 
 const handleUserInfo = () => {
   // Handle user information submission here
-  navigateTo("/userinfo");
+  router.push("/userinfo");
 };
 </script>
 

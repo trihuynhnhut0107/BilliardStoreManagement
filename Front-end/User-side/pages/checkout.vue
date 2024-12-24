@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="flex justify-end mb-10">
-          <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded" @click="handlePay">
+          <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded pay" @click="handlePay">
             Pay
           </button>
         </div> 
@@ -55,9 +55,16 @@
   import DefaultLayout from "~/layout/default.vue";
   import { ref, computed, onMounted } from "vue";
   import { useRoute } from "vue-router";
+  import Cookies from 'js-cookie';
 
   const route = useRoute();
-  const customerID = localStorage.getItem("customerID");
+  // Get the user ID from Cookie
+  const getCustomerID = () => {
+    const customerID = Cookies.get("customerID");
+    return customerID ? Number(customerID) : null; // Convert to Number, or return null if it doesn't exist
+  };
+  
+  const customerID = getCustomerID();
 
   // User info
   const userInfo = ref(null);

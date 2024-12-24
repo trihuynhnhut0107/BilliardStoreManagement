@@ -38,6 +38,8 @@
 import { useLogin } from "~/composables/useLogin";
 import DefaultLayout from "~/layout/default.vue";
 import { useRouter } from "vue-router"; 
+import Cookies from "js-cookie";
+
 
 const formData = ref({
   username: "",
@@ -59,12 +61,13 @@ const handleLogin = async () => {
   if (!result.success) {
     // Display the error message from the response
     errorMessage.value = result.message || "Login failed.";
-    console.error("Login Error:", result.message);
+    alert(errorMessage.value);
+    window.location.reload();
   } else {
     console.log("Login successful, Customer ID:", result.customerID);
 
     // Store the customer ID in a global state or local storage if needed
-    localStorage.setItem("customerID", result.customerID);
+    Cookies.set("customerID", result.customerID, { expires: 1, path: "/" });
 
     // Navigate to the user home page
     router.push("/userhome");

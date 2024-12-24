@@ -24,9 +24,11 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.11.2",
     "pm2": "^5.4.2",
+    "react-router-dom": "^7.1.0",
     "sequelize": "^6.37.3",
     "sinon": "^19.0.2",
     "socket.io": "^4.7.5",
+    "testcafe": "^3.7.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
