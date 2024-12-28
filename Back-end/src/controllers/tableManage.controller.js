@@ -34,7 +34,7 @@ class tableManageController {
     }).send(res);
   };
   updateTable = async (req, res, next) => {
-    new OK({
+    new CREATED({
       message: await tableManageService.updateTable(req.body),
     }).send(res);
   };

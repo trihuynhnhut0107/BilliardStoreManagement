@@ -6,6 +6,10 @@ const router = express.Router();
 const menuManageController = require("../../controllers/menuManage.controller");
 
 router.get("/get-menu-list", asyncHandler(menuManageController.getMenuList));
+router.get(
+  "/get-menu-list-pagination",
+  asyncHandler(menuManageController.getMenuListPagination)
+);
 router.post(
   "/create-new-menu-item",
   asyncHandler(menuManageController.createMenuItem)

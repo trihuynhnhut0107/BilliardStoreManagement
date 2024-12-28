@@ -26,7 +26,11 @@
               )"
               :key="key"
               class="p-2 text-center align-middle">
-              {{ value[1] }}
+              {{
+                isNaN(value[1])
+                  ? value[1]
+                  : Intl.NumberFormat("de-DE").format(value[1])
+              }}
             </td>
             <td class="p-2 w-[80px] text-center">
               <button
@@ -52,11 +56,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import EditRow from "./EditRow.vue";
 
 const dataList = defineModel(); // Your data list for the table
 
 const selectedRow = ref(null);
+
+const emit = defineEmits(["updateRow"]);
 
 // Extract column keys from the first row of the dataList (excluding 'createdAt' and 'updatedAt')
 const columns = computed(() => {
@@ -85,12 +90,13 @@ const editRow = (row) => {
   selectedRow.value = { ...row };
 };
 
-const updateRow = (updatedRow) => {
-  const index = dataList.value.findIndex((item) => item.id === updatedRow.id);
-  if (index !== -1) {
-    dataList.value[index] = updatedRow;
-  }
-  cancelEdit();
+const updateRow = async (updatedRow) => {
+  emit("updateRow", updatedRow, (result) => {
+    if (result) {
+      cancelEdit();
+      console.log(result);
+    }
+  });
 };
 
 const cancelEdit = () => {

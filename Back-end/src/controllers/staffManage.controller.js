@@ -10,6 +10,15 @@ class staffManageController {
       metadata: await staffManageService.getAllStaff(),
     }).send(res);
   };
+  getAllStaffPagination = async (req, res, next) => {
+    new CREATED({
+      message: "Get all staff with pagination OK!",
+      metadata: await staffManageService.getAllStaffPagination(
+        req.query.page_size,
+        req.query.page_number
+      ),
+    }).send(res);
+  };
   getStaffByID = async (req, res, next) => {
     new CREATED({
       message: "Get staff by ID OK!",

@@ -12,6 +12,35 @@ class customerManageService {
     }
     return foundCustomer;
   };
+  static getAllCustomerPagination = async (page_size, page_number) => {
+    if (!page_number) {
+      throw new BadRequestError("Page number is required");
+    }
+    if (page_number < 1) {
+      throw new BadRequestError("Invalid page number");
+    }
+    if (page_size < 1) {
+      throw new BadRequestError("Invalid page size");
+    }
+    const pageSizeInt = parseInt(page_size, 10);
+    const pageNumberInt = parseInt(page_number, 10);
+    const totalRecords = await Customer.count();
+    const totalPages = Math.ceil(totalRecords / pageSizeInt);
+    const foundCustomer = await Customer.findAll({
+      limit: pageSizeInt,
+      offset: pageNumberInt * (pageSizeInt - 1),
+    });
+    if (!foundCustomer) {
+      throw new BadRequestError("Customer not found");
+    }
+    return {
+      totalRecords,
+      totalPages,
+      currentPage: pageNumberInt,
+      pageSize: pageSizeInt,
+      customers: foundCustomer,
+    };
+  };
   static getCustomerByID = async (customer_id) => {
     const foundCustomer = await Customer.findOne({
       where: { id: customer_id },
