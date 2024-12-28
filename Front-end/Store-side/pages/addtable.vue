@@ -31,7 +31,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <label for="status" class="text-base font-semibold w-full text-[#3A6351]">Status: </label>
-                    <input id="status" v-model="formData.status" required type="text" placeholder="Status"
+                    <input readonly id="status" v-model="formData.status" type="text" required placeholder="Status"
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
             </div>

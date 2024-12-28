@@ -88,6 +88,7 @@ const refetchData = async () => {
 refetchData();
 
 const editTable = async () => {
+    console.log(JSON.stringify(formData.value));
     const { data, error } = await useFetch(`http://localhost:8080/v1/api/staff-manage/update-staff`, {
         method: 'POST',
         body: JSON.stringify({
