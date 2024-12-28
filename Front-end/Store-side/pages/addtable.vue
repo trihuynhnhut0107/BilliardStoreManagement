@@ -9,7 +9,7 @@
             <div class="flex flex-col gap-2 min-w-[350px]">
                 <div class="flex items-center gap-2">
                     <label for="tableType" class="text-base font-semibold w-full text-[#3A6351]">Table type: </label>
-                    <input id="tableType" v-model="formData.table_type" required type="text" placeholder="Table type: "
+                    <input id="tableType" v-model="formData.table_type" required type="text" placeholder="Table type"
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
                 <div class="flex items-center gap-2">
@@ -41,7 +41,7 @@
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <NuxtLink to="/tablemanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
                 Cancel</NuxtLink>
-            <button v-on:click="createTable"
+<button v-on:click="createTable"
                 class="w-fit text-[#3A6351] py-1 px-4 bg-white text-sm font-medium rounded border border-[#3A6351] box-border">Create</button>
         </div>
     </div>
@@ -63,7 +63,7 @@ const formData = ref({
     ball_quantity: '',
     stick_quantity: '',
     price: '',
-    status: 'Available',
+    status: '',
 });
 
 const toUpperCase = (str) => {

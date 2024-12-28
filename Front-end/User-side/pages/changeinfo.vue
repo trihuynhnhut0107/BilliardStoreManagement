@@ -69,7 +69,7 @@
   <script setup>
   import { ref } from "vue";
   import { useRouter } from "vue-router";
-  import { watch } from "vue";
+  import Cookies from "js-cookie";
   
   // Router for navigation
   const router = useRouter();
@@ -81,8 +81,14 @@
     email: "",
   });
   
+  
+  const getCustomerID = () => {
+    const customerID = Cookies.get("customerID");
+    return customerID ? Number(customerID) : null; // Convert to Number, or return null if it doesn't exist
+  };
+  const customerID = getCustomerID();
+
   // Fetch customer data
-  const customerID = localStorage.getItem("customerID");
   const fetchCustomerData = async () => {
     try {
       const response = await $fetch(`http://localhost:8080/v1/api/customer-manage/customer/${customerID}`);
@@ -113,9 +119,8 @@
         method: "POST",
         body: payload,
       });
-  
       alert("Information updated successfully!");
-      router.push("/userhome"); // Redirect after update
+      await router.push("/userhome");
     } catch (error) {
       console.error("Error updating customer info:", error);
       alert("Failed to update information. Please try again.");

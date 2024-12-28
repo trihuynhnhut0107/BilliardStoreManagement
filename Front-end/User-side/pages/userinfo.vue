@@ -9,8 +9,7 @@
             <h2 class="flex ml-[2vw] text-[#3A6351] font-bold">{{ userInfo.metadata.name }}</h2>
           </div>
           <div class="flex flex-col h-[40vh] text-xl font-weight-700 items-start space-y-[6vh]">
-            <button class="hover:text-yellow-600">Account information</button>
-            <button @click="toggleChangeInfo" class="hover:text-yellow-600">
+            <button @click="toggleChangeInfo" class="hover:text-yellow-600 change_info">
               {{ isChangeInfoOpen ? "Close Change Info" : "Change information" }}
             </button>
             <button @click="logout" class="hover:text-yellow-600">Logout</button>
@@ -48,6 +47,7 @@ import DefaultLayout from '~/layout/default.vue'
 import { computed } from 'vue';
 import ChangeInfo from './changeinfo.vue';
 import { useRouter } from 'vue-router';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 
@@ -59,13 +59,27 @@ const toggleChangeInfo = () => {
   isChangeInfoOpen.value = !isChangeInfoOpen.value;
 };
 
-// Get the user ID from localStorage
-const customerID = localStorage.getItem('customerID')
+// Get the user ID from Cookie
+const getCustomerID = () => {
+  const customerID = Cookies.get("customerID");
+  return customerID ? Number(customerID) : null; // Convert to Number, or return null if it doesn't exist
+};
+
+const customerID = getCustomerID();
 
 // Fetch the user info using `useFetch`
 const { data: userInfo, error, isPending } = useFetch(`http://localhost:8080/v1/api/customer-manage/customer/${customerID}`)
 
 // Since the API data is under `metadata`, we can use that to bind values
 const userData = computed(() => userInfo ? userInfo.metadata : {})
+
+const logout = () => {
+  localStorage.removeItem('customerID');
+  alert("You have been logged out");
+  router.push('/userlogin').then(() => {
+    window.location.reload();
+  });
+};
+
 
 </script>
