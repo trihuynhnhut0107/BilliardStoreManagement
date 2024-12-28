@@ -128,9 +128,14 @@ class CustomerAccessService {
     if (!validator.isEmail(email)) {
       throw new AuthFailureError("Invalid email format");
     }
-    const holderCustomer = await Account.findOne({ where: { email: email } });
-    if (holderCustomer) {
-      throw new UserExistError("Email already exists");
+    let holderStaff;
+    holderStaff = await Account.findOne({ where: { email: email } });
+    if (holderStaff) {
+      throw new BadRequestError("Email already exists");
+    }
+    holderStaff = await Account.findOne({ where: { username: username } });
+    if (holderStaff) {
+      throw new BadRequestError("Username already exists");
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const newCustomerAccount = await Account.create({

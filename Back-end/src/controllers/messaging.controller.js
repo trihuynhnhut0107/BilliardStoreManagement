@@ -15,6 +15,16 @@ class MessagingController {
       metadata: await MessagingService.getConversation(req.params.id),
     }).send(res);
   };
+
+  getCustomerCurrentConversationID = async (req, res, next) => {
+    new OK({
+      message: "Conversation fetch successfully",
+      metadata: await MessagingService.getCustomerCurrentConversationID(
+        req.params.id
+      ),
+    }).send(res);
+  };
+
   getOpenConversations = async (req, res, next) => {
     new OK({
       message: "Open conversations fetch successfully",

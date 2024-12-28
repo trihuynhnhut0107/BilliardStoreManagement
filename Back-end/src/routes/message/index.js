@@ -12,6 +12,12 @@ router.get(
   "/get-conversation/:id",
   asyncHandler(messagingController.getConversation)
 );
+
+router.get(
+  "/get-customer-current-conversation-id/:id",
+  asyncHandler(messagingController.getCustomerCurrentConversationID)
+);
+
 router.get(
   "/get-open-conversations",
   asyncHandler(messagingController.getOpenConversations)

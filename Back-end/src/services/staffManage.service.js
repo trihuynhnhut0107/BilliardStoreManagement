@@ -5,20 +5,20 @@ const Staff = require("../models/Staff");
 
 class staffManageService {
   static getAllStaff = async () => {
-    const foundedStaff = await Staff.findAll();
-    if (!foundedStaff) {
+    const foundStaff = await Staff.findAll();
+    if (!foundStaff) {
       throw new BadRequestError("Staff not found");
     }
-    return foundedStaff;
+    return foundStaff;
   };
   static getStaffByID = async (staff_id) => {
-    const foundedStaff = await Staff.findOne({
+    const foundStaff = await Staff.findOne({
       where: { id: staff_id },
     });
-    if (!foundedStaff) {
+    if (!foundStaff) {
       throw new BadRequestError("Staff not found");
     }
-    return foundedStaff;
+    return foundStaff;
   };
   static updateStaffInfo = async ({ staff_id, name, phone_number, role }) => {
     if (!staff_id) {

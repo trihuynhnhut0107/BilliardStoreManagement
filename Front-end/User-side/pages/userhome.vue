@@ -97,7 +97,10 @@
               <button
                 @click="openModal(table)"
                 class="bg-green-800 text-white p-2 rounded-md">
-                <img src="../public/image/plus-small.png" class="w-5 h-5" alt="Booking" />
+                <img
+                  src="../public/image/plus-small.png"
+                  class="w-5 h-5"
+                  alt="Booking" />
               </button>
             </div>
           </div>
@@ -105,12 +108,11 @@
       </section>
 
       <!-- Booking Modal -->
-      <BookingModal class="booking-modal"
+      <BookingModal
+        class="booking-modal"
         v-if="isModalOpen"
         :table="selectedTable"
-        @close="closeModal"
-      />
-
+        @close="closeModal" />
 
       <!-- Button to toggle the message component -->
       <div class="fixed bottom-14 right-10">
@@ -123,12 +125,13 @@
 
       <!-- Message Component -->
       <div v-if="isMessageOpen" class="fixed bottom-20 right-10 mb-14">
-        <Message />
+        <MessageBox v-model="cookie" />
       </div>
 
       <!-- DON'T TOUCH ITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT -->
       <!-- Footer -->
-      <footer class="flex-shrink-0 bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
+      <footer
+        class="flex-shrink-0 bg-[#3A6351] border-t border-gray-300 bottom-0 w-full">
         <!-- Top section with logo, description, and navigation -->
         <div
           class="container mx-auto px-4 py-6 flex justify-between items-start">
@@ -170,11 +173,12 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BookingModal from "./bookingmodal.vue";
 import BilliardTable from "../public/Image/billard-table.jpg";
-import Message from "./usermessage.vue";
 
 const isModalOpen = ref(false);
 const selectedTable = ref(null);
 const isMessageOpen = ref(false);
+
+const cookie = Number(useCookie("customerID").value);
 
 const router = useRouter();
 

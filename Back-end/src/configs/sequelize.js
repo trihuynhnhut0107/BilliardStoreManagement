@@ -11,7 +11,6 @@ const sequelize = new Sequelize(
     host: process.env.LOCAL_DB_HOST,
     port: process.env.LOCAL_DB_PORT,
     dialect: "mysql",
-    timezone: "+07:00",
     define: {
       freezeTableName: true,
     },

@@ -6,6 +6,11 @@ const TableManageController = require("../../controllers/tableManage.controller"
 const router = express.Router();
 
 router.get("/get-all-tables", asyncHandler(TableManageController.getAllTable));
+router.get(
+  "/get-all-tables-pagination",
+  asyncHandler(TableManageController.getAllTablePagination)
+);
+router.get("/table/:id", asyncHandler(TableManageController.getTableByID));
 router.post(
   "/create-new-table",
   asyncHandler(TableManageController.createNewTable)

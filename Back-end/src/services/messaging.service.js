@@ -15,6 +15,21 @@ class MessagingService {
     });
     return messages;
   };
+
+  static getCustomerCurrentConversationID = async (customerID) => {
+    const foundConversationID = await Conversation.findOne({
+      attributes: ["id"],
+      where: {
+        customerID: customerID,
+        status: "open",
+      },
+    });
+    if (!foundConversationID) {
+      return -1;
+    }
+    return foundConversationID;
+  };
+
   static getOpenConversations = async () => {
     const conversationsWithLatestMessages = await Conversation.findAll({
       where: {
@@ -120,7 +135,6 @@ class MessagingService {
   static sendMessage = async ({
     senderType,
     senderID,
-    receiverID,
     conversationID,
     messageText,
   }) => {

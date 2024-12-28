@@ -50,12 +50,57 @@ class tableManageService {
     return updatedTableList;
   };
 
+  static getAllTablePagination = async (page_size, page_number) => {
+    if (!page_number) {
+      throw new BadRequestError("Page number is required");
+    }
+    if (!validator.isInt(String(page_number)) || page_number < 1) {
+      throw new BadRequestError("Invalid page number");
+    }
+    if (!validator.isInt(String(page_size)) || page_size < 1) {
+      throw new BadRequestError("Invalid page size");
+    }
+
+    const pageSizeInt = parseInt(page_size, 10);
+    const pageNumberInt = parseInt(page_number, 10);
+
+    // Get total count of records
+    const totalRecords = await BilliardTable.count();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalRecords / pageSizeInt);
+
+    // Fetch the paginated list
+    const tableList = await BilliardTable.findAll({
+      limit: pageSizeInt,
+      offset: (pageNumberInt - 1) * pageSizeInt,
+    });
+
+    return {
+      totalRecords,
+      totalPages,
+      currentPage: pageNumberInt,
+      pageSize: pageSizeInt,
+      tables: tableList,
+    };
+  };
+
+  static getTableByID = async (table_id) => {
+    if (!table_id) {
+      throw new BadRequestError("Table ID is required");
+    }
+    const table = await BilliardTable.findOne({ where: { id: table_id } });
+    if (!table) {
+      throw new BadRequestError("Table not found");
+    }
+    return table;
+  };
   static createNewTable = async ({
     table_type,
     stick_quantity,
     ball_quantity,
     price,
-    status = "available",
+    status,
   }) => {
     if (!table_type || !stick_quantity || !ball_quantity || !price) {
       throw new BadRequestError("Please fill all the required field");
@@ -72,7 +117,7 @@ class tableManageService {
       stick_quantity,
       ball_quantity,
       price,
-      status,
+      status: status ?? "Available",
     });
     if (!newTable) {
       throw new ServerError("Table not created");

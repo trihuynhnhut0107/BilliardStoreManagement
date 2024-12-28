@@ -14,6 +14,15 @@ class BookingController {
       metadata: await BookingService.getBookingByID(req.params.booking_id),
     }).send(res);
   };
+
+  getBookingByTableIDandDate = async (req, res, next) => {
+    new OK({
+      metadata: await BookingService.getBookingByTableIDandDate(
+        req.params.table_id,
+        req.query.date
+      ),
+    }).send(res);
+  };
   createBooking = async (req, res, next) => {
     new CREATED({
       message: "Create booking successfully",

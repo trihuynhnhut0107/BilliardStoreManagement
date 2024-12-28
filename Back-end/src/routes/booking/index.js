@@ -5,9 +5,12 @@ const bookingController = require("../../controllers/booking.controller");
 const router = express.Router();
 
 router.get("/get-all-booking", asyncHandler(bookingController.getAllBooking));
+router.get("/:booking_id", asyncHandler(bookingController.getBookingByID));
+
+// Add a new route to get bookings by table ID in params and date in query
 router.get(
-  "/booking/:booking_id",
-  asyncHandler(bookingController.getBookingByID)
+  "/table/:table_id",
+  asyncHandler(bookingController.getBookingByTableIDandDate)
 );
 router.post("/create-booking", asyncHandler(bookingController.createBooking));
 
