@@ -132,6 +132,16 @@ class tableManageService {
     price,
     status,
   }) => {
+    if (!table_type || !stick_quantity || !ball_quantity || !price) {
+      throw new BadRequestError("Please fill all the required field");
+    }
+    if (
+      !validator.isInt(String(stick_quantity)) ||
+      !validator.isInt(String(ball_quantity)) ||
+      !validator.isFloat(String(price))
+    ) {
+      throw new BadRequestError("Invalid input");
+    }
     if (!table_id) {
       throw new BadRequestError("Table ID is required");
     }

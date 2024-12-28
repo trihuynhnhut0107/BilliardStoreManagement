@@ -1,20 +1,18 @@
 <template>
-  <div>
-
-  </div>
+  <div></div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 const router = useRouter();
 
 const navigate = () => {
-  router.push('/login');
-}
+  router.push("/login");
+};
 
 onMounted(async () => {
-  await navigate()
-})
+  await navigate();
+});
 </script>
 
 <style scoped></style>

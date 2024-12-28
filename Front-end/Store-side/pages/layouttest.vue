@@ -3,7 +3,8 @@
     <Table
       v-model="tables"
       :comboBoxColumn="comboBoxColumns"
-      class="flex items-center justify-center" />
+      class="flex items-center justify-center"
+      @updateRow="updateRow" />
     <div
       class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
       <button
@@ -56,6 +57,34 @@ const optionColumn = "status";
 const comboBoxColumns = ref({
   status: ["Available", "Busy"], // Options for the 'status' column
 });
+
+const updateRow = async (row, callback) => {
+  let result = false;
+  const data = await $fetch(
+    "http://localhost:8080/v1/api/table-manage/update-table",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        table_id: row.id,
+        status: row.status,
+        ball_quantity: row.ball_quantity,
+        stick_quantity: row.stick_quantity,
+        price: row.price,
+        table_type: row.table_type,
+      }),
+      onResponse({ response }) {
+        if (response.status !== 201) {
+          toast.error(response._data.message);
+          callback(false);
+        } else {
+          toast.success("Table updated successfully!");
+          callback(true);
+          getData();
+        }
+      },
+    }
+  );
+};
 
 const getData = async () => {
   const data = await $fetch(

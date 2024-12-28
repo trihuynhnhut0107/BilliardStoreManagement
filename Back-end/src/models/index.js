@@ -47,9 +47,8 @@ Customer.hasMany(Bill, {
   foreignKey: "customer_id",
 });
 
-Bill.hasMany(BillDetail, {
-  foreignKey: "bill_id",
-});
+Bill.hasMany(BillDetail, { foreignKey: "bill_id" });
+BillDetail.belongsTo(Bill, { foreignKey: "bill_id" });
 
 Conversation.belongsTo(Customer, { foreignKey: "customerID" });
 

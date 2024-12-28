@@ -25,7 +25,7 @@ const BillDetail = sequelize.define("BillDetail", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  itemId: {
+  item_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },

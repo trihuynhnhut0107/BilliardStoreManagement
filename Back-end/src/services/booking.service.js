@@ -7,7 +7,7 @@ const Customer = require("../models/Customer");
 
 class BookingService {
   static getAllBooking = async () => {
-    try {
+    {
       // Fetch all bookings
       const bookings = await Booking.findAll();
 
@@ -29,9 +29,6 @@ class BookingService {
       }
 
       return bookings; // Return the list of bookings after updates
-    } catch (error) {
-      console.error("Error while fetching and updating bookings:", error);
-      throw error; // Optional: rethrow the error for further handling
     }
   };
 
