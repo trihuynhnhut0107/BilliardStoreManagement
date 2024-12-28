@@ -157,7 +157,7 @@ const filteredTables = computed(() => {
             table.id.toString().includes(searchQuery.value) ||
             table.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             table.phone_number.toString().includes(searchQuery.value) ||
-            table.points.toLowerCase().includes(searchQuery.value.toLowerCase())
+            table.points.toString().includes(searchQuery.value)
         );
     });
 });

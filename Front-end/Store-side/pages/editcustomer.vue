@@ -88,7 +88,7 @@ const editTable = async () => {
         body: JSON.stringify({
             customer_id: customerID,
             name: formData.value.name,
-            phone: formData.value.phone_number,
+            phone_number: formData.value.phone_number,
             email: formData.value.email,
         }),
     })

@@ -5,10 +5,12 @@
       <div class="flex items-center w-max rounded-2xl border px-3 py-1">
         <input placeholder="Search" v-model="searchQuery"
           class="outline-none border-none bg-transparent pr-20 text-xs" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16">
-          <path
-            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-        </svg>
+        <div @click="deleteSelectedTable" class="cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+          </svg>
+        </div>
       </div>
       <!-- <div class="flex items-center w-max rounded-2xl border px-3 gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="#000" viewBox="0 0 16 16">
@@ -225,6 +227,45 @@ const deleteTable = async (id) => {
     console.log(err);
   }
 };
+
+const deleteSelectedTable = async () => {
+  try {
+    const selectedTables = tables.value.filter(table => table.selected)
+
+    if (selectedTables.length === 0) {
+      alert("Please select at least one table to delete")
+      return
+    }
+
+    const confirmDelete = confirm(`Are you sure you want to delete ${selectedTables.length} selected table(s)?`)
+    if (!confirmDelete) return
+
+    for (const table of selectedTables) {
+      const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/delete-table', {
+        method: 'POST',
+        body: JSON.stringify({
+          table_id: table.id
+        }),
+      })
+
+      if (data.value.status !== 201) {
+        console.log(`Error deleting table ${table.id}:`, error)
+      }
+    }
+
+    toast.success("Selected tables deleted successfully", {
+      autoClose: 3000,
+    })
+    selectAllChecked.value = false
+    // Refetch data after deletion
+    refetchData()
+  } catch (err) {
+    toast.error("Error deleting selected tables", {
+      autoClose: 3000,
+    })
+    console.error('Error deleting selected tables:', err)
+  }
+}
 
 const editTable = (id) => {
   router.push(`/edittable?id=${id}`);
