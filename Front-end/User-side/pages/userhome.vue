@@ -90,6 +90,7 @@
               class="w-full h-32 object-cover mb-4" />
             <h1 class="text-xl font-bold text-black mb-2">{{ table.name }}</h1>
             <p class="text-base text-black">{{ table.description }}</p>
+            <p class="text-base text-black">{{ table.type }}</p>
             <div class="mt-4 flex justify-between items-center">
               <h2 class="text-green-800 font-bold text-2xl">
                 ${{ table.price }}
@@ -196,6 +197,7 @@ if (data.value && data.value.metadata) {
     id: table.id,
     name: `Imperior ${table.id}`, // Adjust table name if needed
     description: `Description for table ${table.id}`,
+    type: `Type : ${table.table_type}`,
     price: table.price,
     table_type: table.table_type,
     image: BilliardTable, // Use a placeholder image or adjust based on data if available

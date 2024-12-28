@@ -1,204 +1,204 @@
 import { Selector } from 'testcafe';
 
 fixture `Staff Management Page Test`
-    .page `http://localhost:3001/login`; 
+    .page `http://localhost:3000/login`; 
 
-// Test 1: Navigate to Customer Management
-// test('Navigate to Staff Management Page', async t => {
-//     const usernameInput = Selector('input[placeholder="Username"]');
-//     const passwordInput = Selector('input[placeholder="Password"]');
-//     const loginButton = Selector('button').withText('Login');
-//     const staffManagementLink = Selector('a').withText('Staff Management'); // Adjust selector based on exact text
+// Test 1: Navigate to Staff Management
+test('Navigate to Staff Management Page', async t => {
+    const usernameInput = Selector('input[placeholder="Username"]');
+    const passwordInput = Selector('input[placeholder="Password"]');
+    const loginButton = Selector('button').withText('Login');
+    const staffManagementLink = Selector('a').withText('Staff Management'); // Adjust selector based on exact text
     
-//     // Step 1: Log in
-//     await t
-//         .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
-//         .typeText(passwordInput, 'testadmin1')
-//         .click(loginButton);
+    // Step 1: Log in
+    await t
+        .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
+        .typeText(passwordInput, 'testadmin1')
+        .click(loginButton);
 
-//     // Step 2: Check redirection (page URL after login)
-//     await t
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/admininformation', 'User is not redirected to the correct page');
+    // Step 2: Check redirection (page URL after login)
+    await t
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/admininformation', 'User is not redirected to the correct page');
 
-//     // Step 3: Navigate to Customer Management
-//     await t
-//         .click(staffManagementLink)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
-// });
+    // Step 3: Navigate to Customer Management
+    await t
+        .click(staffManagementLink)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
+});
 
 // Test 2 : Add staff with validate value
-// test('Add staff with validate value', async t => {
-//     const usernameInput = Selector('input[placeholder="Username"]');
-//     const passwordInput = Selector('input[placeholder="Password"]');
-//     const loginButton = Selector('button').withText('Login');
-//     const staffManagementLink = Selector('a').withText('Staff Management'); 
-//     const addButton = Selector('a').withText('Add staff');
+test('Add staff with validate value', async t => {
+    const usernameInput = Selector('input[placeholder="Username"]');
+    const passwordInput = Selector('input[placeholder="Password"]');
+    const loginButton = Selector('button').withText('Login');
+    const staffManagementLink = Selector('a').withText('Staff Management'); 
+    const addButton = Selector('a').withText('Add staff');
 
-//     // Fill the form 
-//     const fullNameInput = Selector('input[placeholder="Full name"]');
-//     const phoneNumberInput = Selector('input[placeholder="Phone number"]');
-//     const emailInput = Selector('input[placeholder="Email"]');
-//     const roleInput = Selector('input[placeholder="Role"]');
-//     const usernameFormInput = Selector('input[placeholder="Username"]');
-//     const passwordFormInput = Selector('input[placeholder="Password"]');
-//     const createButton = Selector('button').withText('Create');
+    // Fill the form 
+    const fullNameInput = Selector('input[placeholder="Full name"]');
+    const phoneNumberInput = Selector('input[placeholder="Phone number"]');
+    const emailInput = Selector('input[placeholder="Email"]');
+    const roleInput = Selector('input[placeholder="Role"]');
+    const usernameFormInput = Selector('input[placeholder="Username"]');
+    const passwordFormInput = Selector('input[placeholder="Password"]');
+    const createButton = Selector('button').withText('Create');
     
-//     // Step 1: Log in
-//     await t
-//         .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
-//         .typeText(passwordInput, 'testadmin1')
-//         .click(loginButton);
+    // Step 1: Log in
+    await t
+        .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
+        .typeText(passwordInput, 'testadmin1')
+        .click(loginButton);
 
-//     // Step 2: Check redirection (page URL after login)
-//     await t
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/admininformation', 'User is not redirected to the correct page');
+    // Step 2: Check redirection (page URL after login)
+    await t
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/admininformation', 'User is not redirected to the correct page');
 
-//     // Step 3: Navigate to Customer Management
-//     await t
-//         .click(staffManagementLink)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
+    // Step 3: Navigate to Customer Management
+    await t
+        .click(staffManagementLink)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
     
-//     // Step 4: Click Add Customer button
-//     await t
-//         .click(addButton)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/addstaff', 'User is not redirected to Add Staff page');  
+    // Step 4: Click Add Customer button
+    await t
+        .click(addButton)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/addstaff', 'User is not redirected to Add Staff page');  
 
-//     // Step 5: Fill validate value in the form
-//     await t
-//         .typeText(fullNameInput, 'Test Staff')
-//         .typeText(phoneNumberInput, '0123456789')
-//         .typeText(roleInput, 'manager')
-//         .typeText(emailInput, 'teststaff9@example.com')
+    // Step 5: Fill validate value in the form
+    await t
+        .typeText(fullNameInput, 'Test Staff 10')
+        .typeText(phoneNumberInput, '0123456789')
+        .typeText(roleInput, 'manager')
+        .typeText(emailInput, 'teststaff10@example.com')
         
-//         .typeText(usernameFormInput, 'teststaff9')
-//         .typeText(passwordFormInput, 'teststaff9')
+        .typeText(usernameFormInput, 'teststaff10')
+        .typeText(passwordFormInput, 'teststaff10')
 
-//         .click(createButton);
+        .click(createButton);
 
-//     // Step 6 : 
-//     await t
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/staffmanagement', 'Create unsuccessful');  
-// });
+    // Step 6 : 
+    await t
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/staffmanagement', 'Create unsuccessful');  
+});
 
 // Test 3 : Add staff with invalidate value
-// test('Add staff with invalidate value', async t => {
-//     const usernameInput = Selector('input[placeholder="Username"]');
-//     const passwordInput = Selector('input[placeholder="Password"]');
-//     const loginButton = Selector('button').withText('Login');
-//     const staffManagementLink = Selector('a').withText('Staff Management'); 
-//     const addButton = Selector('a').withText('Add staff');
+test('Add staff with email exist', async t => {
+    const usernameInput = Selector('input[placeholder="Username"]');
+    const passwordInput = Selector('input[placeholder="Password"]');
+    const loginButton = Selector('button').withText('Login');
+    const staffManagementLink = Selector('a').withText('Staff Management'); 
+    const addButton = Selector('a').withText('Add staff');
 
-//     // Fill the form 
-//     const fullNameInput = Selector('input[placeholder="Full name"]');
-//     const phoneNumberInput = Selector('input[placeholder="Phone number"]');
-//     const emailInput = Selector('input[placeholder="Email"]');
-//     const roleInput = Selector('input[placeholder="Role"]');
-//     const usernameFormInput = Selector('input[placeholder="Username"]');
-//     const passwordFormInput = Selector('input[placeholder="Password"]');
-//     const createButton = Selector('button').withText('Create');
+    // Fill the form 
+    const fullNameInput = Selector('input[placeholder="Full name"]');
+    const phoneNumberInput = Selector('input[placeholder="Phone number"]');
+    const emailInput = Selector('input[placeholder="Email"]');
+    const roleInput = Selector('input[placeholder="Role"]');
+    const usernameFormInput = Selector('input[placeholder="Username"]');
+    const passwordFormInput = Selector('input[placeholder="Password"]');
+    const createButton = Selector('button').withText('Create');
 
-//     // Toast message
-//     const toastMessage = Selector('.Toastify__toast').withText('Email already exists');
+    // Toast message
+    const toastMessage = Selector('.Toastify__toast').withText('Email already exists');
     
-//     // Step 1: Log in
-//     await t
-//         .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
-//         .typeText(passwordInput, 'testadmin1')
-//         .click(loginButton);
+    // Step 1: Log in
+    await t
+        .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
+        .typeText(passwordInput, 'testadmin1')
+        .click(loginButton);
 
-//     // Step 2: Check redirection (page URL after login)
-//     await t
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/admininformation', 'User is not redirected to the correct page');
+    // Step 2: Check redirection (page URL after login)
+    await t
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/admininformation', 'User is not redirected to the correct page');
 
-//     // Step 3: Navigate to Customer Management
-//     await t
-//         .click(staffManagementLink)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
+    // Step 3: Navigate to Customer Management
+    await t
+        .click(staffManagementLink)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
     
-//     // Step 4: Click Add Customer button
-//     await t
-//         .click(addButton)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/addstaff', 'User is not redirected to Add Staff page');  
+    // Step 4: Click Add Customer button
+    await t
+        .click(addButton)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/addstaff', 'User is not redirected to Add Staff page');  
 
-//     // Step 5: Fill validate value in the form
-//     await t
-//         .typeText(fullNameInput, 'Test Staff')
-//         .typeText(phoneNumberInput, '0123456789')
-//         .typeText(roleInput, 'manager')
-//         .typeText(emailInput, 'teststaff1@example.com')
+    // Step 5: Fill validate value in the form
+    await t
+        .typeText(fullNameInput, 'Test Staff')
+        .typeText(phoneNumberInput, '0123456789')
+        .typeText(roleInput, 'manager')
+        .typeText(emailInput, 'teststaff1@example.com')
 
-//         .typeText(usernameFormInput, 'teststaff1')
-//         .typeText(passwordFormInput, 'teststaff1')
-//         .click(createButton);
+        .typeText(usernameFormInput, 'teststaff1')
+        .typeText(passwordFormInput, 'teststaff1')
+        .click(createButton);
 
-//      // Step 6: Check for "Email already exists" toast message
-//      await t.expect(toastMessage.exists).ok('Toast message did not appear');       
-// });
+     // Step 6: Check for "Email already exists" toast message
+     await t.expect(toastMessage.exists).ok('Toast message did not appear');       
+});
 
 // // Test 4 : Add Staff while 1 row is null (Full Name)
-// test('Add staff with invalidate value', async t => {
-//     const usernameInput = Selector('input[placeholder="Username"]');
-//     const passwordInput = Selector('input[placeholder="Password"]');
-//     const loginButton = Selector('button').withText('Login');
-//     const staffManagementLink = Selector('a').withText('Staff Management'); 
-//     const addButton = Selector('a').withText('Add staff');
+test('Add staff with a blank value', async t => {
+    const usernameInput = Selector('input[placeholder="Username"]');
+    const passwordInput = Selector('input[placeholder="Password"]');
+    const loginButton = Selector('button').withText('Login');
+    const staffManagementLink = Selector('a').withText('Staff Management'); 
+    const addButton = Selector('a').withText('Add staff');
 
-//     // Fill the form 
-//     const phoneNumberInput = Selector('input[placeholder="Phone number"]');
-//     const emailInput = Selector('input[placeholder="Email"]');
-//     const roleInput = Selector('input[placeholder="Role"]');
-//     const usernameFormInput = Selector('input[placeholder="Username"]');
-//     const passwordFormInput = Selector('input[placeholder="Password"]');
-//     const createButton = Selector('button').withText('Create');
+    // Fill the form 
+    const phoneNumberInput = Selector('input[placeholder="Phone number"]');
+    const emailInput = Selector('input[placeholder="Email"]');
+    const roleInput = Selector('input[placeholder="Role"]');
+    const usernameFormInput = Selector('input[placeholder="Username"]');
+    const passwordFormInput = Selector('input[placeholder="Password"]');
+    const createButton = Selector('button').withText('Create');
 
-//     // Toast message
-//     const toastMessage = Selector('.Toastify__toast').withText('Name is required');
+    // Toast message
+    const toastMessage = Selector('.Toastify__toast').withText('Name is required');
     
-//     // Step 1: Log in
-//     await t
-//         .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
-//         .typeText(passwordInput, 'testadmin1')
-//         .click(loginButton);
+    // Step 1: Log in
+    await t
+        .typeText(usernameInput, 'testadmin1') // Replace with valid test credentials
+        .typeText(passwordInput, 'testadmin1')
+        .click(loginButton);
 
-//     // Step 2: Check redirection (page URL after login)
-//     await t
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/admininformation', 'User is not redirected to the correct page');
+    // Step 2: Check redirection (page URL after login)
+    await t
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/admininformation', 'User is not redirected to the correct page');
 
-//     // Step 3: Navigate to Customer Management
-//     await t
-//         .click(staffManagementLink)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
+    // Step 3: Navigate to Customer Management
+    await t
+        .click(staffManagementLink)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/staffmanagement', 'User is not redirected to Staff Management page');  
     
-//     // Step 4: Click Add Customer button
-//     await t
-//         .click(addButton)
-//         .expect(t.eval(() => document.location.pathname))
-//         .eql('/addstaff', 'User is not redirected to Add Staff page');  
+    // Step 4: Click Add Customer button
+    await t
+        .click(addButton)
+        .expect(t.eval(() => document.location.pathname))
+        .eql('/addstaff', 'User is not redirected to Add Staff page');  
 
-//     // Step 5: Fill validate value in the form
-//     await t
-//         .typeText(phoneNumberInput, '0123456789')
-//         .typeText(roleInput, 'manager')
-//         .typeText(emailInput, 'teststaff1@example.com')
+    // Step 5: Fill validate value in the form
+    await t
+        .typeText(phoneNumberInput, '0123456789')
+        .typeText(roleInput, 'manager')
+        .typeText(emailInput, 'teststaff1@example.com')
 
-//         .typeText(usernameFormInput, 'teststaff1')
-//         .typeText(passwordFormInput, 'teststaff1')
-//         .click(createButton);
+        .typeText(usernameFormInput, 'teststaff1')
+        .typeText(passwordFormInput, 'teststaff1')
+        .click(createButton);
 
-//      // Step 6: Check for "Email already exists" toast message
-//      await t.expect(toastMessage.exists).ok('Toast message did not appear');           
-// }); 
+     // Step 6: Check for "Email already exists" toast message
+     await t.expect(toastMessage.exists).ok('Toast message did not appear');           
+}); 
 
 // //Test 5 : Edit the Staff  
 test('Edit Staff', async t => {

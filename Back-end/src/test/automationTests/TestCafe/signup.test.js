@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture`Signup Page Test`
-    .page`http://localhost:3001/usercreateaccount`; // Replace with the correct URL
+    .page`http://localhost:3000/usercreateaccount`; // Replace with the correct URL
 
 //Test 1 : Sign up with valid values
 test('User can sign up with valid details', async t => {
@@ -17,10 +17,10 @@ test('User can sign up with valid details', async t => {
 
     // Fill in the form with valid data
     await t
-        .typeText(usernameInput, 'testuser1277')
-        .typeText(passwordInput, 'testuser1277')
-        .typeText(emailInput, 'testuser1277@example.com')
-        .typeText(nameInput, 'Test User 1277')
+        .typeText(usernameInput, 'testuser1368')
+        .typeText(passwordInput, 'testuser1368')
+        .typeText(emailInput, 'testuser1368@example.com')
+        .typeText(nameInput, 'Test User 1368')
         .typeText(phoneNumberInput, '0123456789')
         .click(signUpButton);
     
@@ -46,7 +46,7 @@ test('User sees error when submitting an incomplete form', async t => {
     // Validate the alert message
     const alertInfo = await t.getNativeDialogHistory();
     await t.expect(alertInfo[0].type).eql('alert', 'Expected an alert dialog.');   
-    await t.expect(alertInfo[0].text).eql('Your account may be appeared or existed blank in form. Error signing up. Please try again.', 'Unexpected alert message.');
+    await t.expect(alertInfo[0].text).eql('Your account may be appeared or existed blank or invalid values in form . Error signing up. Please try again.', 'Unexpected alert message.');
     await t.eval(() => window.location.reload());
 });
 

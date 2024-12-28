@@ -79,36 +79,40 @@ const validatePhone = (phone) => {
 }
 
 const isValidInput = () => {
+    if (!formData.value.name) {
+        toast.error("Name is required");
+        return false;
+    }
+    if (!formData.value.phone_number) {
+        toast.error("Phone number is required");
+        return false;
+    }
+    if (!validatePhone(formData.value.phone_number)) {
+        toast.error("Please enter a valid phone number");
+        return false;
+    }
+    if (!formData.value.role) {
+        toast.error("Role is required");
+        return false;
+    }
     if (!formData.value.email) {
         toast.error("Email is required");
         return false;
     }
-    if (!formData.value.name) {
-        toast.error("Name is required");
+    if (!validateEmail(formData.value.email)) {
+        toast.error("Please enter a valid email address");
+        return false;
+    } 
+    if (!formData.value.username) {
+        toast.error("Username is required");
         return false;
     }
     if (!formData.value.password) {
         toast.error("Password is required");
         return false;
-    } if (!formData.value.phone_number) {
-        toast.error("Phone number is required");
-        return false;
-    } if (!formData.value.username) {
-        toast.error("Username is required");
-        return false;
-    } if (!formData.value.role) {
-        toast.error("Role is required");
-        return false;
-    } if (!validateEmail(formData.value.email)) {
-        toast.error("Please enter a valid email address");
-        return false;
-    } if (!validatePhone(formData.value.phone_number)) {
-        toast.error("Please enter a valid phone number");
-        return false;
-    }
+    } 
     return true
 }
-
 const toUpperCase = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }

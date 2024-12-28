@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture `User Login Page Test`
-    .page `http://localhost:3001/userlogin`; // Update the URL as needed
+    .page `http://localhost:3000/userlogin`; // Update the URL as needed
 
 // Test 1: Verify that all essential elements exist on the page
 test('Verify page elements', async t => {
@@ -74,6 +74,7 @@ test('Navigation links', async t => {
     const forgotPasswordLink = Selector('a').withText('Forgot password?');
     const createAccountLink = Selector('a').withText('Create new account');
 
+    await t.debug();
     // Check the navigation to the forgot password page
     await t
         .click(forgotPasswordLink)
@@ -82,7 +83,7 @@ test('Navigation links', async t => {
 
     // Navigate back to the login page and check for the create account page
     await t
-        .navigateTo('http://localhost:3001/userlogin') // Navigate back to login page
+        .navigateTo('http://localhost:3000/userlogin') // Navigate back to login page
         .click(createAccountLink)
         .expect(Selector('h3').withText('Create new account').exists)  // Check the correct page loaded
         .ok('Create account page is loaded');

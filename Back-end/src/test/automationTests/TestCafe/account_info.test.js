@@ -1,7 +1,7 @@
 import { Selector, ClientFunction } from 'testcafe';
 
 fixture`User Info Page`
-    .page`http://localhost:3001/userlogin`; // Replace with your actual application URL
+    .page`http://localhost:3000/userlogin`; // Replace with your actual application URL
 
 // Helper selectors for login
 const usernameInput = Selector('input[placeholder="Username"]');

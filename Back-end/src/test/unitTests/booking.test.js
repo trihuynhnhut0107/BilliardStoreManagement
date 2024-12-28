@@ -2,25 +2,29 @@ const chai = require("chai");
 const sinon = require("sinon");
 const { expect } = chai;
 
-// Import your service method
+// Import your service and models
 const BookingService = require("../../services/booking.service");
+const BilliardTable = require("../../models/BilliardTable");
+const Customer = require("../../models/Customer");
+const Booking = require("../../models/Booking");
 
 describe("BookingService - createBooking", () => {
-  let mockCreateBooking;
+  let tableStub, customerStub, bookingFindStub, bookingCreateStub;
 
-  // Setup mock for createBooking
   beforeEach(() => {
-    // If the method interacts with external systems like DB, mock them here
-    mockCreateBooking = sinon.stub(BookingService, "createBooking");
+    // Stub dependencies
+    tableStub = sinon.stub(BilliardTable, "findOne");
+    customerStub = sinon.stub(Customer, "findOne");
+    bookingFindStub = sinon.stub(Booking, "findOne");
+    bookingCreateStub = sinon.stub(Booking, "create");
   });
 
   afterEach(() => {
-    // Restore the stubbed methods
+    // Restore all stubs
     sinon.restore();
   });
 
   it("should return success when booking is created successfully", async () => {
-    // Prepare mock return data
     const bookingData = {
       table_id: 1,
       customer_id: 1,
@@ -28,18 +32,14 @@ describe("BookingService - createBooking", () => {
       end_time: "10:30:00 12/13/2024",
     };
 
-    const expectedResponse = {
-      message: "Create booking successfully",
-    };
+    tableStub.resolves({ id: 1 });
+    customerStub.resolves({ id: 1 });
+    bookingFindStub.resolves(null); // No conflicting booking
+    bookingCreateStub.resolves({ id: 1 });
 
-    // Stub the createBooking method to resolve with expected data
-    mockCreateBooking.resolves(expectedResponse);
-
-    // Call the service method
     const response = await BookingService.createBooking(bookingData);
 
-    // Assert that the response is what we expected
-    expect(response.message).to.equal("Create booking successfully");
+    expect(response).to.equal("Create booking successfully");
   });
 
   it('should return error when "table_id" is missing', async () => {
@@ -49,13 +49,6 @@ describe("BookingService - createBooking", () => {
       start_time: "08:30:00 12/13/2024",
       end_time: "10:30:00 12/13/2024",
     };
-
-    const expectedError = {
-      message: "Please fill all the required fields",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
 
     try {
       await BookingService.createBooking(bookingData);
@@ -72,13 +65,6 @@ describe("BookingService - createBooking", () => {
       end_time: "10:30:00 12/13/2024",
     };
 
-    const expectedError = {
-      message: "Please fill all the required fields",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
-
     try {
       await BookingService.createBooking(bookingData);
     } catch (err) {
@@ -93,13 +79,6 @@ describe("BookingService - createBooking", () => {
       start_time: "",
       end_time: "10:30:00 12/13/2024",
     };
-
-    const expectedError = {
-      message: "Please fill all the required fields",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
 
     try {
       await BookingService.createBooking(bookingData);
@@ -116,13 +95,6 @@ describe("BookingService - createBooking", () => {
       end_time: "",
     };
 
-    const expectedError = {
-      message: "Please fill all the required fields",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
-
     try {
       await BookingService.createBooking(bookingData);
     } catch (err) {
@@ -131,19 +103,12 @@ describe("BookingService - createBooking", () => {
   });
 
   it("should return error for invalid date formats", async () => {
-    const bookingData = {
+const bookingData = {
       table_id: 1,
       customer_id: 1,
       start_time: "08:30:00 13/12/2024", // Invalid format
       end_time: "10:30:00 12/13/2024",
     };
-
-    const expectedError = {
-      message: "Invalid date format",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
 
     try {
       await BookingService.createBooking(bookingData);
@@ -160,12 +125,7 @@ describe("BookingService - createBooking", () => {
       end_time: "10:30:00 12/13/2024",
     };
 
-    const expectedError = {
-      message: "Invalid table ID",
-    };
-
-    // Stub the method to simulate an error response
-    mockCreateBooking.throws(expectedError);
+    tableStub.resolves(null); // Table not found
 
     try {
       await BookingService.createBooking(bookingData);

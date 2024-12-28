@@ -80,7 +80,7 @@ class BookingService {
       start_time: startTime,
       end_time: endTime,
     });
-    global.io.emit("New booking");
+    // global.io.emit("New booking");
 
     if (!newBooking) {
       throw new ServerError("Booking not created");

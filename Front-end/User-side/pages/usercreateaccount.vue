@@ -63,6 +63,8 @@
 
 <script setup>
 import DefaultLayout from "~/layout/default.vue";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css'
 
 const formData = ref({
   username: "",
@@ -72,7 +74,50 @@ const formData = ref({
   phone_number: ""
 });
 
+const isValidInput = () => {
+  const { username, email, password, name, phone_number } = formData.value;
+
+  // Validate username: At least 8 characters
+  if (!username || username.trim().length < 8) {
+    toast.error("Username must be at least 8 characters long.");
+    return false;
+  }
+
+  // Validate password: At least 8 characters, no uppercase or special characters
+  if (!password || password.trim().length < 8) {
+    toast.error("Password must be at least 8 characters long");
+    return false;
+  }
+
+  // Validate email: Basic email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error("Invalid email address.");
+    return false;
+  }
+
+
+  // Validate name: Not empty
+  if (!name || name.trim().length === 0) {
+    toast.error("Name is required.");
+    return false;
+  }
+
+  // Validate phone number: Exactly 10 digits, starts with "0"
+  const phoneRegex = /^0\d{9}$/;
+  if (!phoneRegex.test(phone_number)) {
+    toast.error("Phone number must be 10 digits long and start with '0'.");
+    return false;
+  }
+  return true; // All validations passed
+};
+
+
 const handleSignUp = async () => {
+  let check = isValidInput();
+  if (!check) {
+    return
+  }
   try {
     const { data, error } = await useFetch(
       "http://localhost:8080/v1/api/access/customer-site/signup",
@@ -91,9 +136,10 @@ const handleSignUp = async () => {
       navigateTo("/userlogin");
     }
   } catch (err) {
-    console.error(err);
-    alert("Your account may be appeared or existed blank in form. Error signing up. Please try again.");
-    window.location.reload();
+    toast.error("Email already exists", {
+      autoClose: 3000,
+    })
+    console.log(err)
   }
 };
 </script>
