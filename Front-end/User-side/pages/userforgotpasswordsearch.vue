@@ -53,7 +53,7 @@
 
 <script setup>
 import { NuxtLink } from "#build/components";
-import DefaultLayout from "~/layout/default.vue";
+import DefaultLayout from "~/layouts/default.vue";
 const userEmail = "example@gmail.com";
 </script>
 

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  plugins: [{ src: "~/plugins/flatpickr.js", mode: "client" }],
   modules: ["@nuxt/test-utils/module"],
   css: ["~/assets/css/main.css"],
 });

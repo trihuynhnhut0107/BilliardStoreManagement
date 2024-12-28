@@ -14,7 +14,7 @@
         <input type="text" placeholder="Email address or phone number" />
         <div class="button">
           <button class="btn-cancel">
-            <NuxtLink to="/login">Cancel</NuxtLink>
+            <NuxtLink to="/userlogin">Cancel</NuxtLink>
           </button>
           <button class="btn-search">
             <NuxtLink to="/forgotpasswordsearch">Search</NuxtLink>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import DefaultLayout from "~/layout/default.vue";
+import DefaultLayout from "~/layouts/default.vue";
 </script>
 
 <style scoped>

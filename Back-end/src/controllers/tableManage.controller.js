@@ -13,6 +13,21 @@ class tableManageController {
       },
     }).send(res);
   };
+  getAllTablePagination = async (req, res, next) => {
+    new OK({
+      message: "Get all table with pagination successfully",
+      metadata: await tableManageService.getAllTablePagination(
+        req.query.page_size,
+        req.query.page_number
+      ),
+    }).send(res);
+  };
+  getTableByID = async (req, res, next) => {
+    new OK({
+      message: "Get table by id successfully",
+      metadata: await tableManageService.getTableByID(req.params.id),
+    }).send(res);
+  };
   createNewTable = async (req, res, next) => {
     new CREATED({
       message: await tableManageService.createNewTable(req.body),

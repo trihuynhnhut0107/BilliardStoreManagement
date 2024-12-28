@@ -1,15 +1,19 @@
-function utcDateToString(date) {
-  // Convert UTC to GMT+7
-  const localDate = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+function convertUTCToGMT7String(utcString) {
+  const utcDate = new Date(utcString);
 
-  const hours = String(localDate.getHours()).padStart(2, "0");
-  const minutes = String(localDate.getMinutes()).padStart(2, "0");
-  const seconds = String(localDate.getSeconds()).padStart(2, "0");
+  // Adjust to GMT+7 by adding 7 hours to the UTC time
+  const gmt7Date = new Date(utcDate.getTime()); // Add 7 hours
 
-  const day = String(localDate.getDate()).padStart(2, "0");
-  const month = String(localDate.getMonth() + 1).padStart(2, "0");
-  const year = localDate.getFullYear();
+  // Extract time and date components
+  const hours = String(gmt7Date.getHours()).padStart(2, "0");
+  const minutes = String(gmt7Date.getMinutes()).padStart(2, "0");
+  const seconds = String(gmt7Date.getSeconds()).padStart(2, "0");
+  const month = String(gmt7Date.getMonth() + 1).padStart(2, "0");
+  const day = String(gmt7Date.getDate()).padStart(2, "0");
+  const year = gmt7Date.getFullYear();
 
-  return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+  // Return the formatted string
+  return `${hours}:${minutes}:${seconds} ${month}/${day}/${year}`;
 }
-module.exports = utcDateToString;
+
+module.exports = convertUTCToGMT7String;

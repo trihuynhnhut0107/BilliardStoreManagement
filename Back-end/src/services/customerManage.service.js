@@ -6,30 +6,30 @@ const Customer = require("../models/Customer");
 
 class customerManageService {
   static getAllCustomer = async () => {
-    const foundedCustomer = await Customer.findAll();
-    if (!foundedCustomer) {
+    const foundCustomer = await Customer.findAll();
+    if (!foundCustomer) {
       throw new BadRequestError("Customer not found");
     }
-    return foundedCustomer;
+    return foundCustomer;
   };
   static getCustomerByID = async (customer_id) => {
-    const foundedCustomer = await Customer.findOne({
+    const foundCustomer = await Customer.findOne({
       where: { id: customer_id },
     });
-    if (!foundedCustomer) {
+    if (!foundCustomer) {
       throw new BadRequestError("Customer not found");
     }
-    return foundedCustomer;
+    return foundCustomer;
   };
   static getCustomerWithBill = async (customer_id) => {
-    const foundedCustomer = await Customer.findOne({
+    const foundCustomer = await Customer.findOne({
       where: { id: customer_id },
       include: Bill,
     });
-    if (!foundedCustomer) {
+    if (!foundCustomer) {
       throw new BadRequestError("Customer not found");
     }
-    return foundedCustomer;
+    return foundCustomer;
   };
   static updateCustomer = async ({
     customer_id,
