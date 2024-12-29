@@ -25,7 +25,7 @@ class MessagingService {
       },
     });
     if (!foundConversationID) {
-      return -1;
+      return { id: -1 };
     }
     return foundConversationID;
   };
@@ -150,7 +150,9 @@ class MessagingService {
 
     if (!conversation)
       throw new BadRequestError("Conversation not found or created");
-
+    if (conversation.status === "open" && senderType === "staff") {
+      conversation.update({ status: "handling", staffID: senderID });
+    }
     const message = await Message.create({
       conversationID: conversation.id,
       senderType,
