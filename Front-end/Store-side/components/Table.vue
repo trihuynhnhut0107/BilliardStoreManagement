@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 
-const dataList = defineModel(); // Your data list for the table
+const dataList = defineModel();
 
 const selectedRow = ref(null);
 

@@ -7,7 +7,9 @@
       </div>
     </div>
     <div class="w-full h-full py-6 px-12">
-      <div class="w-full h-full grid grid-flow-row grid-cols-4 gap-2">
+      <div
+        v-if="allTableInfo.metadata.length !== 0"
+        class="w-full h-full grid grid-flow-row grid-cols-4 gap-2">
         <div v-for="item in allTableInfo.metadata" :key="item.id">
           <div
             class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transform transition-all duration-300 ease-in-out">
@@ -46,6 +48,7 @@
           </div>
         </div>
       </div>
+      <div v-else>No table is available</div>
     </div>
   </div>
 </template>
