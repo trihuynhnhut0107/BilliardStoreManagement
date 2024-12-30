@@ -27,7 +27,7 @@ class staffManageService {
     const totalRecords = await Staff.count();
     const foundStaff = await Staff.findAll({
       limit: pageSizeInt,
-      offset: pageNumberInt * (pageSizeInt - 1),
+      offset: (pageNumberInt - 1) * pageSizeInt,
     });
     if (!foundStaff) {
       throw new BadRequestError("Staff not found");
