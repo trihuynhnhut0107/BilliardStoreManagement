@@ -18,7 +18,8 @@
                 <p>Active</p>
             </div> -->
             <div class="flex gap-2 items-center">
-                <NuxtLink to="/addcustomer" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
+                <NuxtLink to="/addcustomer"
+                    class="w-fit bg-[#3A6351] py-[6px] px-4 text-white text-sm font-medium rounded">
                     Add
                     user</NuxtLink>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#ff0000" viewBox="0 0 16 16">
@@ -29,7 +30,7 @@
         </div>
 
         <!-- Table -->
-        <Table v-model="datalist" :currentPage="currentPage" :totalPages="totalPages"
+        <Table v-model="filteredTables" :currentPage="currentPage" :totalPages="totalPages"
             :handlePageChange="handlePageChange" @updateRow="updateRow">
         </Table>
 
@@ -81,23 +82,23 @@ const handlePageChange = async (direction) => {
 };
 
 // Handle row updates
-const updateRow = async (updatedRow) => {
+const updateRow = async (updatedRow, callback) => {
     const response = await $fetch(
-        `http://localhost:8080/v1/api/table-manage/update-table`,
+        `http://localhost:8080/v1/api/customer-manage/update-customer`,
         {
             method: "POST",
             body: {
-                table_id: updatedRow.id,
-                table_type: updatedRow.table_type.toLowerCase(),
-                stick_quantity: updatedRow.stick_quantity,
-                ball_quantity: updatedRow.ball_quantity,
-                price: updatedRow.price,
-                status: updatedRow.status.toLowerCase(),
+                customer_id: updatedRow.id,
+                name: updatedRow.name,
+                phone_number: updatedRow.phone_number,
+                email: updatedRow.email,
             },
             onResponse({ response }) {
                 if (response.status !== 200 && response.status !== 201) {
                     toast.error(response._data.message);
+                    callback(false);
                 } else {
+                    callback(true);
                     refetchData();
                     toast.success("Table updated successfully");
                 }
@@ -106,8 +107,34 @@ const updateRow = async (updatedRow) => {
     );
 };
 
+// Handle search query
+const filteredTables = computed(() => {
+    const query = searchQuery.value.toLowerCase().trim()
+    if (!query) return datalist.value
+
+    return datalist.value.filter(table =>
+        table.id.toString().toLowerCase().includes(query) ||
+        table.name.toLowerCase().includes(query) ||
+        table.phone_number.toString().toLowerCase().includes(query) ||
+        table.email.toLowerCase().includes(query) ||
+        table.accountID.toString().toLowerCase().includes(query) ||
+        table.points.toString().toLowerCase().includes(query) ||
+        table.status.toLowerCase().includes(query)
+    )
+})
+
 // Initial data fetch
 refetchData();
+
+watch([currentPage, itemsPerPage], async () => {
+    await refetchData();
+});
+
+watch(filteredTables, async () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = totalPages.value;
+    }
+});
 </script>
 
 <style scoped></style>

@@ -20,7 +20,7 @@
               <p>Active</p>
           </div> -->
       <div class="flex gap-2 items-center">
-        <NuxtLink to="/addtable" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">Add
+        <NuxtLink to="/addtable" class="w-fit bg-[#3A6351] py-[6px] px-4 text-white text-sm font-medium rounded">Add
           table</NuxtLink>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#ff0000" viewBox="0 0 16 16">
           <path
@@ -30,8 +30,8 @@
     </div>
 
 
-    <Table v-model="datalist" :currentPage="currentPage" :totalPages="totalPages" :handlePageChange="handlePageChange"
-      @updateRow="updateRow">
+    <Table v-model="filteredTables" :currentPage="currentPage" :totalPages="totalPages"
+      :handlePageChange="handlePageChange" @updateRow="updateRow" @delete-row="deleteRow">
     </Table>
 
   </div>
@@ -74,7 +74,8 @@ const refetchData = async () => {
 const handlePageChange = async (direction) => {
   if (direction === 'next' && currentPage.value < totalPages.value) {
     currentPage.value++;
-  } else if (direction === 'prev' && currentPage.value > 1) {
+  }
+  if (direction === 'prev' && currentPage.value > 1) {
     currentPage.value--;
   }
   await refetchData();
@@ -82,9 +83,8 @@ const handlePageChange = async (direction) => {
 
 // Handle row updates
 const updateRow = async (updatedRow, callback) => {
-  let result = false;
   const data = await $fetch(
-    "http://localhost:8080/v1/api/table-manage/update-table",
+    "http://localhost:8080/v1/api/customer-manage/update-customer",
     {
       method: "POST",
       body: JSON.stringify({
@@ -97,7 +97,7 @@ const updateRow = async (updatedRow, callback) => {
         status: updatedRow.status,
       }),
       onResponse({ response }) {
-        if (response.status !== 201) {
+        if (response.status !== 200 && response.status !== 201) {
           toast.error(response._data.message);
           callback(false);
         } else {
@@ -110,11 +110,53 @@ const updateRow = async (updatedRow, callback) => {
   );
 };
 
+//Handle delete row
+const deleteRow = async (row) => {
+  const data = await $fetch(
+    "http://localhost:8080/v1/api/table-manage/delete-table",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        table_id: row.id,
+      }),
+      onResponse({ response }) {
+        if (response.status !== 200 && response.status !== 201) {
+          toast.error(response._data.message);
+        } else {
+          toast.success("Table deleted successfully!");
+          refetchData();
+        }
+      },
+    }
+  );
+};
+
+// Handle search query
+const filteredTables = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) return datalist.value
+
+  return datalist.value.filter(table =>
+    table.id.toString().toLowerCase().includes(query) ||
+    table.price.toString().toLowerCase().includes(query) ||
+    table.stick_quantity.toString().toLowerCase().includes(query) ||
+    table.ball_quantity.toString().toLowerCase().includes(query) ||
+    table.table_type.toLowerCase().includes(query) ||
+    table.status.toLowerCase().includes(query)
+  )
+})
+
 // Initial data fetch
 refetchData();
 
 watch([currentPage, itemsPerPage], async () => {
   await refetchData();
+});
+
+watch(filteredTables, async () => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value;
+  }
 });
 </script>
 

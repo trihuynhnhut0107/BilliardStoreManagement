@@ -4,7 +4,7 @@
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <h1 class="font-bold text-xl">Add New Customer</h1>
         </div>
-        <form @submit.prevent class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between"
+        <form @submit.prevent class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between items-center"
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <div class="flex flex-col gap-2 min-w-[350px]">
                 <div class="flex items-center gap-2">

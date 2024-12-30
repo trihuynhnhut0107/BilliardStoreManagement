@@ -23,8 +23,8 @@ class staffManageService {
     }
     const pageSizeInt = parseInt(page_size, 10);
     const pageNumberInt = parseInt(page_number, 10);
-    const totalPages = Math.ceil(totalRecords / pageSizeInt);
     const totalRecords = await Staff.count();
+    const totalPages = Math.ceil(totalRecords / pageSizeInt);
     const foundStaff = await Staff.findAll({
       limit: pageSizeInt,
       offset: (pageNumberInt - 1) * pageSizeInt,

@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between"
+    <div class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between items-center"
         style="box-shadow: 0px 0px 3px #a4a4a4">
         <div class="flex flex-col gap-2">
             <h3 class="text-[#3A6351] font-semibold text-2xl mb-2">{{ formData.name }}</h3>

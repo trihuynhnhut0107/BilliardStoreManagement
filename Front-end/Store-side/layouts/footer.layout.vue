@@ -24,10 +24,10 @@
           </div>
           <div>
             <ul class="flex gap-10 font-bold">
-              <NuxtLink to="/products">PRODUCTS</NuxtLink>
-              <NuxtLink to="/blog">BLOG</NuxtLink>
-              <NuxtLink to="/about">ABOUT</NuxtLink>
-              <NuxtLink to="/contacts">CONTACTS</NuxtLink>
+              <NuxtLink>PRODUCTS</NuxtLink>
+              <NuxtLink>BLOG</NuxtLink>
+              <NuxtLink>ABOUT</NuxtLink>
+              <NuxtLink>CONTACTS</NuxtLink>
             </ul>
           </div>
         </div>

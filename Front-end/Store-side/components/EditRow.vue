@@ -3,11 +3,7 @@
     <!-- Editable Cells Row -->
     <td v-for="column in editableColumns" :key="column.key" class="p-2">
       <!-- Regular input for all columns -->
-      <input
-        v-model="editableRow[column.key]"
-        type="text"
-        :placeholder="column.label"
-        :disabled="column.key === 'id'"
+      <input v-model="editableRow[column.key]" type="text" :placeholder="column.label" :disabled="column.key === 'id'"
         class="w-full p-2 border border-gray-300 rounded text-center" />
     </td>
   </tr>
@@ -15,16 +11,10 @@
   <!-- Action Buttons Row -->
   <tr class="edit-form-row bg-yellow-50 border-2 border-yellow-300">
     <td colspan="100%" class="p-2 text-right">
-      <button
-        type="button"
-        @click="submitEdit"
-        class="p-2 bg-green-500 text-white rounded mx-2">
+      <button type="button" @click="submitEdit" class="py-[6px] px-4 bg-green-500 text-white rounded mx-2">
         Save
       </button>
-      <button
-        type="button"
-        @click="cancelEdit"
-        class="p-2 ml-2 border border-gray-300 rounded mx-2">
+      <button type="button" @click="cancelEdit" class="py-[6px] px-4 ml-2 border border-gray-300 rounded mx-2">
         Cancel
       </button>
     </td>

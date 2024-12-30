@@ -2,7 +2,7 @@
   <div class="w-full border-collapse border-none">
     <table class="w-full border-collapse">
       <!-- Table Header -->
-      <thead class="bg-gray-100 border-b border-gray-300">
+      <thead class="bg-white border-b border-gray-300">
         <tr>
           <th v-for="column in columns" :key="column.key" class="p-2">
             {{ column.label }}
@@ -28,8 +28,11 @@
               }}
             </td>
             <td class="p-2 w-[80px] text-center">
-              <button @click="editRow(item)" class="p-2 px-4 bg-blue-500 text-white rounded">
+              <button @click="editRow(item)" class="py-[6px] px-4 bg-blue-500 text-white rounded">
                 Edit
+              </button>
+              <button @click="deleteRow(item)" class="py-[6px] px-4 ml-2 bg-red-500 text-white rounded">
+                Delete
               </button>
             </td>
           </tr>
@@ -69,7 +72,7 @@ const dataList = defineModel();
 
 const selectedRow = ref(null);
 
-const emit = defineEmits(["updateRow"]);
+const emit = defineEmits(["updateRow", "deleteRow"]);
 
 const toUpperCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -124,6 +127,10 @@ const updateRow = async (updatedRow) => {
       cancelEdit();
     }
   });
+};
+
+const deleteRow = (row) => {
+  emit("deleteRow", row);
 };
 
 const cancelEdit = () => {

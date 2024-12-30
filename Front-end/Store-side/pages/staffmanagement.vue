@@ -19,7 +19,7 @@
             </div> -->
             <div class="flex gap-2 items-center">
                 <NuxtLink to="/addstaff"
-                    class="line-clamp-1 w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">Add
+                    class="line-clamp-1 w-fit bg-[#3A6351] py-[6px] px-4 text-white text-sm font-medium rounded">Add
                     staff</NuxtLink>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#ff0000" viewBox="0 0 16 16">
                     <path
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Table -->
-        <Table v-model="datalist" :currentPage="currentPage" :totalPages="totalPages"
+        <Table v-model="filteredTables" :currentPage="currentPage" :totalPages="totalPages"
             :handlePageChange="handlePageChange" @updateRow="updateRow">
         </Table>
 
@@ -51,19 +51,22 @@ const datalist = ref([]);
 const searchQuery = ref("");
 const currentPage = ref(1);
 const itemsPerPage = ref(6);
-const totalPages = ref('');
+const totalPages = ref(0);
 
 // Function to refetch data with pagination
 const refetchData = async () => {
     const data = await $fetch(
-        "http://localhost:8080/v1/api/staff-manage/get-all-staff-pagination?page_size=3&page_number=1",
+        "http://localhost:8080/v1/api/staff-manage/get-all-staff-pagination",
         {
             method: "GET",
+            query: {
+                page_size: itemsPerPage.value,
+                page_number: currentPage.value,
+            },
         }
     );
     totalPages.value = data.metadata.totalPages;
     datalist.value = data.metadata.staffs;
-    console.log(data.metadata.staffs);
 };
 
 // Handle page changes
@@ -77,7 +80,7 @@ const handlePageChange = async (direction) => {
 };
 
 // Handle row updates
-const updateRow = async (updatedRow) => {
+const updateRow = async (updatedRow, callback) => {
     const response = await $fetch(
         `http://localhost:8080/v1/api/staff-manage/update-staff`,
         {
@@ -91,7 +94,9 @@ const updateRow = async (updatedRow) => {
             onResponse({ response }) {
                 if (response.status !== 200 && response.status !== 201) {
                     toast.error(response._data.message);
+                    callback(false);
                 } else {
+                    callback(true);
                     refetchData();
                     toast.success("Table updated successfully");
                 }
@@ -100,9 +105,33 @@ const updateRow = async (updatedRow) => {
     );
 };
 
+// Handle search query
+const filteredTables = computed(() => {
+    const query = searchQuery.value.toLowerCase().trim()
+    if (!query) return datalist.value
+
+    return datalist.value.filter(table =>
+        table.id.toString().toLowerCase().includes(query) ||
+        table.name.toLowerCase().includes(query) ||
+        table.phone_number.toString().toLowerCase().includes(query) ||
+        table.role.toLowerCase().includes(query) ||
+        table.accountID.toString().toLowerCase().includes(query) ||
+        table.status.toLowerCase().includes(query)
+    )
+})
+
 // Initial data fetch
 refetchData();
 
+watch([currentPage, itemsPerPage], async () => {
+    await refetchData();
+});
+
+watch(filteredTables, async () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = totalPages.value;
+    }
+});
 </script>
 
 <style scoped></style>

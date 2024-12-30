@@ -48,7 +48,7 @@ import "vue3-toastify/dist/index.css";
 import { useRouter } from "nuxt/app";
 
 definePageMeta({
-    layout: "main",
+    layout: "home-layout",
 });
 
 const router = useRouter();
