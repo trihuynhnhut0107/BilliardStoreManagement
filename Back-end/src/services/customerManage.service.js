@@ -28,7 +28,7 @@ class customerManageService {
     const totalPages = Math.ceil(totalRecords / pageSizeInt);
     const foundCustomer = await Customer.findAll({
       limit: pageSizeInt,
-      offset: pageNumberInt * (pageSizeInt - 1),
+      offset: (pageNumberInt - 1) * pageSizeInt,
     });
     if (!foundCustomer) {
       throw new BadRequestError("Customer not found");
