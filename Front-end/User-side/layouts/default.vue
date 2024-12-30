@@ -12,13 +12,8 @@
         <ul
           class="hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
           <li>
-            <NuxtLink to="/userhome" class="text-lg font-bold text-green-900"
-              >Home</NuxtLink
-            >
-          </li>
-          <li>
-            <NuxtLink to="/userlogin" class="text-lg font-bold text-green-900"
-              >Login</NuxtLink
+            <NuxtLink to="/" class="text-lg font-bold text-green-900"
+              >Products</NuxtLink
             >
           </li>
           <li>
@@ -50,25 +45,19 @@
     <main class="w-full h-full">
       <slot />
     </main>
-    <footer
-      class="flex flex-row bg-[#3A6351] border-t border-gray-300 w-full h-full">
-      <!-- Top section with logo, description, and navigation -->
+    <footer class="bg-[#3A6351] border-t border-gray-300">
       <div class="container mx-auto px-4 py-6 flex justify-between items-start">
-        <!-- Left side: Logo and description -->
         <div class="w-1/2">
           <div class="flex items-center space-x-2">
-            <!-- Logo box -->
             <div class="w-10 h-10 bg-gray-200"></div>
             <h2 class="text-2xl text-white font-bold">Demo.</h2>
           </div>
           <p class="text-white mt-2">
             Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s.
+            industry.
           </p>
         </div>
 
-        <!-- Right side: Navigation links -->
         <div class="flex space-x-6 text-sm font-semibold text-white">
           <a href="#" class="hover:text-yellow-600">Products</a>
           <a href="#" class="hover:text-yellow-600">Blog</a>
@@ -76,8 +65,6 @@
           <a href="#" class="hover:text-yellow-600">Contacts</a>
         </div>
       </div>
-
-      <!-- Bottom section with copyright -->
       <div
         class="border-t border-gray-300 py-4 text-center text-sm text-gray-200">
         ©2024 Demo Inc. All rights reserved

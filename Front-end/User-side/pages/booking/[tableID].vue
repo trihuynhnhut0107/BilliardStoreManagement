@@ -3,8 +3,8 @@
     <div class="w-full px-6 py-2">
       <NuxtLink
         to="/"
-        class="bg-green-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-green-600">
-        Back to Home</NuxtLink
+        class="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600">
+        Cancel</NuxtLink
       >
     </div>
     <div class="w-full h-full flex flex-col sm:flex-row p-4">
@@ -112,7 +112,7 @@
                   : ''
               }`"
               @click="confirmSubmit">
-              Book
+              Booking
             </button>
           </div>
         </div>
@@ -141,7 +141,7 @@
             </p>
             <p class="text-sm">End Time: {{ formatTime(booking.end_time) }}</p>
           </div>
-          <div v-if="bookingList.length === 0">No booking</div>
+          <div v-if="bookingList.length === 0">No booking available</div>
         </div>
       </div>
     </div>

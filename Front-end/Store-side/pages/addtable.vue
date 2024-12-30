@@ -43,12 +43,12 @@
 </template>
 
 <script setup>
-import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
-import { useRouter } from 'nuxt/app';
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+import { useRouter } from "nuxt/app";
 
 definePageMeta({
-    layout: 'home-layout'
+    layout: "main",
 });
 
 const router = useRouter();
@@ -93,7 +93,7 @@ const createTable = async () => {
 
 <style scoped>
 .name::placeholder {
-    color: #3A6351;
+    color: #3a6351;
 }
 
 .name {

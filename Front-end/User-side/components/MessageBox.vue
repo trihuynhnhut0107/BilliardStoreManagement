@@ -48,15 +48,6 @@ const getConversationID = async () => {
   );
   if (data.metadata.id !== -1) {
     conversationID.value = data.metadata.id;
-    socket.emit("joinConversation", { conversationID: conversationID.value });
-    // Assuming `socket` is your Socket.IO client instance
-    socket.on("newMessage", (message) => {
-      const newMessage = {
-        text: message.messageText,
-        isOwn: message.senderType === "customer",
-      };
-      messages.value.push(newMessage);
-    });
   }
 };
 getConversationID();
@@ -79,6 +70,15 @@ const getConversation = async () => {
 watch(conversationID, (newConversationID) => {
   if (newConversationID !== -1) {
     getConversation();
+    socket.emit("joinConversation", { conversationID: conversationID.value });
+    // Assuming `socket` is your Socket.IO client instance
+    socket.on("newMessage", (message) => {
+      const newMessage = {
+        text: message.messageText,
+        isOwn: message.senderType === "customer",
+      };
+      messages.value.push(newMessage);
+    });
   }
 });
 
@@ -92,15 +92,17 @@ const sendMessage = async () => {
         senderID: customerID.value,
         messageText: newMessage.value,
       }),
+      onResponse({ request, response, options }) {
+        console.log(response._data);
+      },
     }
   );
   if (data.metadata.conversationID) {
+    console.log(data);
     conversationID.value = data.metadata.conversationID;
   }
   newMessage.value = "";
 };
-
-onMounted(() => {});
 </script>
 
 <style scoped></style>
