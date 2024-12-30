@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full flex flex-col items-center justify-center bg-white">
+  <div class="w-full h-full flex flex-col items-center justify-center bg-white  p-10 ">
     <form
       @submit.prevent="handleSignUp"
       class="self-center w-fit flex flex-col items-center gap-5 rounded-lg shadow-[2px_2px_2px_#A4A4A4] p-4 px-11 bg-white">
@@ -54,6 +54,10 @@ import Cookies from "js-cookie";
 import { navigateTo } from "nuxt/app";
 import { toast } from "vue3-toastify";
 
+definePageMeta({
+  layout: "main",
+});
+
 const formData = ref({
   username: "",
   email: "",
@@ -62,7 +66,55 @@ const formData = ref({
   phone_number: "",
 });
 
+const loginFormData = ref({
+  username: formData.username,
+  password: formData.password
+});
+
+const isValidInput = () => {
+  const { username, email, password, name, phone_number } = formData.value;
+
+  // Validate username: At least 8 characters
+  if (!username || username.trim().length < 8) {
+    toast.error("Username must be at least 8 characters long.");
+    return false;
+  }
+
+  // Validate password: At least 8 characters, no uppercase or special characters
+  if (!password || password.trim().length < 8) {
+    toast.error("Password must be at least 8 characters long");
+    return false;
+  }
+
+  // Validate email: Basic email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error("Invalid email address.");
+    return false;
+  }
+
+
+  // Validate name: Not empty
+  if (!name || name.trim().length === 0) {
+    toast.error("Name is required.");
+    return false;
+  }
+
+  // Validate phone number: Exactly 10 digits, starts with "0"
+  const phoneRegex = /^0\d{9}$/;
+  if (!phoneRegex.test(phone_number)) {
+    toast.error("Phone number must be 10 digits long and start with '0'.");
+    return false;
+  }
+  return true; // All validations passed
+};
+
+
 const handleSignUp = async () => {
+  let check = isValidInput();
+  if (!check) {
+    return
+  }
   const data = await $fetch(
     "http://localhost:8080/v1/api/access/customer-site/signup",
     {
@@ -78,26 +130,26 @@ const handleSignUp = async () => {
       },
     }
   );
-  navigateTo("/userlogin");
-  // if (data?.value?.status === 201) {
-  //   const user = data.value.metadata.user;
-  //   toast.success("Signup successful!");
 
-  //   const result = await useLogin({
-  //     username: formData.value.username,
-  //     password: formData.value.password,
-  //   });
+  // If signup is successful, user are already logged in
+  if (data?.status === 201) {
+    toast.success("Signup successful!");
 
-  //   if (result.success) {
-  //     Cookies.set("customerID", result.customerID, { expires: 1, path: "/" });
-  //     navigateTo("/userhome");
-  //   } else {
-  //     toast.error("Login failed. Please try again.");
-  //   }
+    const result = await useLogin({
+      username: formData.value.username,
+      password: formData.value.password,
+    });
 
-  //   // Reset form data
-  //   Object.keys(formData.value).forEach((key) => (formData.value[key] = ""));
-  // }
+    if (result.success) {
+      Cookies.set("customerID", result.customerID, { expires: 1, path: "/" });
+      navigateTo("/");
+    } else {
+      toast.error("Login failed. Please try again.");
+    }
+
+    // Reset form data
+    Object.keys(formData.value).forEach((key) => (formData.value[key] = ""));
+  }
 };
 </script>
 

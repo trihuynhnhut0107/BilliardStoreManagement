@@ -13,13 +13,8 @@
         <ul
           class="hidden md:flex items-center justify-around w-1/2 lg:w-1/3 space-x-4 lg:space-x-8 ml-4 md:ml-24">
           <li>
-            <NuxtLink to="/userhome" class="text-lg font-bold text-green-900"
-              >Home</NuxtLink
-            >
-          </li>
-          <li>
-            <NuxtLink to="/userlogin" class="text-lg font-bold text-green-900"
-              >Login</NuxtLink
+            <NuxtLink to="/" class="text-lg font-bold text-green-900"
+              >Product</NuxtLink
             >
           </li>
           <li>
@@ -97,12 +92,18 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from "nuxt/app";
+
 const isMessageOpen = ref(false);
 const cookie = Number(useCookie("customerID").value);
 
 const toggleMessage = () => {
   isMessageOpen.value = !isMessageOpen.value;
 };
+
+const handleUserInfo = () => {
+  navigateTo("/userinfo");
+}
 </script>
 
 <style scoped>
