@@ -35,6 +35,80 @@ class billManageService {
     return returnList; // Return the resolved list
   };
 
+  static getAllBillPagination = async (page_size, page_number) => {
+    if (!page_number) {
+      throw new BadRequestError("Page number is required");
+    }
+    if (page_number < 1) {
+      throw new BadRequestError("Invalid page number");
+    }
+    if (page_size < 1) {
+      throw new BadRequestError("Invalid page size");
+    }
+
+    const pageSizeInt = parseInt(page_size, 10);
+    const pageNumberInt = parseInt(page_number, 10);
+    const totalRecords = await Bill.count();
+    const totalPages = Math.ceil(totalRecords / pageSizeInt);
+    const foundBillList = await Bill.findAll({
+      limit: pageSizeInt,
+      offset: (pageNumberInt - 1) * pageSizeInt,
+    });
+
+    const returnList = await Promise.all(
+      foundBillList.map(async (bill) => {
+        // const billDetail = await BillDetail.findAll({
+        //   attributes: ["itemType", "item_id", "quantity", "price"],
+        //   where: { bill_id: bill.id },
+        // });
+        const foundCustomer = await Customer.findOne({
+          where: { id: bill.customer_id },
+        });
+
+        return {
+          id: bill.id,
+          customer_name: foundCustomer.name,
+          price: bill.total_price,
+          total_quantity: bill.item_quantity,
+          created_at: convertUTCToGMT7String(bill.createdAt),
+        };
+      })
+    );
+
+    return {
+      totalRecords,
+      totalPages,
+      currentPage: pageNumberInt,
+      pageSize: pageSizeInt,
+      bills: returnList,
+    };
+  };
+
+  static getBillDetailByID = async (bill_id) => {
+    if (!bill_id) {
+      throw new BadRequestError("Bill ID is required");
+    }
+
+    const foundBill = await Bill.findOne({ where: { id: bill_id } });
+    if (!foundBill) {
+      throw new BadRequestError("Bill not found");
+    }
+    const foundCustomer = await Customer.findOne({
+      where: { id: foundBill.customer_id },
+    });
+
+    const foundBillDetail = await BillDetail.findAll({
+      where: { bill_id: bill_id },
+    });
+
+    return {
+      id: foundBill.id,
+      customer_name: foundCustomer.name,
+      bill_detail: foundBillDetail,
+      created_at: convertUTCToGMT7String(foundBill.createdAt),
+    };
+  };
+
   static createBill = async ({
     booking_id,
     customer_id,
