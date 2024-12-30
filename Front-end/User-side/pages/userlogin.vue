@@ -2,7 +2,7 @@
   <div
     class="flex justify-around p-[50px] h-screen w-full max-w-full bg-cover bg-no-repeat bg-[url('/Image/img_1.jpg')]">
     <header class="flex flex-col items-left justify-center">
-      <h1 class="text-[#3A6351] text-5xl font-bold uppercase">app name</h1>
+      <h1 class="text-green-400 text-5xl font-bold uppercase">app name</h1>
       <h3 class="capitalize w-[60%] text-3xl font-medium mt-2">
         book your perfect game anytime anywhere!
       </h3>

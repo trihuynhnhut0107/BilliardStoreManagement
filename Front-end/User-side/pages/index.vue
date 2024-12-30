@@ -40,7 +40,7 @@
                   <NuxtLink
                     :to="`/booking/${item.id}`"
                     class="px-6 py-1 bg-green-500 text-white rounded">
-                    Book
+                    Booking
                   </NuxtLink>
                 </div>
               </div>
@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { toast } from "vue3-toastify";
 
 definePageMeta({
@@ -86,7 +87,6 @@ const getAllTable = async () => {
   );
   allTableInfo.value = data;
 };
-
 await getAllTable();
 
 function toggleDialog(tableID: number) {
