@@ -27,7 +27,7 @@ class menuManageService {
     const totalPages = Math.ceil(totalRecords / pageSizeInt);
     const foundMenuList = await MenuItem.findAll({
       limit: pageSizeInt,
-      offset: pageNumberInt * (pageSizeInt - 1),
+      offset: (pageNumberInt - 1) * pageSizeInt,
     });
     if (!foundMenuList) {
       throw new BadRequestError("Menu list not found");
