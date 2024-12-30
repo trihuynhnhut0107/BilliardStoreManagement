@@ -29,97 +29,18 @@
       </div>
     </div>
 
-    <div>
-      <table class="w-full border-collapse border-none">
-        <!-- table header -->
-        <thead class=" top-0 bg-white border-b border-[#ECF0F2] border-solid">
-          <tr>
-            <th class="p-2 w-[50px]">
-              <input type="checkbox" @change="selectAll" v-model="selectAllChecked"
-                class="cursor-pointser rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
-            </th>
-            <th class="p-2 w-[80px]">ID</th>
-            <th class="p-2 w-[150px]">Table type</th>
-            <th class="p-2 w-[100px]">Stick quantity</th>
-            <th class="p-2 w-[100px]">Ball quantity</th>
-            <th class="p-2 w-[100px]">Price</th>
-            <th class="p-2 w-[100px]">Status</th>
-            <th class="p-2 w-[80px]">Edit</th>
-            <th class="p-2 w-[80px]">Delete</th>
-          </tr>
-        </thead>
 
-        <!-- table row -->
-        <tbody>
-          <tr v-for="(table, index) in paginatedTables" :key="index" class="hover:bg-gray-50 last:border-none bg-white">
-            <td class="p-2 py-4 w-[50px] text-center align-middle">
-              <input type="checkbox" v-model="table.selected"
-                class="cursor-pointser rounded border-2 border-[#3A6351] checked:bg-[#3A6351] checked:border-[#3A6351] h-4 w-4" />
-            </td>
-            <td class="p-2 w-[80px] text-center align-middle">
-              {{ table.id }}
-            </td>
-            <td class="p-2 w-[150px] text-center align-middle">
-              {{ table.table_type }}
-            </td>
-            <td class="p-2 w-[100px] text-center align-middle">
-              {{ table.stick_quantity }}
-            </td>
-            <td class="p-2 w-[100px] text-center align-middle">
-              {{ table.ball_quantity }}
-            </td>
-            <td class="p-2 w-[100px] text-center align-middle">
-              {{ table.price }}
-            </td>
-            <td class="p-2 w-[100px] text-center align-middle">
-              {{ table.status }}
-            </td>
-            <td class="p-2 w-[80px] text-center align-middle">
-              <svg @click="editTable(table.id)" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#000"
-                viewBox="0 0 16 16">
-                <path
-                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                <path fill-rule="evenodd"
-                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-              </svg>
-            </td>
-            <td class="p-2 w-[80px] text-center align-middle">
-              <svg @click="deleteTable(table.id)" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="#ff0000"
-                viewBox="0 0 16 16">
-                <path
-                  d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-              </svg>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <Table v-model="datalist" :currentPage="currentPage" :totalPages="totalPages" :handlePageChange="handlePageChange"
+      @updateRow="updateRow">
+    </Table>
 
-    </div>
-    <!-- Pagination -->
-    <div class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
-      <button @click="currentPage > 1 && currentPage--" :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
-        class="px-3 py-2 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
-          <path fill-rule="evenodd"
-            d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
-        </svg>
-      </button>
-      <!-- <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span> -->
-      <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="currentPage < totalPages && currentPage++"
-        :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }" class="px-3 py-2 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
-          <path fill-rule="evenodd"
-            d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-        </svg>
-      </button>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify';
 
 const router = useRouter()
 
@@ -127,149 +48,74 @@ definePageMeta({
   layout: 'home-layout'
 });
 
-const tables = ref([]);
+const datalist = ref([]);
 const searchQuery = ref("");
 const currentPage = ref(1);
-const itemsPerPage = 6;
+const itemsPerPage = ref(6);
+const totalPages = ref('');
 
-
-const toUpperCase = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// Function to refetch data
+// Function to refetch data with pagination
 const refetchData = async () => {
-  const { data: newData, error } = await useFetch(
-    "http://localhost:8080/v1/api/table-manage/get-all-tables"
+  const data = await $fetch(
+    "http://localhost:8080/v1/api/table-manage/get-all-tables-pagination",
+    {
+      method: "GET",
+      query: {
+        page_number: currentPage.value,
+        page_size: itemsPerPage.value,
+      },
+    }
   );
-
-  if (newData.value && newData.value.status === 200) {
-    tables.value = newData.value.metadata.map((item) => ({
-      id: item.id,
-      table_type: toUpperCase(item.table_type),
-      stick_quantity: item.stick_quantity,
-      ball_quantity: item.ball_quantity,
-      price: item.price,
-      status: toUpperCase(item.status),
-    }));
-  } else {
-    console.error("Error fetching table data:", error.value);
-  }
+  totalPages.value = data.metadata.totalPages;
+  datalist.value = data.metadata.tables;
 };
 
+// Handle page changes
+const handlePageChange = async (direction) => {
+  if (direction === 'next' && currentPage.value < totalPages.value) {
+    currentPage.value++;
+  } else if (direction === 'prev' && currentPage.value > 1) {
+    currentPage.value--;
+  }
+  await refetchData();
+};
+
+// Handle row updates
+const updateRow = async (updatedRow, callback) => {
+  let result = false;
+  const data = await $fetch(
+    "http://localhost:8080/v1/api/table-manage/update-table",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        table_id: updatedRow.id,
+        status: updatedRow.status,
+        ball_quantity: updatedRow.ball_quantity,
+        stick_quantity: updatedRow.stick_quantity,
+        price: updatedRow.price,
+        table_type: updatedRow.table_type,
+        status: updatedRow.status,
+      }),
+      onResponse({ response }) {
+        if (response.status !== 201) {
+          toast.error(response._data.message);
+          callback(false);
+        } else {
+          toast.success("Table updated successfully!");
+          callback(true);
+          refetchData();
+        }
+      },
+    }
+  );
+};
+
+// Initial data fetch
 refetchData();
 
-// Computed property to filter tables based on search query
-const filteredTables = computed(() => {
-  return tables.value.filter((table) => {
-    return (
-      table.id.toString().includes(searchQuery.value) ||
-      table.table_type.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      table.ball_quantity.toString().includes(searchQuery.value) ||
-      table.stick_quantity.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      table.price.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      table.status.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-  });
+watch([currentPage, itemsPerPage], async () => {
+  await refetchData();
 });
-
-// Computed property for pagination
-const totalPages = computed(() => {
-  return Math.ceil(filteredTables.value.length / itemsPerPage);
-});
-
-// Computed property to get current page items
-const paginatedTables = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredTables.value.slice(start, end);
-});
-
-const selectAllChecked = ref(false);
-
-const selectAll = () => {
-  const isSelected = selectAllChecked.value;
-  tables.value.forEach((table) => {
-    table.selected = isSelected;
-  });
-};
-
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  currentPage.value = 1;
-});
-
-const deleteTable = async (id) => {
-  try {
-    const confirmDelete = confirm(
-      `Are you sure you want to delete table ${id}?`
-    );
-    if (!confirmDelete) return;
-
-    const { data, error } = await useFetch(
-      "http://localhost:8080/v1/api/table-manage/delete-table",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          table_id: id,
-        }),
-      }
-    );
-    await refetchData();
-    toast.success(`Delete table ${id} successful`, {
-      autoClose: 3000,
-    });
-    // Refetch data after deletion
-  } catch (err) {
-    toast.error("Error deleting table", {
-      autoClose: 3000,
-    });
-    console.log(err);
-  }
-};
-
-const deleteSelectedTable = async () => {
-  try {
-    const selectedTables = tables.value.filter(table => table.selected)
-
-    if (selectedTables.length === 0) {
-      alert("Please select at least one table to delete")
-      return
-    }
-
-    const confirmDelete = confirm(`Are you sure you want to delete ${selectedTables.length} selected table(s)?`)
-    if (!confirmDelete) return
-
-    for (const table of selectedTables) {
-      const { data, error } = await useFetch('http://localhost:8080/v1/api/table-manage/delete-table', {
-        method: 'POST',
-        body: JSON.stringify({
-          table_id: table.id
-        }),
-      })
-
-      if (data.value.status !== 201) {
-        console.log(`Error deleting table ${table.id}:`, error)
-      }
-    }
-
-    toast.success("Selected tables deleted successfully", {
-      autoClose: 3000,
-    })
-    selectAllChecked.value = false
-    // Refetch data after deletion
-    refetchData()
-  } catch (err) {
-    toast.error("Error deleting selected tables", {
-      autoClose: 3000,
-    })
-    console.error('Error deleting selected tables:', err)
-  }
-}
-
-const editTable = (id) => {
-  router.push(`/edittable?id=${id}`);
-};
 </script>
 
 <style scoped></style>

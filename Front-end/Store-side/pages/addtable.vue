@@ -4,7 +4,7 @@
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <h1 class="font-bold text-xl">Add New Table</h1>
         </div>
-        <form @submit.prevent class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between"
+        <form @submit.prevent class="bg-white rounded-lg h-fit w-full px-10 py-3 flex justify-between items-center"
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <div class="flex flex-col gap-2 min-w-[350px]">
                 <div class="flex items-center gap-2">
@@ -29,11 +29,6 @@
                     <input id="price" v-model.number="formData.price" type="number" required placeholder="Price"
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
-                <div class="flex items-center gap-2">
-                    <label for="status" class="text-base font-semibold w-full text-[#3A6351]">Status: </label>
-                    <input readonly id="status" v-model="formData.status" type="text" required placeholder="Status"
-                        class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
-                </div>
             </div>
             <img src="https://placehold.co/150x200" />
         </form>
@@ -41,7 +36,7 @@
             style="box-shadow: 0px 0px 3px #a4a4a4">
             <NuxtLink to="/tablemanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
                 Cancel</NuxtLink>
-<button v-on:click="createTable"
+            <button v-on:click="createTable"
                 class="w-fit text-[#3A6351] py-1 px-4 bg-white text-sm font-medium rounded border border-[#3A6351] box-border">Create</button>
         </div>
     </div>
@@ -63,50 +58,29 @@ const formData = ref({
     ball_quantity: '',
     stick_quantity: '',
     price: '',
-    status: '',
 });
 
 const toUpperCase = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const validateForm = () => {
-    if (!formData.value.table_type || !formData.value.status) {
-        toast.error('Please fill in all fields', {
-            autoClose: 3000,
-        });
-        return false;
-    }
-
-    if (formData.value.stick_quantity <= 0 || formData.value.ball_quantity <= 0 || formData.value.price <= 0) {
-        toast.error('Quantities and price must be positive numbers', {
-            autoClose: 3000,
-        });
-        return false;
-    }
-
-    return true;
-}
-
 const createTable = async () => {
     try {
-        if (!validateForm()) return;
-
-        const response = await $fetch('http://localhost:8080/v1/api/table-manage/create-new-table', {
+        const data = await $fetch('http://localhost:8080/v1/api/table-manage/create-new-table', {
             method: 'POST',
             body: JSON.stringify({
                 table_type: toUpperCase(formData.value.table_type),
                 stick_quantity: formData.value.stick_quantity,
                 ball_quantity: formData.value.ball_quantity,
                 price: formData.value.price,
-                status: toUpperCase(formData.value.status),
+                status: 'available',
             })
         });
 
         toast.success('Table created successfully', {
             autoClose: 3000,
         });
-        router.push("/tablemanagement");
+        navigateTo("/tablemanagement");
 
     } catch (err) {
         console.error('Create Table Failed:', err);
