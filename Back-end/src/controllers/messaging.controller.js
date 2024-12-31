@@ -10,7 +10,7 @@ class MessagingController {
   };
 
   getConversation = async (req, res, next) => {
-    new CREATED({
+    new OK({
       message: "Conversation fetch successfully",
       metadata: await MessagingService.getConversation(req.params.id),
     }).send(res);

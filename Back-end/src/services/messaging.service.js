@@ -5,6 +5,7 @@ const { BadRequestError, ServerError } = require("../core/error.response");
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 const sequelize = require("../configs/sequelize");
+const Customer = require("../models/Customer");
 
 class MessagingService {
   static getConversation = async (conversationID) => {
@@ -21,7 +22,9 @@ class MessagingService {
       attributes: ["id"],
       where: {
         customerID: customerID,
-        status: "open",
+        status: {
+          [Op.or]: ["open", "handling"],
+        },
       },
     });
     if (!foundConversationID) {
@@ -31,6 +34,7 @@ class MessagingService {
   };
 
   static getOpenConversations = async () => {
+    // Fetch conversations with latest messages where the status is "open"
     const conversationsWithLatestMessages = await Conversation.findAll({
       where: {
         status: "open",
@@ -38,60 +42,86 @@ class MessagingService {
       include: [
         {
           model: Message,
-          attributes: ["id", "messageText", "createdAt"], // Fetch only necessary fields
+          attributes: ["id", "messageText", "senderType", "createdAt"], // Fetch only necessary fields
           limit: 1, // Fetch only the latest message
           order: [["createdAt", "DESC"]], // Ensure it's the latest message
         },
       ],
     });
-    return conversationsWithLatestMessages.map((conversation) => {
-      const latestMessage = conversation.Messages[0]; // Messages is the included array
-      return {
-        id: conversation.id,
-        customerID: conversation.customerID,
-        latestMessage: latestMessage
-          ? {
-              id: latestMessage.id,
-              messageText: latestMessage.messageText,
-              createdAt: latestMessage.createdAt,
-            }
-          : null, // Handle case where no messages exist
-      };
-    });
+
+    // Map through conversations and fetch customer details
+    const results = await Promise.all(
+      conversationsWithLatestMessages.map(async (conversation) => {
+        const latestMessage = conversation.Messages[0]; // Get the latest message
+        const foundCustomer = await Customer.findOne({
+          where: { id: conversation.customerID },
+        });
+
+        return {
+          id: conversation.id,
+          customerName: foundCustomer ? foundCustomer.name : "Unknown", // Handle missing customer
+          latestMessage: latestMessage
+            ? {
+                id: latestMessage.id,
+                messageText: latestMessage.messageText,
+                senderType: latestMessage.senderType,
+                createdAt: latestMessage.createdAt,
+              }
+            : null, // Handle case where no messages exist
+        };
+      })
+    );
+
+    return results;
   };
 
   static getConversationWithStaffID = async (staffID) => {
+    // Fetch conversations with latest messages
     const conversationsWithLatestMessages = await Conversation.findAll({
-      where: { staffID: staffID },
+      where: { staffID },
       include: [
         {
           model: Message,
-          attributes: ["id", "messageText", "createdAt"], // Fetch only necessary fields
+          attributes: ["id", "messageText", "senderType", "createdAt"], // Fetch only necessary fields
           limit: 1, // Fetch only the latest message
           order: [["createdAt", "DESC"]], // Ensure it's the latest message
         },
       ],
     });
 
-    if (!conversationsWithLatestMessages) {
-      throw new Error("No conversations found for the provided staffID.");
+    // If no conversations found, return an empty array
+    if (
+      !conversationsWithLatestMessages ||
+      conversationsWithLatestMessages.length === 0
+    ) {
+      return []; // Return empty array instead of throwing an error
     }
 
-    return conversationsWithLatestMessages.map((conversation) => {
-      const latestMessage = conversation.Messages[0]; // Messages is the included array
-      return {
-        id: conversation.id,
-        staffID: conversation.staffID,
-        customerID: conversation.customerID,
-        latestMessage: latestMessage
-          ? {
-              id: latestMessage.id,
-              messageText: latestMessage.messageText,
-              createdAt: latestMessage.createdAt,
-            }
-          : null, // Handle case where no messages exist
-      };
-    });
+    // Map through conversations and resolve asynchronous operations
+    const results = await Promise.all(
+      conversationsWithLatestMessages.map(async (conversation) => {
+        const latestMessage = conversation.Messages[0]; // Get the latest message
+        const foundCustomer = await Customer.findOne({
+          where: { id: conversation.customerID },
+        });
+
+        return {
+          id: conversation.id,
+          staffID: conversation.staffID,
+          customerName: foundCustomer ? foundCustomer.name : "Unknown", // Handle missing customer
+          latestMessage: latestMessage
+            ? {
+                id: latestMessage.id,
+                messageText: latestMessage.messageText,
+                senderType: latestMessage.senderType,
+                createdAt: latestMessage.createdAt,
+              }
+            : null, // Handle case where no messages exist
+        };
+      })
+    );
+
+    return results;
   };
 
   // Function to find or create a conversation
@@ -103,7 +133,12 @@ class MessagingService {
     if (senderType === "customer") {
       const conversation =
         (await Conversation.findOne({
-          where: { customerId: senderID, status: "open" }, // Find open conversation with customer ID
+          where: {
+            customerId: senderID,
+            status: {
+              [Op.or]: ["open", "handling"], // Check for both open or handling statuses
+            },
+          }, // Find open conversation with customer ID
         })) ||
         (await Conversation.create({
           // Create a new conversation if none exists
