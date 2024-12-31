@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center pt-[10vh] gap-4">
+  <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center gap-4 mb-[4vh]">
     <div>
       <h1 class="text-4xl font-bold text-[#3A6351] text-center mt-10">Demo.</h1>
     </div>

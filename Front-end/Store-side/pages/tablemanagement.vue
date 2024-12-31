@@ -84,17 +84,15 @@ const handlePageChange = async (direction) => {
 // Handle row updates
 const updateRow = async (updatedRow, callback) => {
   const data = await $fetch(
-    "http://localhost:8080/v1/api/customer-manage/update-customer",
+    "http://localhost:8080/v1/api/table-manage/update-table",
     {
       method: "POST",
       body: JSON.stringify({
-        table_id: updatedRow.id,
-        status: updatedRow.status,
+        table_id: updatedRow.id, 
+        table_type: updatedRow.table_type, 
+        stick_quantity: updatedRow.stick_quantity, 
         ball_quantity: updatedRow.ball_quantity,
-        stick_quantity: updatedRow.stick_quantity,
         price: updatedRow.price,
-        table_type: updatedRow.table_type,
-        status: updatedRow.status,
       }),
       onResponse({ response }) {
         if (response.status !== 200 && response.status !== 201) {

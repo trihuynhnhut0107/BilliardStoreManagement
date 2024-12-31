@@ -83,6 +83,7 @@ const handlePageChange = async (direction) => {
 
 // Handle row updates
 const updateRow = async (updatedRow, callback) => {
+    console.log(updatedRow.phone_number);
     const response = await $fetch(
         `http://localhost:8080/v1/api/customer-manage/update-customer`,
         {
@@ -100,7 +101,7 @@ const updateRow = async (updatedRow, callback) => {
                 } else {
                     callback(true);
                     refetchData();
-                    toast.success("Table updated successfully");
+                    toast.success("Customer updated successfully");
                 }
             },
         }
