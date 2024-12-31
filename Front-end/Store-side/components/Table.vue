@@ -7,7 +7,7 @@
           <th v-for="column in columns" :key="column.key" class="p-2">
             {{ column.label }}
           </th>
-          <th class="p-2">Actions</th>
+          <th v-show="canChange" class="p-2">Actions</th>
         </tr>
       </thead>
 
@@ -17,7 +17,7 @@
           <!-- Display Row -->
           <tr class="hover:bg-gray-200 bg-white" :class="{
             'bg-blue-50 border-blue-300 w-[80px]': selectedRow?.id === item.id,
-          }">
+          }" @dblclick="viewRow(item)">
             <td v-for="(value, key) in Object.entries(item).filter(
               ([key]) => key !== 'createdAt' && key !== 'updatedAt'
             )" :key="key" class="p-2 text-center align-middle w-[80px]">
@@ -27,7 +27,7 @@
                   : Intl.NumberFormat("de-DE").format(value[1])
               }}
             </td>
-            <td class="p-2 w-[80px] text-center">
+            <td v-show="canChange" class="p-2 w-[80px] text-center">
               <button @click="editRow(item)" class="py-[6px] px-4 bg-blue-500 text-white rounded">
                 Edit
               </button>
@@ -72,7 +72,7 @@ const dataList = defineModel();
 
 const selectedRow = ref(null);
 
-const emit = defineEmits(["updateRow", "deleteRow"]);
+const emit = defineEmits(["updateRow", "deleteRow", "viewRow"]);
 
 const toUpperCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -115,6 +115,10 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  canChange: {
+    type: Boolean,
+    default: true,
+  }
 });
 
 const editRow = (row) => {
@@ -133,8 +137,11 @@ const deleteRow = (row) => {
   emit("deleteRow", row);
 };
 
+const viewRow = (row) => {
+  emit("viewRow", row);
+};
+
 const cancelEdit = () => {
   selectedRow.value = null;
-
 };
 </script>

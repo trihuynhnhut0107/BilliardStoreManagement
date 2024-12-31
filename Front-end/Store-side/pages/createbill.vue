@@ -176,22 +176,25 @@ const getBillDetails = () => {
 };
 
 const getCustomerById = async () => {
-    try {
-        const { data, error } = await useFetch(`http://localhost:8080/v1/api/customer-manage/customer/${customerData.value.id}`, {
-            method: 'GET',
-        });
-
-        if (data.value && data.value.metadata) {
-            customerData.value.name = data.value.metadata.name;
-            customerData.value.email = data.value.metadata.email;
-            customerData.value.phone_number = data.value.metadata.phone_number;
+    const data = await $fetch(`http://localhost:8080/v1/api/customer-manage/customer/${customerData.value.id}`, {
+        method: 'GET',
+        onResponse({ response }) {
+            if (response.status !== 200 && response.status !== 201) {
+                customerData.value.name = '';
+                customerData.value.email = '';
+                customerData.value.phone_number = '';
+                toast.error(response._data.message);
+            }
         }
-    } catch (error) {
-        console.error(error);
-        customerData.value.name = '';
-        customerData.value.email = '';
-        customerData.value.phone_number = '';
+    });
+
+    if (data && data.metadata) {
+        customerData.value.name = data.metadata.name;
+        customerData.value.email = data.metadata.email;
+        customerData.value.phone_number = data.metadata.phone_number;
     }
+
+
 };
 
 watch(() => customerData.value.id, async (newID) => {
@@ -234,30 +237,28 @@ const createBill = async () => {
         return;
     }
 
-    try {
-        const { data, error } = await useFetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
-            method: 'POST',
-            body: JSON.stringify({
-                customer_id: customerData.value.id,
-                staff_id: staffID.value,
-                bill_details: billDetails
-            })
-        });
+    console.log(JSON.stringify({
+        customer_id: customerData.value.id,
+        staff_id: staffID.value,
+        bill_details: billDetails
+    }));
 
-        if (error.value) {
-            throw new Error(error.value.message || 'Failed to create bill');
+    const data = await $fetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
+        method: 'POST',
+        body: JSON.stringify({
+            customer_id: customerData.value.id,
+            staff_id: staffID.value,
+            bill_details: billDetails
+        }),
+        onResponse({ response }) {
+            if (response.status !== 200 && response.status !== 201) {
+                toast.error(response._data.message);
+            } else {
+                toast.success('Bill created successfully');
+                navigateTo("/billmanagement");
+            }
         }
-
-        toast.success('Bill created successfully', {
-            autoClose: 3000,
-        });
-        navigateTo("/tablemanagement");
-    } catch (err) {
-        console.error('Create Bill Failed:', err);
-        toast.error(err.message || 'Failed to create bill', {
-            autoClose: 3000,
-        });
-    }
+    });
 }
 </script>
 
