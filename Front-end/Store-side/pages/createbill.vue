@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex items-center bg-white w-full py-2 px-10 rounded gap-6" style="box-shadow: 0px 0px 3px #a4a4a4">
-            <NuxtLink to="/tablemanagement" class="text-[#3A6351] font-medium text-sm">
+            <NuxtLink to="/billmanagement" class="text-[#3A6351] font-medium text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
                         d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
@@ -89,7 +89,7 @@
         </div>
         <div class="flex justify-end items-center gap-2 bg-white w-full py-2 px-10 rounded"
             style="box-shadow: 0px 0px 3px #a4a4a4">
-            <NuxtLink to="/tablemanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
+            <NuxtLink to="/billmanagement" class="w-fit bg-[#3A6351] py-1 px-4 text-white text-sm font-medium rounded">
                 Cancel</NuxtLink>
             <button @click="createBill"
                 class="w-fit text-[#3A6351] py-1 px-4 bg-white text-sm font-medium rounded border border-[#3A6351] box-border">Create</button>
@@ -120,26 +120,27 @@ const dateTimeNow = computed(() => {
 });
 
 const customerData = ref({
-    id: '1',
+    id: '',
     name: '',
     email: '',
     phone_number: ''
 });
 
 const tableData = ref({
-    id: '1',
+    id: '',
     date: '',
     start_time: '',
     end_time: '',
     duration: {
         hours: 0,
         minutes: 0,
-    }
+    },
+    price: 0,
 });
 
 const menuData = ref({
-    id: '1',
-    quantity: 1,
+    id: '',
+    quantity: 0,
 });
 
 const staffID = ref('');
@@ -157,7 +158,7 @@ const getBillDetails = () => {
     if (tableData.value.date && tableData.value.start_time && tableData.value.end_time) {
         details.push({
             itemType: "BilliardTable",
-            itemId: parseInt(tableData.value.id),
+            item_id: parseInt(tableData.value.id),
             start_time: formatDateTime(tableData.value.date, tableData.value.start_time),
             end_time: formatDateTime(tableData.value.date, tableData.value.end_time)
         });
@@ -167,7 +168,7 @@ const getBillDetails = () => {
     if (menuData.value.id && menuData.value.quantity) {
         details.push({
             itemType: "MenuItem",
-            itemId: parseInt(menuData.value.id),
+            item_id: parseInt(menuData.value.id),
             quantity: parseInt(menuData.value.quantity)
         });
     }
@@ -197,6 +198,21 @@ const getCustomerById = async () => {
 
 };
 
+const getDuration = (start_time, end_time) => {
+    const [startHours, startMinutes] = start_time.split(':');
+    const [endHours, endMinutes] = end_time.split(':');
+
+    const start = new Date(0, 0, 0, startHours, startMinutes);
+    const end = new Date(0, 0, 0, endHours, endMinutes);
+
+    const diff = end - start;
+    const hours = Math.floor(diff / 1000 / 60 / 60);
+    const minutes = Math.floor((diff - hours * 1000 * 60 * 60) / 1000 / 60);
+
+    tableData.value.duration.hours = hours;
+    tableData.value.duration.minutes = minutes;
+};
+
 watch(() => customerData.value.id, async (newID) => {
     if (newID) {
         await getCustomerById();
@@ -219,6 +235,7 @@ watch(() => {
             tableData.value.start_time = '';
             tableData.value.end_time = '';
         }
+        getDuration(start_time, end_time);
     }
 }, { immediate: true });
 
@@ -236,12 +253,6 @@ const createBill = async () => {
         });
         return;
     }
-
-    console.log(JSON.stringify({
-        customer_id: customerData.value.id,
-        staff_id: staffID.value,
-        bill_details: billDetails
-    }));
 
     const data = await $fetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
         method: 'POST',

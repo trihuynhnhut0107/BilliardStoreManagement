@@ -30,7 +30,7 @@
         </div>
 
         <!-- Table -->
-        <Table v-model="filteredTables" :currentPage="currentPage" :totalPages="totalPages"
+        <Table v-model="filteredTables" :currentPage="currentPage" :totalPages="totalPages" :can-delete="false"
             :handlePageChange="handlePageChange" @updateRow="updateRow">
         </Table>
 

@@ -31,7 +31,8 @@
               <button @click="editRow(item)" class="py-[6px] px-4 bg-blue-500 text-white rounded">
                 Edit
               </button>
-              <button @click="deleteRow(item)" class="py-[6px] px-4 ml-2 bg-red-500 text-white rounded">
+              <button v-show="canDelete" @click="deleteRow(item)"
+                class="py-[6px] px-4 ml-2 bg-red-500 text-white rounded">
                 Delete
               </button>
             </td>
@@ -116,6 +117,10 @@ const props = defineProps({
     required: true,
   },
   canChange: {
+    type: Boolean,
+    default: true,
+  },
+  canDelete: {
     type: Boolean,
     default: true,
   }
