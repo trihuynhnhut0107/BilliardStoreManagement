@@ -103,7 +103,7 @@ const toggleMessage = () => {
 
 const handleUserInfo = () => {
   navigateTo("/userinfo");
-}
+};
 </script>
 
 <style scoped>

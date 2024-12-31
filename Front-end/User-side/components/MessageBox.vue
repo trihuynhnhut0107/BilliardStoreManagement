@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue3-toastify";
+
 const { socket } = useSocket();
 
 interface Message {
@@ -40,14 +42,17 @@ const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
 
 const customerID = defineModel({ default: -1 });
+console.log("Message box customerID:", customerID.value);
 
 const conversationID = ref(-1);
+
 const getConversationID = async () => {
   const data = await $fetch(
     `http://localhost:8080/v1/api/message/get-customer-current-conversation-id/${customerID.value}`
   );
   if (data.metadata.id !== -1) {
     conversationID.value = data.metadata.id;
+    console.log("Conversation ID:", conversationID.value);
   }
 };
 getConversationID();
@@ -93,7 +98,10 @@ const sendMessage = async () => {
         messageText: newMessage.value,
       }),
       onResponse({ request, response, options }) {
-        console.log(response._data);
+        if (response.status !== 201) {
+          toast.error(response._data.message);
+          return;
+        }
       },
     }
   );
@@ -103,6 +111,21 @@ const sendMessage = async () => {
   }
   newMessage.value = "";
 };
+
+onMounted(() => {
+  if (conversationID.value !== -1) {
+    getConversation();
+    socket.emit("joinConversation", { conversationID: conversationID.value });
+    // Assuming `socket` is your Socket.IO client instance
+    socket.on("newMessage", (message) => {
+      const newMessage = {
+        text: message.messageText,
+        isOwn: message.senderType === "customer",
+      };
+      messages.value.push(newMessage);
+    });
+  }
+});
 </script>
 
 <style scoped></style>

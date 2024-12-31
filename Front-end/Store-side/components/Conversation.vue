@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen p-6 bg-gray-100">
+  <div class="flex flex-col h-full p-6 bg-gray-100">
     <div class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">
@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from "vue3-toastify";
+
 const { socket } = useSocket();
 
 const props = defineProps<{ conversationID: number }>();
@@ -41,19 +43,26 @@ interface Message {
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
 
-const { data, error } = await useFetch(
-  `http://localhost:8080/v1/api/message/get-conversation/${props.conversationID}`
-);
-console.log(data.value);
-if (data.value) {
-  const fetchedMessage = data.value.metadata.map((msg: any) => ({
-    text: msg.messageText,
-    isOwn: msg.senderType === "staff" ? true : false,
-  }));
-  messages.value.push(...fetchedMessage);
-} else if (error.value) {
-  console.error("Failed to fetch messages:", error.value);
-}
+const fetchConversation = async () => {
+  const data = await $fetch(
+    `http://localhost:8080/v1/api/message/get-conversation/${props.conversationID}`,
+    {
+      onResponse({ response }) {
+        if (response.status != 200) {
+          toast.error(response._data.message);
+        }
+      },
+    }
+  );
+  if (data) {
+    const fetchedMessage = data.metadata.map((msg: any) => ({
+      text: msg.messageText,
+      isOwn: msg.senderType === "staff" ? true : false,
+    }));
+    messages.value.push(...fetchedMessage);
+  }
+};
+fetchConversation();
 
 const sendMessage = async () => {
   const { data } = await useFetch(

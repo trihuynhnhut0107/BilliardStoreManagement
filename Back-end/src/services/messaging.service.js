@@ -21,7 +21,9 @@ class MessagingService {
       attributes: ["id"],
       where: {
         customerID: customerID,
-        status: "open",
+        status: {
+          [Op.or]: ["open", "handling"],
+        },
       },
     });
     if (!foundConversationID) {
