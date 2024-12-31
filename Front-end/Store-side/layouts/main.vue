@@ -22,7 +22,7 @@
         </div>
       </div>
     </header>
-    <main>
+    <main class="w-full h-full">
       <div class="flex flex-row w-full h-full">
         <!-- Sidebar -->
         <div
@@ -187,7 +187,6 @@
         </div>
       </div>
     </main>
-    <footer></footer>
   </div>
 </template>
 

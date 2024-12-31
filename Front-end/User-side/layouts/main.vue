@@ -96,6 +96,7 @@ import { navigateTo } from "nuxt/app";
 
 const isMessageOpen = ref(false);
 const cookie = Number(useCookie("customerID").value);
+console.log(cookie);
 
 const toggleMessage = () => {
   isMessageOpen.value = !isMessageOpen.value;

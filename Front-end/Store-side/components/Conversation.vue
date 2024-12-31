@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col h-full p-6 bg-gray-100">
-    <div class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+    <!-- Conversation Box -->
+    <div
+      ref="conversationBox"
+      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">
           <p
@@ -14,6 +17,7 @@
       </div>
     </div>
 
+    <!-- Input Field -->
     <div class="flex">
       <input
         v-model="newMessage"
@@ -30,7 +34,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, nextTick, watch } from "vue";
 import { toast } from "vue3-toastify";
+import { useSocket } from "@/composables/useSocket";
 
 const { socket } = useSocket();
 
@@ -40,58 +46,114 @@ interface Message {
   text: string;
   isOwn: boolean;
 }
+
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
 
+const conversationBox = ref<HTMLDivElement | null>(null);
+
+const scrollToBottom = () => {
+  if (conversationBox.value) {
+    conversationBox.value.scrollTop = conversationBox.value.scrollHeight;
+  }
+};
+
+// Fetch messages for the current conversation
 const fetchConversation = async () => {
-  const data = await $fetch(
-    `http://localhost:8080/v1/api/message/get-conversation/${props.conversationID}`,
-    {
+  try {
+    console.log("Fetching conversation with ID:", props.conversationID);
+    const data = await $fetch(
+      `http://localhost:8080/v1/api/message/get-conversation/${props.conversationID}`,
+      {
+        onResponse({ response }) {
+          if (response.status !== 200) {
+            toast.error(response._data.message);
+          }
+        },
+      }
+    );
+
+    const fetchedMessages = data.metadata.map((msg: any) => ({
+      text: msg.messageText,
+      isOwn: msg.senderType === "staff",
+    }));
+
+    // Clear existing messages and add the new ones
+    messages.value = fetchedMessages;
+    nextTick(scrollToBottom); // Ensure the DOM updates before scrolling
+  } catch (error) {
+    toast.error("Failed to fetch conversation.");
+  }
+};
+
+// Send a new message
+const sendMessage = async () => {
+  if (!newMessage.value.trim()) return;
+
+  try {
+    await $fetch("http://localhost:8080/v1/api/message/send-message", {
+      method: "POST",
+      body: JSON.stringify({
+        conversationID: props.conversationID,
+        senderType: "staff",
+        senderID: 2, // Replace with dynamic customer ID if needed
+        messageText: newMessage.value,
+      }),
       onResponse({ response }) {
-        if (response.status != 200) {
+        if (response.status !== 201) {
           toast.error(response._data.message);
         }
       },
-    }
-  );
-  if (data) {
-    const fetchedMessage = data.metadata.map((msg: any) => ({
-      text: msg.messageText,
-      isOwn: msg.senderType === "staff" ? true : false,
-    }));
-    messages.value.push(...fetchedMessage);
+    });
+
+    messages.value.push(newMessage.value);
+    // Clear message input after sending
+    newMessage.value = "";
+  } catch (error) {
+    toast.error("Failed to send message.");
   }
 };
-fetchConversation();
 
-const sendMessage = async () => {
-  const { data } = await useFetch(
-    "http://localhost:8080/v1/api/message/send-message",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        conversationId: null, // or the existing conversation ID
-        senderType: "customer",
-        senderId: 1, // Assuming this is a valid customer ID
-        receiverId: 1,
-        messageText: newMessage.value,
-      }),
-    }
-  );
-  newMessage.value = "";
-  console.log(data.value);
-};
+// Watch for changes in conversationID prop and refetch messages
+watch(
+  () => props.conversationID,
+  async (newConversationID) => {
+    // Clear messages and fetch the new conversation when conversationID changes
+    messages.value = [];
+    await fetchConversation();
+    // Join the conversation in the socket connection
+    socket.emit("joinConversation", { conversationID: props.conversationID });
+
+    // Listen for new messages in the conversation via socket
+    socket.on("newMessage", (message) => {
+      const newMessage = {
+        text: message.messageText,
+        isOwn: message.senderType === "staff",
+      };
+      // Add the new message to the conversation
+      messages.value.push(newMessage);
+      nextTick(scrollToBottom); // Scroll to the latest message
+    });
+  }
+);
 
 onMounted(() => {
+  // Join the conversation in the socket connection
   socket.emit("joinConversation", { conversationID: props.conversationID });
-  // Assuming `socket` is your Socket.IO client instance
+
+  // Listen for new messages in the conversation via socket
   socket.on("newMessage", (message) => {
     const newMessage = {
       text: message.messageText,
       isOwn: message.senderType === "staff",
     };
-    messages.value = [...messages.value, newMessage];
+    // Add the new message to the conversation
+    messages.value.push(newMessage);
+    nextTick(scrollToBottom); // Scroll to the latest message
   });
+
+  // Initial fetch when component is mounted
+  fetchConversation();
 });
 </script>
 
