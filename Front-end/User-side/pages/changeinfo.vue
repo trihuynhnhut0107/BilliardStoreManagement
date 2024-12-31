@@ -137,7 +137,7 @@ const updateCustomer = async () => {
     const payload = {
       customer_id: Number(customerID),
       name: form.value.name,
-      phone: form.value.phone,
+      phone_number: form.value.phone,
       email: form.value.email,
     };
 

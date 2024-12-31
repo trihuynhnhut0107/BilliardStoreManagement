@@ -81,44 +81,70 @@ const handlePageChange = async (direction) => {
 
 // Handle row updates
 const updateRow = async (updatedRow, callback) => {
-    const response = await $fetch(
-        `http://localhost:8080/v1/api/staff-manage/update-staff`,
-        {
-            method: "POST",
-            body: {
-                staff_id: updatedRow.id,
-                staff_name: updatedRow.staff_name,
-                staff_email: updatedRow.staff_email,
-                staff_phone: updatedRow.staff_phone,
-            },
-            onResponse({ response }) {
-                if (response.status !== 200 && response.status !== 201) {
-                    toast.error(response._data.message);
-                    callback(false);
-                } else {
-                    callback(true);
-                    refetchData();
-                    toast.success("Table updated successfully");
-                }
-            },
+    console.log("Updated Row:", updatedRow);
+
+    // Ensure all required fields are present and not empty
+    const staffName = updatedRow.staff_name?.trim() || updatedRow.name?.trim();
+    const staffRole = updatedRow.role?.trim() || updatedRow.email?.trim();
+    const staffPhone = updatedRow.phone_number?.trim() || updatedRow.phone?.trim();
+
+    if (!staffName || !staffRole || !staffPhone) {
+        toast.error("Missing required fields. Please fill in all fields.");
+        callback(false);
+        return;
+    }
+
+    const payload = {
+        staff_id: updatedRow.id,
+        name: staffName,
+        role: staffRole,
+        phone_number: staffPhone,
+    };
+
+    try {
+        const response = await $fetch(
+            `http://localhost:8080/v1/api/staff-manage/update-staff`,
+            {
+                method: "POST",
+                body: payload,
+            }
+        );
+        
+        if (response.status === 200 || response.status === 201) {
+            callback(true);
+            refetchData();
+            toast.success("Staff updated successfully");
+        } else {
+            toast.error(response._data.message || "An error occurred.");
+            callback(false);
         }
-    );
+    } catch (error) {
+        console.error("Error updating staff:", error);
+        toast.error("Failed to update staff. Please try again.");
+        callback(false);
+    }
 };
+
+
 
 // Handle search query
 const filteredTables = computed(() => {
-    const query = searchQuery.value.toLowerCase().trim()
-    if (!query) return datalist.value
+    const query = (searchQuery.value || "").toLowerCase().trim();
 
-    return datalist.value.filter(table =>
-        table.id.toString().toLowerCase().includes(query) ||
-        table.name.toLowerCase().includes(query) ||
-        table.phone_number.toString().toLowerCase().includes(query) ||
-        table.role.toLowerCase().includes(query) ||
-        table.accountID.toString().toLowerCase().includes(query) ||
-        table.status.toLowerCase().includes(query)
-    )
-})
+    if (!query) return datalist.value || [];
+
+    return (datalist.value || []).filter(table => {
+        return (
+            (table.id?.toString().toLowerCase() || "").includes(query) ||
+            (table.name?.toLowerCase() || "").includes(query) ||
+            (table.phone_number?.toString().toLowerCase() || "").includes(query) ||
+            (table.role?.toLowerCase() || "").includes(query) ||
+            (table.accountID?.toString().toLowerCase() || "").includes(query) ||
+            (table.status?.toLowerCase() || "").includes(query)
+        );
+    });
+});
+
 
 // Initial data fetch
 refetchData();

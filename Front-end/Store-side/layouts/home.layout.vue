@@ -154,7 +154,7 @@ const appDescription = ref('Lorem ipsum dolor sit amet consectetur adipisicing e
 
 const logOut = () => {
   localStorage.removeItem('staffID')
-  router.push('/login')
+  navigateTo('/login')
 }
 </script>
 
