@@ -3,7 +3,7 @@
     <!-- Conversation Box -->
     <div
       ref="conversationBox"
-      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+      class="flex-1 overflow-y-auto bg-white rounded-lg shadow-md mb-4 h-0 grow p-6">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">
           <p
@@ -49,6 +49,8 @@ interface Message {
 
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
+
+const currentStaffID = ref();
 
 const conversationBox = ref<HTMLDivElement | null>(null);
 
@@ -96,7 +98,7 @@ const sendMessage = async () => {
       body: JSON.stringify({
         conversationID: props.conversationID,
         senderType: "staff",
-        senderID: 2, // Replace with dynamic customer ID if needed
+        senderID: currentStaffID.value,
         messageText: newMessage.value,
       }),
       onResponse({ response }) {
@@ -106,9 +108,7 @@ const sendMessage = async () => {
       },
     });
 
-    messages.value.push(newMessage.value);
-    // Clear message input after sending
-    newMessage.value = "";
+    newMessage.value = ""; // Clear the input after sending
   } catch (error) {
     toast.error("Failed to send message.");
   }
@@ -117,20 +117,29 @@ const sendMessage = async () => {
 // Watch for changes in conversationID prop and refetch messages
 watch(
   () => props.conversationID,
-  async (newConversationID) => {
-    // Clear messages and fetch the new conversation when conversationID changes
+  async (newConversationID, oldConversationID) => {
+    // Leave the old conversation room
+    if (oldConversationID) {
+      socket.emit("leaveConversation", { conversationID: oldConversationID });
+    }
+
+    // Clear messages and fetch the new conversation
     messages.value = [];
     await fetchConversation();
-    // Join the conversation in the socket connection
-    socket.emit("joinConversation", { conversationID: props.conversationID });
 
-    // Listen for new messages in the conversation via socket
+    // Join the new conversation room
+    socket.emit("joinConversation", { conversationID: newConversationID });
+
+    // Listen for new messages specific to this conversation
+    socket.off("newMessage"); // Remove any previous listener to avoid duplicates
     socket.on("newMessage", (message) => {
+      console.log("New message received:", message);
+
       const newMessage = {
         text: message.messageText,
-        isOwn: message.senderType === "staff",
+        isOwn: message.senderID === currentStaffID.value,
       };
-      // Add the new message to the conversation
+
       messages.value.push(newMessage);
       nextTick(scrollToBottom); // Scroll to the latest message
     });
@@ -138,22 +147,13 @@ watch(
 );
 
 onMounted(() => {
-  // Join the conversation in the socket connection
-  socket.emit("joinConversation", { conversationID: props.conversationID });
-
-  // Listen for new messages in the conversation via socket
-  socket.on("newMessage", (message) => {
-    const newMessage = {
-      text: message.messageText,
-      isOwn: message.senderType === "staff",
-    };
-    // Add the new message to the conversation
-    messages.value.push(newMessage);
-    nextTick(scrollToBottom); // Scroll to the latest message
-  });
+  currentStaffID.value = localStorage.getItem("staffID");
 
   // Initial fetch when component is mounted
   fetchConversation();
+});
+onUnmounted(() => {
+  socket.off("newMessage"); // Ensure no lingering listeners
 });
 </script>
 

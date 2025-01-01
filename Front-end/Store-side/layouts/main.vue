@@ -22,7 +22,7 @@
         </div>
       </div>
     </header>
-    <main class="w-full h-full">
+    <main class="w-full h-full flex-1 overflow-auto">
       <div class="flex flex-row w-full h-full">
         <!-- Sidebar -->
         <div

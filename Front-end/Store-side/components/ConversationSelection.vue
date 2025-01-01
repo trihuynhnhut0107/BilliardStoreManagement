@@ -19,7 +19,11 @@
       </div>
       <div class="flex-1 flex flex-col gap-1">
         <h3 class="font-semibold text-sm">{{ conversation.customerName }}</h3>
-        <div class="text-xs flex flex-row space-x-1">
+        <div
+          class="text-xs flex flex-row space-x-1"
+          :class="`${
+            conversation.latestMessage.senderType !== 'staff' ? 'font-bold' : ''
+          } `">
           <p v-if="conversation.latestMessage.senderType === 'staff'">You:</p>
           <p>{{ conversation.latestMessage.messageText }}</p>
         </div>
@@ -34,6 +38,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { toast } from "vue3-toastify";
+
+const { socket } = useSocket();
 
 const props = defineProps({
   url: String,
@@ -87,6 +93,9 @@ const selectConversation = (id: number) => {
 
 // Initial fetch
 onMounted(() => {
+  socket.on("update-message-list", () => {
+    fetchData();
+  });
   fetchData();
 });
 </script>

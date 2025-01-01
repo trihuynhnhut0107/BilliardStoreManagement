@@ -3,7 +3,7 @@
     <Conversation
       :conversationID="selectedConversationID"
       v-model="selectedConversationID"
-      class="w-full h-full" />
+      class="w-full h-full flex-1" />
     <div class="w-2/5 flex flex-col bg-gray-100 shadow-md">
       <div class="flex flex-row justify-around border-b">
         <button
