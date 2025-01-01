@@ -207,6 +207,7 @@ class MessagingService {
       createdAt: message.createdAt,
       isRead: false,
     });
+    global.io.emit("update-message-list", {});
 
     return {
       conversationID: conversation.id,
