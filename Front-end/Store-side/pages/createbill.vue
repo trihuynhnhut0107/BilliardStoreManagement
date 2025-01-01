@@ -22,23 +22,23 @@
                         <label for="id" class="w-full">CustomerID:
                         </label>
                         <input id="id" v-model="customerData.id" required type="text" placeholder="CustomerID"
-                            class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
+                            class="w-full p-1 rounded-lg  text-sm bg-transparent" />
                     </div>
                     <div class="flex items-center gap-2">
                         <label for="name" class="w-full">Name:
                         </label>
                         <input id="name" v-model="customerData.name" type="text" required placeholder="Name"
-                            class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                            class="w-full p-1 rounded-lg  bg-transparent" />
                     </div>
                     <div class="flex items-center gap-2">
                         <label for="phone_number" class="w-full">Phone number: </label>
                         <input id="phone_number" v-model="customerData.phone_number" type="text" required
-                            placeholder="Phone number" class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                            placeholder="Phone number" class="w-full p-1 rounded-lg  bg-transparent" />
                     </div>
                     <div class="flex items-center gap-2">
                         <label for="email" class="w-full">Email: </label>
                         <input id="email" v-model="customerData.email" type="text" required placeholder="Email"
-                            class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                            class="w-full p-1 rounded-lg  bg-transparent" />
                     </div>
                 </div>
                 <hr>
@@ -47,7 +47,7 @@
                     <div class="flex items-center gap-2">
                         <label for="id" class="w-full">TableID: </label>
                         <input id="id" v-model="tableData.id" type="number" required placeholder="TableID"
-                            class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                            class="w-full p-1 rounded-lg  bg-transparent" />
                     </div>
                     <input v-model="tableData.date" required type="date"
                         class="w-full p-1 rounded-lg text-sm bg-transparent" />
@@ -55,13 +55,13 @@
                         <label for="start_time" class="w-full">Start time:
                         </label>
                         <input id="start_time" v-model="tableData.start_time" required type="time"
-                            class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
+                            class="w-full p-1 rounded-lg  text-sm bg-transparent" />
                     </div>
                     <div class="flex items-center gap-2">
                         <label for="end_time" class="w-full">End time:
                         </label>
                         <input id="end_time" v-model="tableData.end_time" required type="time"
-                            class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
+                            class="w-full p-1 rounded-lg  text-sm bg-transparent" />
                     </div>
                     <div class="flex items-center gap-2 py-1">
                         <label class="w-full">Duration:
@@ -71,17 +71,26 @@
                     </div>
                 </div>
                 <hr>
-                <div class="flex flex-col leading-tight text-[13px] min-w-[350px]">
-                    <h3 class="font-semibold text-xl py-2">Menu</h3>
+                <div class="flex items-center gap-2 font-bold text-xl">
+                    <label for="menuItemQuantity" class="w-full">Menu Item Quantity: </label>
+                    <input id='menuItemQuantity' v-model="menuItemQuantity" type="number" required
+                        class="w-full p-1 rounded-lg  bg-transparent" />
+                </div>
+                <!-- Loop over `menuItemQuantity` to display the divs -->
+                <div v-for="i in menuItemQuantity" :key="i"
+                    class="flex flex-col leading-tight text-[13px] min-w-[350px]">
+                    <h3 class="font-semibold text-xl py-2">Menu {{ i }}:</h3>
+
                     <div class="flex items-center gap-2">
-                        <label for="id" class="w-full">Menu: </label>
-                        <input id="id" v-model="menuData.id" type="number" required
-                            class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                        <label :for="'menu-id-' + i" class="w-full">Menu: </label>
+                        <input :id="'menu-id-' + i" v-model="menuData[i - 1].id" type="number" required
+                            class="w-full p-1 rounded-lg bg-transparent" />
                     </div>
+
                     <div class="flex items-center gap-2">
-                        <label for="quantity" class="w-full">Quantity: </label>
-                        <input id="quantity" v-model="menuData.quantity" type="number" required
-                            class="w-full p-1 rounded-lg indent-2.5 bg-transparent" />
+                        <label :for="'menu-quantity-' + i" class="w-full">Quantity: </label>
+                        <input :id="'menu-quantity-' + i" v-model="menuData[i - 1].quantity" type="number" required
+                            class="w-full p-1 rounded-lg bg-transparent" />
                     </div>
                 </div>
 
@@ -138,10 +147,10 @@ const tableData = ref({
     price: 0,
 });
 
-const menuData = ref({
-    id: '',
-    quantity: 0,
-});
+const menuItemQuantity = ref(0);
+const menuData = ref(
+    Array.from({ length: menuItemQuantity.value }, () => ({ id: '', quantity: '' }))
+);
 
 const staffID = ref('');
 
@@ -165,13 +174,19 @@ const getBillDetails = () => {
     }
 
     // Add menu details
-    if (menuData.value.id && menuData.value.quantity) {
-        details.push({
-            itemType: "MenuItem",
-            item_id: parseInt(menuData.value.id),
-            quantity: parseInt(menuData.value.quantity)
-        });
+    if (menuItemQuantity.value >= 1) {
+        for (let i = 0; i < menuItemQuantity.value; i++) {
+            if (menuData.value[i].id && menuData.value[i].quantity) {
+                details.push({
+                    itemType: "MenuItem",
+                    item_id: parseInt(menuData.value[i].id),
+                    quantity: parseInt(menuData.value[i].quantity)
+                });
+            }
+        }
     }
+
+
 
     return details;
 };
@@ -247,6 +262,9 @@ onMounted(async () => {
 const createBill = async () => {
     const billDetails = getBillDetails();
 
+    console.log(menuData.value);
+    console.log(billDetails);
+
     if (billDetails.length === 0) {
         toast.error('Please fill in all required fields', {
             autoClose: 3000,
@@ -254,7 +272,7 @@ const createBill = async () => {
         return;
     }
 
-    const data = await $fetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
+    await $fetch('http://localhost:8080/v1/api/bill-manage/create-bill', {
         method: 'POST',
         body: JSON.stringify({
             customer_id: customerData.value.id,
@@ -271,6 +289,12 @@ const createBill = async () => {
         }
     });
 }
+
+// Watch for changes in `menuItemQuantity` and adjust the `menuData` array size
+watch(menuItemQuantity, (newQuantity) => {
+    // Update menuData based on the new menuItemQuantity
+    menuData.value = Array.from({ length: newQuantity }, () => ({ id: '', quantity: '' }));
+});
 </script>
 
 <style>

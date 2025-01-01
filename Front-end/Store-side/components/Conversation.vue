@@ -1,37 +1,29 @@
-<template>
-  <div class="flex flex-col h-full p-6 bg-gray-100">
-    <!-- Conversation Box -->
-    <div
-      ref="conversationBox"
-      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
-      <div v-for="(msg, index) in messages" :key="index" class="mb-2">
-        <div :class="msg.isOwn ? 'text-right' : 'text-left'">
-          <p
-            :class="
-              msg.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
-            "
-            class="inline-block px-4 py-2 rounded-lg max-w-xs">
-            {{ msg.text }}
-          </p>
+  <template>
+    <div class="flex flex-col relative overflow-hidden" style="
+        box-shadow: 0px 0px 128px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 32px 64px -48px rgba(0, 0, 0, 0.5);">
+      <!-- Conversation Box -->
+      <div ref="conversationBox" class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+        <div v-for="(msg, index) in messages" :key="index" class="mb-2">
+          <div :class="msg.isOwn ? 'text-right' : 'text-left'">
+            <p :class="msg.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+              " class="inline-block px-4 py-2 rounded-lg max-w-xs">
+              {{ msg.text }}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Input Field -->
-    <div class="flex">
-      <input
-        v-model="newMessage"
-        type="text"
-        placeholder="Type a message"
-        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
-      <button
-        @click="sendMessage"
-        class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
-        Send
-      </button>
+      <!-- Input Field -->
+      <div class="flex">
+        <input v-model="newMessage" type="text" placeholder="Type a message" @keydown.enter.prevent="sendMessage"
+          class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
+        <button @click="sendMessage" class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
+          Send
+        </button>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick, watch } from "vue";
@@ -40,7 +32,10 @@ import { useSocket } from "@/composables/useSocket";
 
 const { socket } = useSocket();
 
-const props = defineProps<{ conversationID: number }>();
+const props = defineProps<{
+  conversationID: number;
+  staffID: number;
+}>();
 
 interface Message {
   text: string;
@@ -81,6 +76,7 @@ const fetchConversation = async () => {
     // Clear existing messages and add the new ones
     messages.value = fetchedMessages;
     nextTick(scrollToBottom); // Ensure the DOM updates before scrolling
+    console.log("Messages", messages.value);
   } catch (error) {
     toast.error("Failed to fetch conversation.");
   }
@@ -89,14 +85,13 @@ const fetchConversation = async () => {
 // Send a new message
 const sendMessage = async () => {
   if (!newMessage.value.trim()) return;
-
   try {
     await $fetch("http://localhost:8080/v1/api/message/send-message", {
       method: "POST",
       body: JSON.stringify({
         conversationID: props.conversationID,
         senderType: "staff",
-        senderID: 2, // Replace with dynamic customer ID if needed
+        senderID: props.staffID,
         messageText: newMessage.value,
       }),
       onResponse({ response }) {
@@ -105,8 +100,6 @@ const sendMessage = async () => {
         }
       },
     });
-
-    messages.value.push(newMessage.value);
     // Clear message input after sending
     newMessage.value = "";
   } catch (error) {
@@ -130,8 +123,6 @@ watch(
         text: message.messageText,
         isOwn: message.senderType === "staff",
       };
-      // Add the new message to the conversation
-      messages.value.push(newMessage);
       nextTick(scrollToBottom); // Scroll to the latest message
     });
   }
@@ -148,7 +139,7 @@ onMounted(() => {
       isOwn: message.senderType === "staff",
     };
     // Add the new message to the conversation
-    messages.value.push(newMessage);
+    messages.value = [...messages.value, newMessage];
     nextTick(scrollToBottom); // Scroll to the latest message
   });
 
