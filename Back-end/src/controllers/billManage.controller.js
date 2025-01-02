@@ -27,7 +27,8 @@ class billManageController {
   };
   createBill = async (req, res, next) => {
     new CREATED({
-      message: await billManageService.createBill(req.body),
+      message: "Create bill successfully",
+      metadata: await billManageService.createBill(req.body),
     }).send(res);
   };
 }

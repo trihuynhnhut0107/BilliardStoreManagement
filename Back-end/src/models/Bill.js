@@ -23,6 +23,18 @@ const Bill = sequelize.define("Bill", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  promotion: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  total_discount: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  checkout_price: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
 });
 
 module.exports = Bill;

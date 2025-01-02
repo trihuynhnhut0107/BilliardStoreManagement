@@ -5,5 +5,6 @@ const ReportController = require("../../controllers/report.controller");
 const router = express.Router();
 
 router.get("/get-sale-report", asyncHandler(ReportController.getSalesReport));
+router.get("/get-table-report", asyncHandler(ReportController.getTableReport));
 
 module.exports = router;
