@@ -1,9 +1,14 @@
 <template>
-  <div class="flex flex-col h-full p-6 bg-gray-100">
+  <div
+    class="flex flex-col relative overflow-hidden"
+    style="
+      box-shadow: 0px 0px 128px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 32px 64px -48px rgba(0, 0, 0, 0.5);
+    ">
     <!-- Conversation Box -->
     <div
       ref="conversationBox"
-      class="flex-1 overflow-y-auto bg-white rounded-lg shadow-md mb-4 h-0 grow p-6">
+      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">
           <p
@@ -23,6 +28,7 @@
         v-model="newMessage"
         type="text"
         placeholder="Type a message"
+        @keydown.enter.prevent="sendMessage"
         class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
       <button
         @click="sendMessage"
@@ -40,7 +46,10 @@ import { useSocket } from "@/composables/useSocket";
 
 const { socket } = useSocket();
 
-const props = defineProps<{ conversationID: number }>();
+const props = defineProps<{
+  conversationID: number;
+  staffID: number;
+}>();
 
 interface Message {
   text: string;
@@ -83,6 +92,7 @@ const fetchConversation = async () => {
     // Clear existing messages and add the new ones
     messages.value = fetchedMessages;
     nextTick(scrollToBottom); // Ensure the DOM updates before scrolling
+    console.log("Messages", messages.value);
   } catch (error) {
     toast.error("Failed to fetch conversation.");
   }
@@ -91,14 +101,13 @@ const fetchConversation = async () => {
 // Send a new message
 const sendMessage = async () => {
   if (!newMessage.value.trim()) return;
-
   try {
     await $fetch("http://localhost:8080/v1/api/message/send-message", {
       method: "POST",
       body: JSON.stringify({
         conversationID: props.conversationID,
         senderType: "staff",
-        senderID: currentStaffID.value,
+        senderID: props.staffID,
         messageText: newMessage.value,
       }),
       onResponse({ response }) {
@@ -107,8 +116,8 @@ const sendMessage = async () => {
         }
       },
     });
-
-    newMessage.value = ""; // Clear the input after sending
+    // Clear message input after sending
+    newMessage.value = "";
   } catch (error) {
     toast.error("Failed to send message.");
   }
@@ -139,15 +148,25 @@ watch(
         text: message.messageText,
         isOwn: message.senderID === currentStaffID.value,
       };
-
-      messages.value.push(newMessage);
       nextTick(scrollToBottom); // Scroll to the latest message
     });
   }
 );
 
 onMounted(() => {
-  currentStaffID.value = localStorage.getItem("staffID");
+  // Join the conversation in the socket connection
+  socket.emit("joinConversation", { conversationID: props.conversationID });
+
+  // Listen for new messages in the conversation via socket
+  socket.on("newMessage", (message) => {
+    const newMessage = {
+      text: message.messageText,
+      isOwn: message.senderType === "staff",
+    };
+    // Add the new message to the conversation
+    messages.value = [...messages.value, newMessage];
+    nextTick(scrollToBottom); // Scroll to the latest message
+  });
 
   // Initial fetch when component is mounted
   fetchConversation();
