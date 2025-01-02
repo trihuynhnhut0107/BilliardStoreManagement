@@ -1,15 +1,53 @@
 <template>
-  <div class="w-full h-full">
-    <canvas ref="chartCanvas" width="400" height="200"></canvas>
+  <div class="w-full h-full flex flex-col items-center justify-center">
+    <div class="flex flex-row items-center justify-center">
+      <input type="date" v-model="dateInfo.startTime" />
+      <input type="date" v-model="dateInfo.endTime" />
+    </div>
+    <div class="w-full h-full">
+      <canvas ref="chartCanvas" width="400" height="200"></canvas>
+    </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import Chart from "chart.js/auto";
 import { toast } from "vue3-toastify";
 
 const salesData = ref([]);
+
+const dateInfo = ref({
+  startTime: "",
+  endTime: "",
+});
+
+// Generate months array in MM/YYYY format based on a date range
+const generateMonthsInRange = (
+  startDate: string,
+  endDate: string
+): string[] => {
+  const months = [];
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Ensure start date is before end date
+  if (start > end) return months;
+
+  let currentDate = new Date(start);
+
+  while (currentDate <= end) {
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
+    const year = currentDate.getFullYear();
+    months.push(`${month}/${year}`);
+
+    // Move to the next month
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  return months;
+};
 
 // Fetch sales data
 const getData = async () => {
@@ -18,11 +56,11 @@ const getData = async () => {
       "http://localhost:8080/v1/api/report/get-sale-report",
       {
         query: {
-          start_time: "00:00:00 01/01/2024",
-          end_time: "23:59:59 12/31/2025",
+          start_time: `00:00:00 01/01/2024`,
+          end_time: `23:59:59 03/01/2025`,
         },
         onResponseError({ response }) {
-          toast.error("Failed to fetch sales data:", response._data.message);
+          toast.error(response._data.message);
         },
       }
     );
@@ -43,25 +81,15 @@ const chartCanvas = ref(null);
 watch(salesData, (newData) => {
   if (newData.length === 0) return; // Prevent rendering if no data
 
-  // Prepare the data for the chart
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  // Define start and end date for generating the months
+  const startDate = "2024-01-01"; // Adjust the start date
+  const endDate = "2025-03-01"; // Adjust the end date
 
-  // Create an array for all 24 months (2024-2025)
-  const sales = new Array(24).fill(0); // Initialize all months with 0 sales
-  const labels = [];
+  // Generate month labels for the chart
+  const labels = generateMonthsInRange(startDate, endDate);
+
+  // Create an array to hold the sales data for each month
+  const sales = new Array(labels.length).fill(0); // Initialize all months with 0 sales
 
   // Populate the sales data based on the year_month field
   newData.forEach((item) => {
@@ -69,13 +97,6 @@ watch(salesData, (newData) => {
     const index = (parseInt(year) - 2024) * 12 + (parseInt(month) - 1); // Calculate the index (0-23 for 2 years)
     sales[index] = item.total_sales; // Set the sales data for that specific month
   });
-
-  // Create labels for each month from Jan 2024 to Dec 2025
-  for (let i = 0; i < 24; i++) {
-    const year = Math.floor(i / 12) + 2024; // Calculate year
-    const month = i % 12; // Get month from 0 to 11
-    labels.push(`${months[month]} ${year}`);
-  }
 
   // Initialize the chart if not already initialized
   if (chartCanvas.value && sales.length > 0) {

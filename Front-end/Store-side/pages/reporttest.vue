@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen">
+  <div class="h-screen w-screen">
     <SaleChart />
   </div>
 </template>
