@@ -60,6 +60,19 @@ Conversation.hasMany(Message, { foreignKey: "conversationID" });
 // Message model
 Message.belongsTo(Conversation, { foreignKey: "conversationID" });
 
+// Associations
+BillDetail.belongsTo(MenuItem, {
+  foreignKey: "item_id",
+  constraints: false,
+  as: "menuItem",
+});
+
+BillDetail.belongsTo(BilliardTable, {
+  foreignKey: "item_id",
+  constraints: false,
+  as: "billiardTable",
+});
+
 // Sync models with database
 sequelize
   .sync()

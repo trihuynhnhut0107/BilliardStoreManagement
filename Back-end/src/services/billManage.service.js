@@ -1,6 +1,6 @@
 "use strict";
 
-const { where, Sequelize } = require("sequelize");
+const { where, Sequelize, Op } = require("sequelize");
 const Bill = require("../models/Bill");
 const BillDetail = require("../models/BillDetail");
 const BilliardTable = require("../models/BilliardTable");
@@ -11,6 +11,7 @@ const { ServerError, BadRequestError } = require("../core/error.response");
 const Customer = require("../models/Customer");
 const Booking = require("../models/Booking");
 const convertUTCToGMT7String = require("../helpers/UTCToStringDate");
+const stringToUTCDate = require("../helpers/stringDateToUTC");
 
 class billManageService {
   static getAllBill = async () => {
@@ -97,14 +98,59 @@ class billManageService {
       where: { id: foundBill.customer_id },
     });
 
-    const foundBillDetail = await BillDetail.findAll({
+    const foundBillDetails = await BillDetail.findAll({
       where: { bill_id: bill_id },
+      attributes: [
+        "id",
+        "itemType",
+        "quantity",
+        "price",
+        "start_time",
+        "end_time",
+      ],
+      include: [
+        {
+          model: MenuItem,
+          as: "menuItem",
+          attributes: ["name"],
+          required: false, // Allow null if itemType is not MenuItem
+          where: {
+            "$BillDetail.itemType$": "MenuItem", // Filter based on itemType
+          },
+        },
+        {
+          model: BilliardTable,
+          as: "billiardTable",
+          attributes: ["table_type"],
+          required: false, // Allow null if itemType is not BilliardTable
+          where: {
+            "$BillDetail.itemType$": "BilliardTable", // Filter based on itemType
+          },
+        },
+      ],
+    });
+
+    // Transform start_time and end_time using convertUTCToGMT7String
+    const transformedBillDetails = foundBillDetails.map((detail) => {
+      return {
+        ...detail.get(), // Convert Sequelize instance to plain object
+        start_time: detail.start_time
+          ? convertUTCToGMT7String(detail.start_time)
+          : null,
+        end_time: detail.end_time
+          ? convertUTCToGMT7String(detail.end_time)
+          : null,
+      };
     });
 
     return {
       id: foundBill.id,
       customer_name: foundCustomer.name,
-      bill_detail: foundBillDetail,
+      total_price: foundBill.total_price,
+      promotion: foundBill.promotion,
+      total_discount: foundBill.total_discount,
+      checkout_price: foundBill.checkout_price,
+      bill_detail: transformedBillDetails,
       created_at: convertUTCToGMT7String(foundBill.createdAt),
     };
   };
@@ -190,6 +236,7 @@ class billManageService {
             total_price: 0,
             customer_id: customer_id,
             staff_id: staff_id,
+            checkout_price: 0,
           },
           { transaction }
         );
@@ -240,6 +287,45 @@ class billManageService {
             if (!foundBilliardTable) {
               throw new BadRequestError("BilliardTable not found");
             }
+            // Check if the table is available for the requested time span
+            const startTime = stringToUTCDate(item.start_time);
+            const endTime = stringToUTCDate(item.end_time);
+            const existingBooking = await Booking.findOne({
+              where: {
+                table_id: item.item_id,
+                [Op.or]: [
+                  {
+                    start_time: { [Op.between]: [startTime, endTime] },
+                  },
+                  {
+                    end_time: { [Op.between]: [startTime, endTime] },
+                  },
+                  {
+                    [Op.and]: [
+                      { start_time: { [Op.lte]: startTime } },
+                      { end_time: { [Op.gte]: endTime } },
+                    ],
+                  },
+                ],
+              },
+            });
+
+            if (existingBooking) {
+              throw new BadRequestError(
+                "Table is already booked for the requested time span"
+              );
+            }
+
+            const createdBooking = Booking.create({
+              table_id: item.item_id,
+              customer_id: customer_id,
+              start_time: startTime,
+              end_time: endTime,
+              status: "completed",
+            });
+            if (!createdBooking) {
+              throw new ServerError("Booking not created");
+            }
 
             const price = this.calculateBilliardTablePrice({
               start_time: item.start_time,
@@ -254,8 +340,8 @@ class billManageService {
                 bill_id: newBill.id,
                 itemType: item.itemType,
                 item_id: item.item_id,
-                start_time: item.start_time,
-                end_time: item.end_time,
+                start_time: startTime,
+                end_time: endTime,
                 price,
                 quantity: 1,
               },
@@ -265,8 +351,30 @@ class billManageService {
             throw new BadRequestError("Invalid item type");
           }
         }
-
+        const foundCustomer = await Customer.findOne({
+          where: { id: customer_id },
+          transaction,
+        });
+        if (!foundCustomer) {
+          throw new BadRequestError("Customer not found");
+        }
+        const promotion =
+          foundCustomer.points > 1000
+            ? "Super"
+            : foundCustomer.points > 500
+            ? "VIP"
+            : "Common";
+        const discountAmount =
+          foundCustomer.points > 1000
+            ? total_price * 0.15
+            : foundCustomer.points > 500
+            ? total_price * 0.1
+            : 0;
+        const checkout_price = total_price - discountAmount;
         newBill.total_price = total_price;
+        newBill.promotion = promotion;
+        newBill.total_discount = discountAmount;
+        newBill.checkout_price = checkout_price;
         await newBill.save({ transaction });
       }
 
@@ -282,7 +390,7 @@ class billManageService {
       await currentCustomer.save({ transaction });
 
       await transaction.commit();
-      return "Bill created successfully";
+      return { billID: newBill.id };
     } catch (error) {
       await transaction.rollback();
       throw error;
