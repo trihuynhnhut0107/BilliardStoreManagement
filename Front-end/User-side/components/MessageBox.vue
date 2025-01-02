@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col h-96 p-6 bg-gray-100 overflow-auto">
-    <div class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+    <div
+      ref="conversationBox"
+      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
       <div v-for="(msg, index) in messages" :key="index" class="mb-2">
         <div :class="msg.isOwn ? 'text-right' : 'text-left'">
           <p
@@ -31,6 +33,8 @@
 
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
+import { ref, watch, onMounted, nextTick } from "vue";
+import { useSocket } from "@/composables/useSocket";
 
 const { socket } = useSocket();
 
@@ -38,8 +42,17 @@ interface Message {
   text: string;
   isOwn: boolean;
 }
+
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
+
+const conversationBox = ref<HTMLDivElement | null>(null);
+
+const scrollToBottom = () => {
+  if (conversationBox.value) {
+    conversationBox.value.scrollTop = conversationBox.value.scrollHeight;
+  }
+};
 
 const customerID = defineModel({ default: -1 });
 console.log("Message box customerID:", customerID.value);
@@ -67,6 +80,7 @@ const getConversation = async () => {
       isOwn: msg.senderType === "customer" ? true : false,
     }));
     messages.value = fetchedMessage;
+    nextTick(scrollToBottom); // Ensure scroll position is updated after messages are loaded
   } else if (error.value) {
     console.error("Failed to fetch messages:", error.value);
   }
@@ -76,13 +90,13 @@ watch(conversationID, (newConversationID) => {
   if (newConversationID !== -1) {
     getConversation();
     socket.emit("joinConversation", { conversationID: conversationID.value });
-    // Assuming `socket` is your Socket.IO client instance
     socket.on("newMessage", (message) => {
       const newMessage = {
         text: message.messageText,
         isOwn: message.senderType === "customer",
       };
       messages.value.push(newMessage);
+      nextTick(scrollToBottom); // Scroll to the latest message after receiving a new message
     });
   }
 });
@@ -116,13 +130,13 @@ onMounted(() => {
   if (conversationID.value !== -1) {
     getConversation();
     socket.emit("joinConversation", { conversationID: conversationID.value });
-    // Assuming `socket` is your Socket.IO client instance
     socket.on("newMessage", (message) => {
       const newMessage = {
         text: message.messageText,
         isOwn: message.senderType === "customer",
       };
       messages.value.push(newMessage);
+      nextTick(scrollToBottom); // Scroll to the latest message when a new one is received
     });
   }
 });

@@ -12,6 +12,13 @@ module.exports = (io) => {
     socket.on("joinConversation", ({ conversationID }) => {
       socket.join(`conversation_${conversationID}`);
     });
+    // Handle leaving a conversation
+    socket.on("leaveConversation", ({ conversationID }) => {
+      socket.leave(`conversation_${conversationID}`);
+      console.log(
+        `Socket ${socket.id} left room conversation_${conversationID}`
+      );
+    });
 
     socket.on("change-availability", async (itemID) => {
       const billiardTable = await BilliardTable.findOne({

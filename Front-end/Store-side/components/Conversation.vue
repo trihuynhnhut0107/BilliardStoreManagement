@@ -1,29 +1,43 @@
-  <template>
-    <div class="flex flex-col relative overflow-hidden" style="
-        box-shadow: 0px 0px 128px rgba(0, 0, 0, 0.1);
-        box-shadow: 0px 32px 64px -48px rgba(0, 0, 0, 0.5);">
-      <!-- Conversation Box -->
-      <div ref="conversationBox" class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
-        <div v-for="(msg, index) in messages" :key="index" class="mb-2">
-          <div :class="msg.isOwn ? 'text-right' : 'text-left'">
-            <p :class="msg.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
-              " class="inline-block px-4 py-2 rounded-lg max-w-xs">
-              {{ msg.text }}
-            </p>
-          </div>
+<template>
+  <div
+    class="flex flex-col relative overflow-hidden"
+    style="
+      box-shadow: 0px 0px 128px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 32px 64px -48px rgba(0, 0, 0, 0.5);
+    ">
+    <!-- Conversation Box -->
+    <div
+      ref="conversationBox"
+      class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
+      <div v-for="(msg, index) in messages" :key="index" class="mb-2">
+        <div :class="msg.isOwn ? 'text-right' : 'text-left'">
+          <p
+            :class="
+              msg.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            "
+            class="inline-block px-4 py-2 rounded-lg max-w-xs">
+            {{ msg.text }}
+          </p>
         </div>
       </div>
-
-      <!-- Input Field -->
-      <div class="flex">
-        <input v-model="newMessage" type="text" placeholder="Type a message" @keydown.enter.prevent="sendMessage"
-          class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
-        <button @click="sendMessage" class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
-          Send
-        </button>
-      </div>
     </div>
-  </template>
+
+    <!-- Input Field -->
+    <div class="flex">
+      <input
+        v-model="newMessage"
+        type="text"
+        placeholder="Type a message"
+        @keydown.enter.prevent="sendMessage"
+        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
+      <button
+        @click="sendMessage"
+        class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
+        Send
+      </button>
+    </div>
+  </div>
+</template>
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick, watch } from "vue";
@@ -44,6 +58,8 @@ interface Message {
 
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
+
+const currentStaffID = ref();
 
 const conversationBox = ref<HTMLDivElement | null>(null);
 
@@ -110,18 +126,27 @@ const sendMessage = async () => {
 // Watch for changes in conversationID prop and refetch messages
 watch(
   () => props.conversationID,
-  async (newConversationID) => {
-    // Clear messages and fetch the new conversation when conversationID changes
+  async (newConversationID, oldConversationID) => {
+    // Leave the old conversation room
+    if (oldConversationID) {
+      socket.emit("leaveConversation", { conversationID: oldConversationID });
+    }
+
+    // Clear messages and fetch the new conversation
     messages.value = [];
     await fetchConversation();
-    // Join the conversation in the socket connection
-    socket.emit("joinConversation", { conversationID: props.conversationID });
 
-    // Listen for new messages in the conversation via socket
+    // Join the new conversation room
+    socket.emit("joinConversation", { conversationID: newConversationID });
+
+    // Listen for new messages specific to this conversation
+    socket.off("newMessage"); // Remove any previous listener to avoid duplicates
     socket.on("newMessage", (message) => {
+      console.log("New message received:", message);
+
       const newMessage = {
         text: message.messageText,
-        isOwn: message.senderType === "staff",
+        isOwn: message.senderID === currentStaffID.value,
       };
       nextTick(scrollToBottom); // Scroll to the latest message
     });
@@ -145,6 +170,9 @@ onMounted(() => {
 
   // Initial fetch when component is mounted
   fetchConversation();
+});
+onUnmounted(() => {
+  socket.off("newMessage"); // Ensure no lingering listeners
 });
 </script>
 
