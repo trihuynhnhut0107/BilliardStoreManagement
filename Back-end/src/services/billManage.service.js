@@ -166,18 +166,23 @@ class billManageService {
     try {
       let newBill;
       if (booking_id) {
+        // Ensure that staff_id is provided for bill creation with booking
         if (!staff_id) {
           throw new BadRequestError("Staff ID is required");
         }
 
+        // Fetch the booking
         const foundBooking = await Booking.findOne({
           where: { id: booking_id },
           transaction: transaction,
         });
+
+        // If booking is not found, throw an error
         if (!foundBooking) {
           throw new BadRequestError("Booking not found");
         }
 
+        // Update the booking to completed status
         await foundBooking.update(
           {
             status: "completed",
@@ -186,31 +191,37 @@ class billManageService {
           { transaction: transaction }
         );
 
+        // Fetch the Billiard Table information
         const foundBilliardTable = await BilliardTable.findOne({
           where: { id: foundBooking.table_id },
           transaction: transaction,
         });
 
+        // If Billiard Table is not found, throw an error
         if (!foundBilliardTable) {
           throw new BadRequestError("Billiard Table not found");
         }
 
+        // Calculate the price for the Billiard Table
         const price = this.calculateBilliardTablePrice({
           start_time: foundBooking.start_time,
           end_time: foundBooking.end_time,
           hourlyRate: foundBilliardTable.price,
         });
 
+        // Create the bill for the booking
         newBill = await Bill.create(
           {
             item_quantity: 1,
             total_price: price,
             customer_id: foundBooking.customer_id,
+            checkout_price: 0,
             staff_id: staff_id,
           },
           { transaction: transaction }
         );
 
+        // Create the BillDetail for the Billiard Table
         await BillDetail.create(
           {
             bill_id: newBill.id,
@@ -223,8 +234,51 @@ class billManageService {
           },
           { transaction: transaction }
         );
+
+        // Fetch the customer for promotion and discount
+        const foundCustomer = await Customer.findOne({
+          where: { id: foundBooking.customer_id },
+          transaction: transaction,
+        });
+
+        if (!foundCustomer) {
+          throw new BadRequestError("Customer not found");
+        }
+
+        // Calculate promotion and discount based on customer points
+        let total_price = price;
+        const promotion =
+          foundCustomer.points > 1000
+            ? "Super"
+            : foundCustomer.points > 500
+            ? "VIP"
+            : "Common";
+
+        const discountAmount =
+          foundCustomer.points > 1000
+            ? total_price * 0.15
+            : foundCustomer.points > 500
+            ? total_price * 0.1
+            : 0;
+
+        // Calculate checkout price after discount
+        const checkout_price = total_price - discountAmount;
+
+        // Update the bill with promotion and discount details
+        newBill.total_price = total_price;
+        newBill.promotion = promotion;
+        newBill.total_discount = discountAmount;
+        newBill.checkout_price = checkout_price;
+        await newBill.save({ transaction });
+
+        // Add points based on the total price
+        const addedPoint = Math.round(newBill.total_price / 1000);
+        foundCustomer.points += addedPoint;
+        await foundCustomer.save({ transaction });
+
+        // Commit the transaction
         await transaction.commit();
-        return "Bill created successfully";
+        return { billID: newBill.id };
       } else {
         if (!bill_details || bill_details.length === 0) {
           throw new BadRequestError("Bill details are required");

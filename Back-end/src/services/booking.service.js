@@ -4,6 +4,7 @@ const stringToUTCDate = require("../helpers/stringDateToUTC");
 const BilliardTable = require("../models/BilliardTable");
 const Booking = require("../models/Booking");
 const Customer = require("../models/Customer");
+const convertUTCToGMT7String = require("../helpers/UTCToStringDate");
 
 class BookingService {
   static getAllBooking = async () => {
@@ -30,6 +31,72 @@ class BookingService {
 
       return bookings; // Return the list of bookings after updates
     }
+  };
+  static getAllBookingPagination = async (page_size, page_number) => {
+    if (!page_number) {
+      throw new BadRequestError("Page number is required");
+    }
+    if (page_number < 1) {
+      throw new BadRequestError("Invalid page number");
+    }
+    if (page_size < 1) {
+      throw new BadRequestError("Invalid page size");
+    }
+
+    const currentTime = new Date();
+    const pageSizeInt = parseInt(page_size, 10);
+    const pageNumberInt = parseInt(page_number, 10);
+    const totalRecords = await Booking.count();
+    const totalPages = Math.ceil(totalRecords / pageSizeInt);
+
+    const bookings = await Booking.findAll({
+      limit: pageSizeInt,
+      offset: (pageNumberInt - 1) * pageSizeInt,
+    });
+
+    if (!bookings) {
+      throw new BadRequestError("Booking not found");
+    }
+
+    for (let booking of bookings) {
+      const startTime = new Date(booking.start_time);
+
+      // Check if the booking has exceeded the 15-minute window
+      if (
+        currentTime - startTime > 15 * 60 * 1000 &&
+        booking.status === "booked"
+      ) {
+        // Update the status to 'canceled'
+        await booking.update({ status: "cancelled" });
+      }
+    }
+
+    // Convert start_time and end_time to GMT+7
+    const convertedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const customer = await Customer.findOne({
+          where: { id: booking.customer_id },
+        });
+        const { customer_id, start_time, end_time, id, ...rest } =
+          booking.toJSON(); // Exclude customer_id and extract fields
+
+        return {
+          id: id,
+          customer: customer.name, // Place customer field first
+          ...rest, // Include the rest of the fields
+          start_time: convertUTCToGMT7String(start_time),
+          end_time: convertUTCToGMT7String(end_time),
+        };
+      })
+    );
+
+    return {
+      totalRecords,
+      totalPages,
+      currentPage: pageNumberInt,
+      pageSize: pageSizeInt,
+      bookings: convertedBookings,
+    };
   };
 
   static getBookingByTableID = async (table_id) => {
@@ -84,7 +151,10 @@ class BookingService {
     const booking = await Booking.findOne({
       where: { id: booking_id },
     });
-    return booking;
+    const customer = await Customer.findOne({
+      where: { id: booking.customer_id },
+    });
+    return { booking, customer };
   };
 
   static createBooking = async ({
