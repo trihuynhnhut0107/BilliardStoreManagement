@@ -57,7 +57,7 @@
         <!-- Update Button -->
         <button
           type="submit"
-          class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-300"
+          class="bg-[#3A6351] hover:bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-300"
         >
           Update
         </button>

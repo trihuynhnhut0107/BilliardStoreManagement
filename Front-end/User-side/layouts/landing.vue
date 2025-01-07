@@ -6,7 +6,7 @@
     <main class="w-full h-full overflow-clip flex flex-row">
       <slot />
     </main>
-    <footer class="w-full grid grid-cols-3 grid-rows-1">
+    <footer class="w-full grid grid-cols-3 grid-rows-1 ">
       <div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab tenetur
         corrupti officia soluta illo temporibus, provident officiis dolorum quae

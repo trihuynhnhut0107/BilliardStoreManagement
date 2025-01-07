@@ -2,7 +2,7 @@
     <div
         class="h-svh w-svw max-h-full flex justify-around p-[50px] bg-cover bg-no-repeat bg-[url('/public/login_page.png')]">
         <div class="md:flex m-auto flex-col items-left justify-center hidden">
-            <h1 class="text-[#3A6351] text-5xl font-bold uppercase ">app name</h1>
+            <h1 class="text-[#3A6351] text-5xl font-bold uppercase ">CUELINK</h1>
             <h3 class="capitalize w-[60%] text-3xl font-medium mt-2">book your perfect game anytime anywhere!</h3>
         </div>
         <form @submit.prevent

@@ -1,5 +1,6 @@
 <template>
-  <div class="w-full h-full flex flex-col items-center justify-center bg-white  p-10 ">
+    <Blank>
+      <div class="w-full h-full flex flex-col items-center justify-center bg-white  p-10 ">
     <form
       @submit.prevent="handleSignUp"
       class="self-center w-fit flex flex-col items-center gap-5 rounded-lg shadow-[2px_2px_2px_#A4A4A4] p-4 px-11 bg-white">
@@ -14,7 +15,7 @@
         v-model="formData.password"
         type="password"
         required
-        placeholder="New password"
+        placeholder="Password"
         autocomplete="on"
         class="input-field" />
       <input
@@ -41,11 +42,14 @@
         class="w-[150px] bg-[#3A6351] text-white rounded-md text-center py-2">
         Sign up
       </button>
-      <NuxtLink class="text-[#3A6351] font-bold mt-3" to="/login">
+      <NuxtLink class="text-[#3A6351] font-bold mt-3" to="/userLogin">
         Already have an account?
       </NuxtLink>
     </form>
   </div>
+    </Blank>
+
+    
 </template>
 
 <script setup>
@@ -53,9 +57,10 @@ import { useLogin } from "~/composables/useLogin";
 import Cookies from "js-cookie";
 import { navigateTo } from "nuxt/app";
 import { toast } from "vue3-toastify";
+import Blank from "~/layouts/blank.vue";
 
 definePageMeta({
-  layout: "main",
+  layout: "default",
 });
 
 const formData = ref({

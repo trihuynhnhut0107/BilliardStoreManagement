@@ -4,10 +4,10 @@
     <div
       class="fixed top-0 left-0 right-0 bg-white h-fit max-h-12 text-[#3A6351] px-20 py-2 flex justify-between items-center z-50">
       <div class="flex gap-4">
-        <img src="../public/admin.png" />
-        <h3 class="font-bold text-2xl">Admin</h3>
+        <img src="../public/logo1.png" />
+        <h3 class="font-bold text-2xl">CUELINK</h3>
       </div>
-      <div>
+      <!-- <div>
         <svg
           @click="navigateTo('/admininformation')"
           xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +19,7 @@
             fill-rule="evenodd"
             d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
         </svg>
-      </div>
+      </div> -->
     </div>
 
     <div class="flex flex-1 py-20 mx-20">
@@ -43,7 +43,7 @@
                     d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                 </svg>
                 <NuxtLink to="/admininformation" class="text-[#3A6351] text-sm"
-                  >Admin Information</NuxtLink
+                  >Information</NuxtLink
                 >
               </li>
               <li class="flex gap-4 items-center">
@@ -145,7 +145,7 @@
                   >Analytics</NuxtLink
                 >
               </li>
-              <li class="flex gap-4 items-center">
+              <!-- <li class="flex gap-4 items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="w-4 h-4"
@@ -157,7 +157,7 @@
                 <NuxtLink class="text-[#3A6351] text-sm" to="/setting"
                   >Setting</NuxtLink
                 >
-              </li>
+              </li> -->
               <li @click="logOut" class="flex gap-4 items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

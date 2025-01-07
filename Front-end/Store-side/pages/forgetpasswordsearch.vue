@@ -2,7 +2,7 @@
   <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center pt-[20vh] gap-4">
     <div>
       <h1 class="text-4xl font-bold uppercase text-[#3A6351] text-center mt-10">
-        app name
+        CUELINK.
       </h1>
     </div>
     <form @submit.prevent
