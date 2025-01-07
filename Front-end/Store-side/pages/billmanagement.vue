@@ -10,13 +10,6 @@
                         d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                 </svg>
             </div>
-            <!-- <div class="flex items-center w-max rounded-2xl border px-3 gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="#000" viewBox="0 0 16 16">
-                    <path
-                        d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z" />
-                </svg>
-                <p>Active</p>
-            </div> -->
             <div class="flex gap-2 items-center">
                 <NuxtLink to="/createbill"
                     class="w-fit bg-[#3A6351] py-[6px] px-4 text-white text-sm font-medium rounded">

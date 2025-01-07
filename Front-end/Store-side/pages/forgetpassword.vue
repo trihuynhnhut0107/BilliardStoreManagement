@@ -1,7 +1,7 @@
 <template>
   <div class="bg-[#ECF0F2] h-screen max-h-full flex flex-col items-center pt-[20vh] gap-4">
     <div>
-      <h1 class="text-4xl font-bold uppercase text-[#3A6351] text-center">app name</h1>
+      <h1 class="text-4xl font-bold uppercase text-[#3A6351] text-center">CUELINK.</h1>
     </div>
     <form @submit.prevent
       class="self-center w-fit flex flex-col items-center gap-3 rounded-lg shadow-[2px_2px_2px_#A4A4A4] p-4 px-11 bg-white">

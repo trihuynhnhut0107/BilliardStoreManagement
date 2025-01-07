@@ -1,5 +1,5 @@
 <template>
-  <DefaultLayout>
+  <Blank>
     <div class="forgotpassword-container">
       <header>
         <h1>app name</h1>
@@ -48,11 +48,12 @@
         </div>
       </form>
     </div>
-  </DefaultLayout>
+  </Blank>
 </template>
 
 <script setup>
 import { NuxtLink } from "#build/components";
+import Blank from "~/layouts/blank.vue";
 import DefaultLayout from "~/layouts/default.vue";
 const userEmail = "example@gmail.com";
 </script>

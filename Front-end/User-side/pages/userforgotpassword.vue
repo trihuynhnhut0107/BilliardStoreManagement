@@ -1,8 +1,8 @@
 <template>
-  <DefaultLayout>
+  <Blank>
     <div class="forgotpassword-container">
       <header>
-        <h1>app name</h1>
+        <h1>Cuelin.</h1>
       </header>
       <form>
         <h3>Find your account</h3>
@@ -17,17 +17,19 @@
             <NuxtLink to="/userlogin">Cancel</NuxtLink>
           </button>
           <button class="btn-search">
-            <NuxtLink to="/forgotpasswordsearch">Search</NuxtLink>
+            <NuxtLink to="/useforgotpassword">Search</NuxtLink>
           </button>
         </div>
       </form>
     </div>
-  </DefaultLayout>
+  </Blank>
 </template>
 
 <script setup>
-import DefaultLayout from "~/layouts/default.vue";
+import Blank from "~/layouts/blank.vue";
+
 </script>
+
 
 <style scoped>
 .forgotpassword-container {

@@ -41,7 +41,7 @@
             <p class="w-full">{{ bill.id }}</p>
           </div>
           <div v-if="bill.itemType === 'BilliardTable'">
-            <div class="flex gap-2 text-[13px] mt-1">
+            <div class="">
               <label class="w-full">Table Type:</label>
               <p class="w-full">{{ bill.billiardTable.table_type }}</p>
             </div>
@@ -65,7 +65,7 @@
             <p class="w-full">{{ bill.quantity }}</p>
           </div>
           <div
-            class="flex justify-between gap-2 text-lg font-bold mt-1 text-red-500">
+            class="flex gap-2 text-[13px] mt-1">
             <label class="w-full">Price:</label>
             <p class="w-full">{{ bill.price }} VNĐ</p>
           </div>
@@ -74,22 +74,22 @@
       <div class="overflow-y-auto max-h-[300px]">
         <!-- Total Price Section with full width -->
         <div
-          class="flex justify-between gap-2 text-lg font-bold mt-1 text-red-500 w-full">
+          class="flex gap-2 text-[13px] mt-1">
           <label class="w-full">Total Price:</label>
           <p class="w-full">{{ totalPrice }} VNĐ</p>
         </div>
         <div
-          class="flex justify-between gap-2 text-lg font-bold mt-1 text-red-500 w-full">
+          class="flex gap-2 text-[13px] mt-1">
           <label class="w-full">Total Discount:</label>
           <p class="w-full">{{ totalDiscount }} VNĐ</p>
         </div>
         <div
-          class="flex justify-between gap-2 text-lg font-bold mt-1 text-red-500 w-full">
+          class="flex gap-2 text-[13px] mt-1">
           <label class="w-full">Promotion name:</label>
           <p class="w-full">{{ promotion }}</p>
         </div>
         <div
-          class="flex justify-between text-lg font-bold mt-1 text-red-500 w-full">
+          class="flex gap-2 text-[16px] mt-1 font-semibold">
           <label class="w-full">Checkout price:</label>
           <p class="w-full">{{ checkoutPrice }} VNĐ</p>
         </div>

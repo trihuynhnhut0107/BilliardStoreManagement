@@ -2,7 +2,7 @@
   <div class="w-full h-full flex flex-col">
     <div class="w-full h-full flex flex-row justify-center items-center">
       <div
-        class="flex flex-row justify-center items-center py-6 border-b-4 border-black w-1/3">
+        class="flex flex-row justify-center items-center py-6 border-b-2 border-black w-1/3">
         <h1 class="text-4xl">Table</h1>
       </div>
     </div>
@@ -24,14 +24,14 @@
                 </p>
               </div>
               <div
-                class="flex flex-col space-y-4 justify-around items-center py-2">
+                class="flex flex-col space-y-4 justify-around items-left py-2 ">
                 <div>
                   <p
                     :class="[
                       item.status === 'Available'
                         ? 'bg-green-500'
                         : 'bg-red-600',
-                      'px-2 py-1 text-white rounded',
+                      'px-2 py-1 text-white rounded text-center',
                     ]">
                     {{ item.status }}
                   </p>
@@ -39,7 +39,7 @@
                 <div>
                   <NuxtLink
                     :to="`/booking/${item.id}`"
-                    class="px-6 py-1 bg-green-500 text-white rounded">
+                    class="px-6 py-1 bg-[#3A6351] text-white rounded">
                     Booking
                   </NuxtLink>
                 </div>

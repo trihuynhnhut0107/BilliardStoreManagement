@@ -13,14 +13,14 @@
         <div class="flex flex-col h-[40vh] text-xl font-weight-700 items-start space-y-[6vh]">
           <button
             @click="toggleChangeInfo"
-            class="hover:text-yellow-600 change_info">
+            class="hover:text-[#3A6351] change_info">
             {{
               isChangeInfoOpen
                 ? "Close Change Info"
                 : "Change information"
             }}
           </button>
-          <button @click="logout" class="hover:text-yellow-600">
+          <button @click="logout" class="hover:text-[#3A6351]">
             Logout
           </button>
         </div>
@@ -32,7 +32,7 @@
       v-if="!isChangeInfoOpen"
       class="flex h-[40vh] w-3/4 bg-white mt-[10vh] mr-[5vw] border-2 border-gray-300 rounded-xl shadow-md">
       <div class="flex flex-col ml-[2vw] w-1/2">
-        <h2 class="flex text-3xl text-yellow-400 mt-[4vh] mb-[4vh] font-bold">
+        <h2 class="flex text-3xl text-[#3A6351] mt-[4vh] mb-[4vh] font-bold">
           {{ userData.name || "Loading..." }}
         </h2>
         <h3 class="mb-[4vh]">ID: {{ userData.id || "N/A" }}</h3>
