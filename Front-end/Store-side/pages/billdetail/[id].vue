@@ -41,7 +41,7 @@
             <p class="w-full">{{ bill.id }}</p>
           </div>
           <div v-if="bill.itemType === 'BilliardTable'">
-            <div class="">
+            <div class="flex gap-2 text-[13px] mt-1">
               <label class="w-full">Table Type:</label>
               <p class="w-full">{{ bill.billiardTable.table_type }}</p>
             </div>

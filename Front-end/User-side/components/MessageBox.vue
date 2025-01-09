@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-96 p-6 bg-gray-100 overflow-auto">
+  <div class="flex flex-col h-96 p-4 rounded bg-gray-100 overflow-auto border border-gray-300">
     <div
       ref="conversationBox"
       class="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-md mb-4">
@@ -21,7 +21,9 @@
         v-model="newMessage"
         type="text"
         placeholder="Type a message"
-        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
+        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none"
+        @keydown.enter.prevent="sendMessage"
+        />
       <button
         @click="sendMessage"
         class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">
@@ -102,6 +104,7 @@ watch(conversationID, (newConversationID) => {
 });
 
 const sendMessage = async () => {
+  if (!newMessage.value.trim()) return;
   const data = await $fetch(
     "http://localhost:8080/v1/api/message/send-message",
     {

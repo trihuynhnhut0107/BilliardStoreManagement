@@ -23,7 +23,8 @@
                         class="w-full p-1 rounded-lg indent-2.5 text-sm bg-transparent" />
                 </div>
             </div>
-            <img src="https://placehold.co/150x200" />
+            <!-- <img src="https://placehold.co/150x200" /> -->
+            <img src="../public/hotdog.jpg" class="w-[150px] h-[200px]" />
         </form>
         <div class="flex justify-end items-center gap-2 bg-white w-full py-2 px-10 rounded"
             style="box-shadow: 0px 0px 3px #a4a4a4">

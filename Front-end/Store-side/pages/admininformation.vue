@@ -8,7 +8,8 @@
             <p>Role: {{ formData.role }}</p>
             <p>Start date: {{ formData.startDate }}</p>
         </div>
-        <img src="https://placehold.co/150x200" />
+        <!-- <img src="https://placehold.co/150x200" /> -->
+        <img src="../public/staff.jpg" />
     </div>
 </template>
 

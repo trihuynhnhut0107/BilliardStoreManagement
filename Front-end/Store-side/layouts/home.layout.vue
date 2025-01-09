@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#ECF0F2] min-h-screen w-screen flex flex-col">
+  <div class="bg-[#ECF0F2] min-h-screen w-screen flex flex-col overflow-hidden">
     <!-- Header -->
     <div
       class="fixed top-0 left-0 right-0 bg-white h-fit max-h-12 text-[#3A6351] px-20 py-2 flex justify-between items-center z-50">
@@ -99,10 +99,25 @@
                   <path
                     d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
                 </svg>
+                <NuxtLink to="/bookingmanagement" class="text-[#3A6351] text-sm"
+                  >Booking Management</NuxtLink
+                >
+              </li>
+              <li class="flex gap-4 items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
+                  fill="#3A6351"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z" />
+                  <path
+                    d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
+                </svg>
                 <NuxtLink to="/billmanagement" class="text-[#3A6351] text-sm"
                   >Bill Management</NuxtLink
                 >
-              </li>
+              </li>            
               <li class="flex gap-4 items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -190,18 +205,10 @@
         <div class="flex justify-between pb-8">
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-6 h-6"
-                fill="#fff"
-                viewBox="0 0 16 16">
-                <path
-                  d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1z" />
-                <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-              </svg>
-              <h3 class="text-2xl font-bold">Demo.</h3>
+              <img src="../public/logo2.png" />
+              <h3 class="text-2xl font-bold">CUELINK.</h3>
             </div>
-            <div class="max-w-80 line-clamp-3">
+            <div class="max-w-96 line-clamp-3">
               <p class="text-sm">
                 {{ appDescription }}
               </p>
@@ -215,9 +222,10 @@
               <NuxtLink>CONTACTS</NuxtLink>
             </ul>
           </div>
-          <div class="flex justify-end items-end pt-8">
-            <p class="text-sm">&#64;2024 Demo Inc. All rights reserved</p>
-          </div>
+        </div>
+        <hr />
+        <div class="flex justify-end items-end pt-8">
+          <p class="text-sm">&#64;2024 Cuelink Inc. All rights reserved</p>
         </div>
       </div>
     </div>
@@ -225,9 +233,8 @@
 </template>
 
 <script setup>
-const appDescription = ref(
-  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui consectetur expedita cupiditate provident!"
-);
+const appDescription = ref('We provide high-quality services with the goal of delivering an exceptional experience for our customers. Our store offers a wide range of furniture products, along with attentive customer support. Explore more about us and enjoy the best services we have to offer!')
+
 
 const logOut = () => {
   localStorage.removeItem("staffID");

@@ -19,7 +19,8 @@
         v-model="newMessage"
         type="text"
         placeholder="Type a message"
-        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none" />
+        class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none"
+      />
       <button
         @click="sendMessage"
         class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600">

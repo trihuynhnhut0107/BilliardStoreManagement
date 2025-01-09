@@ -99,7 +99,7 @@
 import { ref, computed } from "vue";
 
 const dataList = defineModel();
-console.log(dataList.value);
+// console.log(dataList.value);
 
 const selectedRow = ref(null);
 
@@ -158,5 +158,9 @@ const props = defineProps({
 
 const bookingCheckout = async (id) => {
   emit("bookingCheckout", id);
+};
+
+const viewRow = (row) => {
+  emit("viewRow", row);
 };
 </script>
