@@ -10,6 +10,7 @@ router.get(
   asyncHandler(bookingController.getAllBookingPagination)
 );
 
+router.post("/confirm-booking", asyncHandler(bookingController.confirmBooking));
 router.get("/:booking_id", asyncHandler(bookingController.getBookingByID));
 
 // Add a new route to get bookings by table ID in params and date in query
