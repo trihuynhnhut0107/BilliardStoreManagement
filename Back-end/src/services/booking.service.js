@@ -5,8 +5,27 @@ const BilliardTable = require("../models/BilliardTable");
 const Booking = require("../models/Booking");
 const Customer = require("../models/Customer");
 const convertUTCToGMT7String = require("../helpers/UTCToStringDate");
+const Promotion = require("../models/Promotion");
+const checkPromotionUsage = require("../helpers/checkPromotionUsage");
 
 class BookingService {
+  static confirmBooking = async ({ booking_id }) => {
+    const booking = await Booking.findOne({
+      where: { id: booking_id },
+    });
+
+    if (!booking) {
+      throw new BadRequestError("Booking not found");
+    }
+
+    if (booking.status !== "booked") {
+      throw new BadRequestError("Booking is not in booked status");
+    }
+
+    await booking.update({ status: "playing" });
+
+    return { bookingID: booking.id };
+  };
   static getAllBooking = async () => {
     {
       // Fetch all bookings
@@ -162,6 +181,7 @@ class BookingService {
     customer_id,
     start_time,
     end_time,
+    promotion_code,
   }) => {
     if (!table_id || !customer_id || !start_time || !end_time) {
       throw new BadRequestError("Please fill all the required fields");
@@ -212,19 +232,40 @@ class BookingService {
         "Table is already booked for the requested time span"
       );
     }
+    let promotionId = null;
+    if (promotion_code) {
+      const promotion = await Promotion.findOne({
+        where: { promotion_code },
+      });
+
+      if (!promotion) {
+        throw new BadRequestError("Invalid promotion code");
+      }
+
+      // Check promotion usage
+      if (!(await checkPromotionUsage(promotion.id))) {
+        throw new BadRequestError(
+          "Promotion has reached its maximum usage limit"
+        );
+      }
+
+      promotionId = promotion.id;
+    }
 
     const newBooking = await Booking.create({
       table_id,
       customer_id,
       start_time: startTime,
       end_time: endTime,
+      promotion_code: promotionId ? promotion_code : null,
     });
+
     // global.io.emit("New booking");
 
     if (!newBooking) {
       throw new ServerError("Booking not created");
     }
-    return "Create booking successfully";
+    return { bookingID: newBooking.id };
   };
 }
 

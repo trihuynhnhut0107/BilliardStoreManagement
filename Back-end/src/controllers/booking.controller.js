@@ -2,6 +2,12 @@ const { OK, CREATED } = require("../core/success.response");
 const BookingService = require("../services/booking.service");
 
 class BookingController {
+  confirmBooking = async (req, res, next) => {
+    new OK({
+      message: "Confirm booking successfully",
+      metadata: await BookingService.confirmBooking(req.body),
+    }).send(res);
+  };
   getAllBooking = async (req, res, next) => {
     new OK({
       message: "Get all booking successfully",

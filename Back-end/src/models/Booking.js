@@ -24,9 +24,13 @@ const Booking = sequelize.define("Booking", {
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM("booked", "cancelled", "completed"),
+    type: DataTypes.ENUM("booked", "playing", "cancelled", "completed"),
     allowNull: false,
     defaultValue: "booked",
+  },
+  promotion_code: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
 });
 

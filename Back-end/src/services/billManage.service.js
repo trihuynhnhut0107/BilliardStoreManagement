@@ -13,6 +13,9 @@ const Booking = require("../models/Booking");
 const convertUTCToGMT7String = require("../helpers/UTCToStringDate");
 const stringToUTCDate = require("../helpers/stringDateToUTC");
 
+const Promotion = require("../models/Promotion");
+const checkPromotionUsage = require("../helpers/checkPromotionUsage");
+
 class billManageService {
   static getAllBill = async () => {
     const foundBillList = await Bill.findAll(); // Retrieve all bills
@@ -160,298 +163,294 @@ class billManageService {
     customer_id,
     staff_id,
     bill_details,
+    promotion_id,
   }) => {
     const transaction = await sequelize.transaction();
+    let currentPromotionID = promotion_id ?? -1;
 
     try {
-      let newBill;
-      if (booking_id) {
-        // Ensure that staff_id is provided for bill creation with booking
-        if (!staff_id) {
-          throw new BadRequestError("Staff ID is required");
-        }
+      const isBooking = Boolean(booking_id);
+      let billCustomerID = customer_id;
 
-        // Fetch the booking
-        const foundBooking = await Booking.findOne({
+      if (isBooking) {
+        const booking = await Booking.findOne({
           where: { id: booking_id },
-          transaction: transaction,
-        });
-
-        // If booking is not found, throw an error
-        if (!foundBooking) {
-          throw new BadRequestError("Booking not found");
-        }
-
-        // Update the booking to completed status
-        await foundBooking.update(
-          {
-            status: "completed",
-            updatedAt: new Date(),
-          },
-          { transaction: transaction }
-        );
-
-        // Fetch the Billiard Table information
-        const foundBilliardTable = await BilliardTable.findOne({
-          where: { id: foundBooking.table_id },
-          transaction: transaction,
-        });
-
-        // If Billiard Table is not found, throw an error
-        if (!foundBilliardTable) {
-          throw new BadRequestError("Billiard Table not found");
-        }
-
-        // Calculate the price for the Billiard Table
-        const price = this.calculateBilliardTablePrice({
-          start_time: foundBooking.start_time,
-          end_time: foundBooking.end_time,
-          hourlyRate: foundBilliardTable.price,
-        });
-
-        // Create the bill for the booking
-        newBill = await Bill.create(
-          {
-            item_quantity: 1,
-            total_price: price,
-            customer_id: foundBooking.customer_id,
-            checkout_price: 0,
-            staff_id: staff_id,
-          },
-          { transaction: transaction }
-        );
-
-        // Create the BillDetail for the Billiard Table
-        await BillDetail.create(
-          {
-            bill_id: newBill.id,
-            itemType: "BilliardTable",
-            item_id: foundBooking.table_id,
-            start_time: foundBooking.start_time,
-            end_time: foundBooking.end_time,
-            price: price,
-            quantity: 1,
-          },
-          { transaction: transaction }
-        );
-
-        // Fetch the customer for promotion and discount
-        const foundCustomer = await Customer.findOne({
-          where: { id: foundBooking.customer_id },
-          transaction: transaction,
-        });
-
-        if (!foundCustomer) {
-          throw new BadRequestError("Customer not found");
-        }
-
-        // Calculate promotion and discount based on customer points
-        let total_price = price;
-        const promotion =
-          foundCustomer.points > 1000
-            ? "Super"
-            : foundCustomer.points > 500
-            ? "VIP"
-            : "Common";
-
-        const discountAmount =
-          foundCustomer.points > 1000
-            ? total_price * 0.15
-            : foundCustomer.points > 500
-            ? total_price * 0.1
-            : 0;
-
-        // Calculate checkout price after discount
-        const checkout_price = total_price - discountAmount;
-
-        // Update the bill with promotion and discount details
-        newBill.total_price = total_price;
-        newBill.promotion = promotion;
-        newBill.total_discount = discountAmount;
-        newBill.checkout_price = checkout_price;
-        await newBill.save({ transaction });
-
-        // Add points based on the total price
-        const addedPoint = Math.round(newBill.total_price / 1000);
-        foundCustomer.points += addedPoint;
-        await foundCustomer.save({ transaction });
-
-        // Commit the transaction
-        await transaction.commit();
-        return { billID: newBill.id };
-      } else {
-        if (!bill_details || bill_details.length === 0) {
-          throw new BadRequestError("Bill details are required");
-        }
-
-        newBill = await Bill.create(
-          {
-            item_quantity: bill_details.length,
-            total_price: 0,
-            customer_id: customer_id,
-            staff_id: staff_id,
-            checkout_price: 0,
-          },
-          { transaction }
-        );
-        if (!newBill) {
-          throw new ServerError("Bill not created");
-        }
-
-        let total_price = 0;
-
-        for (const item of bill_details) {
-          if (item.itemType === "MenuItem") {
-            const foundMenuItem = await MenuItem.findOne({
-              where: { id: item.item_id },
-              transaction,
-            });
-            if (!foundMenuItem || item.quantity > foundMenuItem.quantity) {
-              throw new BadRequestError("Insufficient menu item quantity");
-            }
-
-            await menuManageService.updateMenuItem(
-              {
-                menu_id: item.item_id,
-                quantity: foundMenuItem.quantity - item.quantity,
-              },
-              transaction
-            );
-
-            const price = foundMenuItem.price * item.quantity;
-            total_price += price;
-
-            await BillDetail.create(
-              {
-                bill_id: newBill.id,
-                itemType: item.itemType,
-                item_id: item.item_id,
-                quantity: item.quantity,
-                price,
-                start_time: new Date(),
-                end_time: new Date(),
-              },
-              { transaction }
-            );
-          } else if (item.itemType === "BilliardTable") {
-            const foundBilliardTable = await BilliardTable.findOne({
-              where: { id: item.item_id },
-              transaction,
-            });
-            if (!foundBilliardTable) {
-              throw new BadRequestError("BilliardTable not found");
-            }
-            // Check if the table is available for the requested time span
-            const startTime = stringToUTCDate(item.start_time);
-            const endTime = stringToUTCDate(item.end_time);
-            const existingBooking = await Booking.findOne({
-              where: {
-                table_id: item.item_id,
-                [Op.or]: [
-                  {
-                    start_time: { [Op.between]: [startTime, endTime] },
-                  },
-                  {
-                    end_time: { [Op.between]: [startTime, endTime] },
-                  },
-                  {
-                    [Op.and]: [
-                      { start_time: { [Op.lte]: startTime } },
-                      { end_time: { [Op.gte]: endTime } },
-                    ],
-                  },
-                ],
-              },
-            });
-
-            if (existingBooking) {
-              throw new BadRequestError(
-                "Table is already booked for the requested time span"
-              );
-            }
-
-            const createdBooking = Booking.create({
-              table_id: item.item_id,
-              customer_id: customer_id,
-              start_time: startTime,
-              end_time: endTime,
-              status: "completed",
-            });
-            if (!createdBooking) {
-              throw new ServerError("Booking not created");
-            }
-
-            const price = this.calculateBilliardTablePrice({
-              start_time: item.start_time,
-              end_time: item.end_time,
-              hourlyRate: foundBilliardTable.price,
-            });
-
-            total_price += price;
-
-            await BillDetail.create(
-              {
-                bill_id: newBill.id,
-                itemType: item.itemType,
-                item_id: item.item_id,
-                start_time: startTime,
-                end_time: endTime,
-                price,
-                quantity: 1,
-              },
-              { transaction }
-            );
-          } else {
-            throw new BadRequestError("Invalid item type");
-          }
-        }
-        const foundCustomer = await Customer.findOne({
-          where: { id: customer_id },
           transaction,
         });
-        if (!foundCustomer) {
-          throw new BadRequestError("Customer not found");
-        }
-        const promotion =
-          foundCustomer.points > 1000
-            ? "Super"
-            : foundCustomer.points > 500
-            ? "VIP"
-            : "Common";
-        const discountAmount =
-          foundCustomer.points > 1000
-            ? total_price * 0.15
-            : foundCustomer.points > 500
-            ? total_price * 0.1
-            : 0;
-        const checkout_price = total_price - discountAmount;
-        newBill.total_price = total_price;
-        newBill.promotion = promotion;
-        newBill.total_discount = discountAmount;
-        newBill.checkout_price = checkout_price;
-        await newBill.save({ transaction });
+        if (!booking) throw new BadRequestError("Booking not found");
+        billCustomerID = booking.customer_id;
       }
 
-      const addedPoint = Math.round(newBill.total_price / 1000);
-      const currentCustomer = await Customer.findOne({
-        where: { id: customer_id },
+      const bill = await this.initializeBill({
+        booking_id,
+        customer_id: billCustomerID,
+        staff_id,
         transaction,
       });
-      if (!currentCustomer) {
-        throw new BadRequestError("Customer not found");
-      }
-      currentCustomer.points += addedPoint;
-      await currentCustomer.save({ transaction });
 
+      if (isBooking) {
+        currentPromotionID = await this.processBookingBill({
+          booking_id,
+          staff_id,
+          bill,
+          transaction,
+        });
+      } else {
+        await this.processCustomBill({
+          bill_details,
+          bill,
+          customer_id: billCustomerID,
+          transaction,
+        });
+      }
+
+      await this.finalizeBill({
+        bill,
+        customer_id: billCustomerID,
+        promotion_id:
+          currentPromotionID !== -1 ? currentPromotionID : promotion_id,
+        transaction,
+      });
       await transaction.commit();
-      return { billID: newBill.id };
+
+      return { billID: bill.id };
     } catch (error) {
       await transaction.rollback();
       throw error;
     }
   };
 
-  // Helper function to calculate billiard table price
+  // Helper: Initialize bill
+  static initializeBill = async ({
+    booking_id,
+    customer_id,
+    staff_id,
+    transaction,
+  }) => {
+    return await Bill.create(
+      {
+        item_quantity: booking_id ? 1 : 0,
+        total_price: 0,
+        customer_id,
+        staff_id,
+        checkout_price: 0,
+      },
+      { transaction }
+    );
+  };
+
+  // Helper: Process booking bill
+  static processBookingBill = async ({
+    booking_id,
+    staff_id,
+    bill,
+    transaction,
+  }) => {
+    if (!staff_id) throw new BadRequestError("Staff ID is required");
+
+    const booking = await Booking.findOne({
+      where: { id: booking_id },
+      transaction,
+    });
+    if (!booking) throw new BadRequestError("Booking not found");
+
+    await booking.update(
+      { status: "completed", updatedAt: new Date() },
+      { transaction }
+    );
+
+    const billiardTable = await BilliardTable.findOne({
+      where: { id: booking.table_id },
+      transaction,
+    });
+    if (!billiardTable) throw new BadRequestError("Billiard Table not found");
+
+    const price = this.calculateBilliardTablePrice({
+      start_time: booking.start_time,
+      end_time: booking.end_time,
+      hourlyRate: billiardTable.price,
+    });
+
+    bill.total_price = price;
+    await BillDetail.create(
+      {
+        bill_id: bill.id,
+        itemType: "BilliardTable",
+        item_id: booking.table_id,
+        start_time: booking.start_time,
+        end_time: booking.end_time,
+        price,
+        quantity: 1,
+      },
+      { transaction }
+    );
+    if (booking.promotion_code) {
+      if (checkPromotionUsage(booking.promotion_code)) {
+        const foundPromotion = await Promotion.findOne({
+          where: { promotion_code: booking.promotion_code },
+        });
+        if (!foundPromotion) {
+          throw new BadRequestError("Promotion not found");
+        }
+        return foundPromotion.id;
+      }
+    }
+    return -1;
+  };
+
+  // Helper: Process custom bill
+  static processCustomBill = async ({
+    bill_details,
+    bill,
+    customer_id,
+    transaction,
+  }) => {
+    if (!bill_details || bill_details.length === 0)
+      throw new BadRequestError("Bill details are required");
+
+    let total_price = 0;
+
+    for (const item of bill_details) {
+      const detailPrice = await this.processBillDetail({
+        item,
+        customer_id,
+        transaction,
+      });
+      total_price += detailPrice;
+      let startTime, endTime;
+      if (item.itemType === "BilliardTable") {
+        startTime = stringToUTCDate(item.start_time);
+        endTime = stringToUTCDate(item.end_time);
+        if (startTime === false || endTime === false) {
+          throw new BadRequestError("Invalid date format");
+        }
+      } else {
+        startTime = endTime = new Date();
+      }
+
+      await BillDetail.create(
+        {
+          bill_id: bill.id,
+          itemType: item.itemType,
+          item_id: item.item_id,
+          quantity: item.quantity ?? 1,
+          price: detailPrice,
+          start_time: startTime,
+          end_time: endTime,
+        },
+        { transaction }
+      );
+    }
+
+    bill.total_price = total_price;
+  };
+
+  // Helper: Process individual bill detail
+  static processBillDetail = async ({ item, customer_id, transaction }) => {
+    if (item.itemType === "MenuItem") {
+      const menuItem = await MenuItem.findOne({
+        where: { id: item.item_id },
+        transaction,
+      });
+      if (!menuItem || item.quantity > menuItem.quantity)
+        throw new BadRequestError("Insufficient menu item quantity");
+
+      await menuManageService.updateMenuItem(
+        { menu_id: item.item_id, quantity: menuItem.quantity - item.quantity },
+        transaction
+      );
+
+      return menuItem.price * item.quantity;
+    } else if (item.itemType === "BilliardTable") {
+      const billiardTable = await BilliardTable.findOne({
+        where: { id: item.item_id },
+        transaction,
+      });
+      if (!billiardTable) throw new BadRequestError("BilliardTable not found");
+
+      const startTime = stringToUTCDate(item.start_time);
+      const endTime = stringToUTCDate(item.end_time);
+
+      const overlappingBooking = await Booking.findOne({
+        where: {
+          table_id: item.item_id,
+          [Op.or]: [
+            { start_time: { [Op.between]: [startTime, endTime] } },
+            { end_time: { [Op.between]: [startTime, endTime] } },
+            {
+              [Op.and]: [
+                { start_time: { [Op.lte]: startTime } },
+                { end_time: { [Op.gte]: endTime } },
+              ],
+            },
+          ],
+        },
+        transaction,
+      });
+
+      if (overlappingBooking)
+        throw new BadRequestError(
+          "Table is already booked for the requested time span"
+        );
+
+      await Booking.create(
+        {
+          table_id: item.item_id,
+          customer_id,
+          start_time: startTime,
+          end_time: endTime,
+          status: "completed",
+        },
+        { transaction }
+      );
+
+      return this.calculateBilliardTablePrice({
+        start_time: item.start_time,
+        end_time: item.end_time,
+        hourlyRate: billiardTable.price,
+      });
+    } else {
+      throw new BadRequestError("Invalid item type");
+    }
+  };
+
+  // Helper: Finalize bill with promotion and points
+  static finalizeBill = async ({
+    bill,
+    customer_id,
+    promotion_id,
+    transaction,
+  }) => {
+    const customer = await Customer.findOne({
+      where: { id: customer_id },
+      transaction,
+    });
+    if (!customer) throw new BadRequestError("Customer not found");
+
+    if (!promotion_id) {
+      bill.total_discount = 0;
+      bill.checkout_price = bill.total_price;
+    } else {
+      const foundPromotion = await Promotion.findOne({
+        where: { id: promotion_id },
+      });
+      if (!foundPromotion) {
+        throw new BadRequestError("Promotion not found");
+      }
+      bill.total_discount =
+        bill.total_price * (foundPromotion.discount_rate / 100);
+      bill.checkout_price = bill.total_price - bill.total_discount;
+      await bill.addPromotion(foundPromotion, { transaction });
+    }
+
+    customer.points += Math.round(bill.checkout_price / 1000);
+    await Promise.all([
+      bill.save({ transaction }),
+      customer.save({ transaction }),
+    ]);
+  };
+
+  // Helper: Calculate billiard table price
   static calculateBilliardTablePrice = ({
     start_time,
     end_time,

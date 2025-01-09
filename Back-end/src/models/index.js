@@ -6,9 +6,10 @@ const Account = require("./Account");
 const Bill = require("./Bill");
 const Customer = require("./Customer");
 const BillDetail = require("./BillDetail");
-const { UserExistError } = require("../core/error.response");
 const Conversation = require("./Conversation");
 const Message = require("./Message");
+const Promotion = require("./Promotion");
+const { BadRequestError } = require("../core/error.response");
 
 // // Set up relationships
 // Customer.hasOne(Account, {
@@ -49,6 +50,36 @@ Customer.hasMany(Bill, {
 
 Bill.hasMany(BillDetail, { foreignKey: "bill_id" });
 BillDetail.belongsTo(Bill, { foreignKey: "bill_id" });
+
+Bill.belongsToMany(Promotion, {
+  through: "BillPromotion",
+});
+Promotion.belongsToMany(Bill, {
+  through: "BillPromotion",
+});
+
+const BillPromotion = sequelize.models.BillPromotion;
+BillPromotion.beforeBulkCreate(async (billPromotions, options) => {
+  for (const billPromotion of billPromotions) {
+    const promotionInstance = await Promotion.findByPk(
+      billPromotion.PromotionId
+    );
+
+    if (!promotionInstance) {
+      throw new BadRequestError("Promotion not found");
+    }
+
+    const currentUsage = await BillPromotion.count({
+      where: { PromotionId: billPromotion.PromotionId },
+    });
+
+    if (currentUsage >= promotionInstance.max_usage) {
+      throw new BadRequestError(
+        `Promotion ${promotionInstance.id} has reached its maximum usage limit of ${promotionInstance.max_usage}`
+      );
+    }
+  }
+});
 
 Conversation.belongsTo(Customer, { foreignKey: "customerID" });
 

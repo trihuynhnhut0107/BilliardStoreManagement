@@ -15,6 +15,7 @@ router.use("/v1/api/staff-manage", require("./staffManage"));
 router.use("/v1/api/customer-manage", require("./customerManage"));
 router.use("/v1/api/booking", require("./booking"));
 router.use("/v1/api/report", require("./report"));
+router.use("/v1/api/promotion", require("./promotion"));
 
 // router.get("/", (req, res) => {
 //   res.json({
