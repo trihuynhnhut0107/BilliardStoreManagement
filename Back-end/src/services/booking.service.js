@@ -9,6 +9,27 @@ const Promotion = require("../models/Promotion");
 const checkPromotionUsage = require("../helpers/checkPromotionUsage");
 
 class BookingService {
+  static getBookingByCustomerID = async (customer_id) => {
+    const bookings = await Booking.findAll({
+      where: { customer_id },
+    });
+
+    if (!bookings || bookings.length === 0) {
+      throw new BadRequestError("Booking not found");
+    }
+
+    // Convert Sequelize instances to plain objects and format the dates
+    const updatedBookings = bookings.map((booking) => {
+      const bookingData = booking.get({ plain: true }); // Convert to plain object
+      // Convert start_time and end_time to GMT+7 formatted strings
+      bookingData.start_time = convertUTCToGMT7String(bookingData.start_time);
+      bookingData.end_time = convertUTCToGMT7String(bookingData.end_time);
+      return bookingData; // Return the plain object with updated dates
+    });
+
+    return updatedBookings;
+  };
+
   static confirmBooking = async ({ booking_id }) => {
     const booking = await Booking.findOne({
       where: { id: booking_id },
