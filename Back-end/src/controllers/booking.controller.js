@@ -2,6 +2,14 @@ const { OK, CREATED } = require("../core/success.response");
 const BookingService = require("../services/booking.service");
 
 class BookingController {
+  getBookingByCustomerID = async (req, res, next) => {
+    new OK({
+      message: "Get booking by customer ID successfully",
+      metadata: await BookingService.getBookingByCustomerID(
+        req.params.customer_id
+      ),
+    }).send(res);
+  };
   confirmBooking = async (req, res, next) => {
     new OK({
       message: "Confirm booking successfully",

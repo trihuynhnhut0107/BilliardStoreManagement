@@ -10,6 +10,11 @@ router.get(
   asyncHandler(bookingController.getAllBookingPagination)
 );
 
+router.get(
+  "/get-booking-by-customer-id/:customer_id",
+  asyncHandler(bookingController.getBookingByCustomerID)
+);
+
 router.post("/confirm-booking", asyncHandler(bookingController.confirmBooking));
 router.get("/:booking_id", asyncHandler(bookingController.getBookingByID));
 
