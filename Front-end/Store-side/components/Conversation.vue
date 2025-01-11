@@ -116,6 +116,13 @@ const sendMessage = async () => {
         }
       },
     });
+    // Add the sent message to the UI
+    // The message will be added through the socket event listener
+    nextTick(scrollToBottom);
+    messages.value = [
+      ...messages.value,
+      { text: newMessage.value, isOwn: true },
+    ];
     // Clear message input after sending
     newMessage.value = "";
   } catch (error) {

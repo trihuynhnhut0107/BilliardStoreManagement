@@ -24,7 +24,9 @@
               {{
                 isNaN(value[1])
                   ? toUpperCase(value[1])
-                  : Intl.NumberFormat("de-DE").format(value[1])
+                  : key === 'phone_number'
+                    ? Intl.NumberFormat("de-DE").format(value[1])
+                    : value[1]
               }}
             </td>
             <td v-show="canChange" class="p-2 w-[80px] text-center">
