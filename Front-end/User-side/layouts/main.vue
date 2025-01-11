@@ -22,6 +22,16 @@
               >Contact</NuxtLink
             >
           </li>
+          <li>
+            <NuxtLink to="/promotion" class="text-lg font-bold text-green-900"
+              >Promotion</NuxtLink
+            >
+          </li>
+          <li>
+            <NuxtLink to="/bookinghistory" class="text-lg font-bold text-green-900"
+              >Booking History</NuxtLink
+            >
+          </li>
         </ul>
 
         <!-- Search bar -->
