@@ -1,6 +1,7 @@
 <template>
-  <div class="w-full h-full">
-    <SaleChart />
+  <div class="grid grid-cols-2">
+    <TableCancellationChart class="w-full h-full" />
+    <SaleChart class="w-full h-full" />
   </div>
 </template>
 

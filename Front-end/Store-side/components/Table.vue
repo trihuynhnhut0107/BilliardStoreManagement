@@ -48,7 +48,7 @@
     </table>
 
     <!-- Pagination Controls -->
-    <div class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
+    <div v-show="isPagination" class="flex justify-center items-center mt-4 gap-2 w-full py-2 px-10 rounded bg-white">
       <button @click="props.handlePageChange('prev')"
         :class="{ 'opacity-50 cursor-not-allowed': props.currentPage === 1 }" class="px-3 py-2 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
@@ -125,7 +125,11 @@ const props = defineProps({
   canDelete: {
     type: Boolean,
     default: true,
-  }
+  },
+  isPagination: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const editRow = (row) => {

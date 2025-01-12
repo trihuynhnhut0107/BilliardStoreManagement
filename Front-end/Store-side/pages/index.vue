@@ -9,6 +9,8 @@ const router = useRouter();
 const navigate = () => {
   router.push("/login");
 };
+
+navigate();
 </script>
 
 <style scoped></style>
