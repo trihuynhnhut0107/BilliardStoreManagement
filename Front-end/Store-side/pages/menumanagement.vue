@@ -118,7 +118,7 @@ const searchQuery = ref("");
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const totalPages = ref(0);
-const showPopup = ref(false);
+
 
 // Function to refetch data with pagination
 const refetchData = async () => {
@@ -193,6 +193,7 @@ const editMenu = async () => {
     refetchData();
 };
 
+const showPopup = ref(false);
 const handleShowPopUp = () => {
     showPopup.value = !showPopup.value;
     if (!showPopup.value)

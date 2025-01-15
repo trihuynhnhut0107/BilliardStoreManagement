@@ -1,44 +1,27 @@
 <template>
   <div class="h-full w-full flex flex-col">
     <div class="w-full h-full flex items-center justify-center">
-      <p class="text-center font-bold text-4xl">Table Cancellation Rate</p>
+      <p class="text-center font-bold text-2xl">Table Cancellation Rate</p>
     </div>
 
     <!-- Date Inputs and Submit Button -->
     <div class="w-full h-auto flex items-center justify-center gap-4 mb-4">
       <div>
-        <label for="start-time" class="block text-sm font-semibold"
-          >Start Time</label
-        >
-        <input
-          type="datetime-local"
-          id="start-time"
-          v-model="startTime"
-          class="p-2 border rounded" />
+        <label for="start-time" class="block text-sm font-semibold">Start Time</label>
+        <input type="datetime-local" id="start-time" v-model="startTime" class="p-2 border rounded" />
       </div>
       <div>
-        <label for="end-time" class="block text-sm font-semibold"
-          >End Time</label
-        >
-        <input
-          type="datetime-local"
-          id="end-time"
-          v-model="endTime"
-          class="p-2 border rounded" />
+        <label for="end-time" class="block text-sm font-semibold">End Time</label>
+        <input type="datetime-local" id="end-time" v-model="endTime" class="p-2 border rounded" />
       </div>
-      <button
-        @click="fetchData"
-        class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-        Fetch Data
+      <button @click="fetchData" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        Get data
       </button>
     </div>
 
     <div class="w-full h-5/6 flex items-center justify-center">
       <!-- Add a fallback message if no chartData is available -->
-      <Line
-        :data="chartData"
-        :options="chartOptions"
-        v-if="chartData.labels.length" />
+      <Line :data="chartData" :options="chartOptions" v-if="chartData.labels.length" />
       <p v-else>No data available to display the chart.</p>
     </div>
   </div>
@@ -116,7 +99,7 @@ const chartOptions = ref({
 // Fetch report data
 const fetchData = async () => {
   try {
-    console.log("Start Time:", formatDateForFetch(startTime.value));
+    // console.log("Start Time:", formatDateForFetch(startTime.value));
     const data = await $fetch(
       "http://localhost:8080/v1/api/report/get-table-report",
       {

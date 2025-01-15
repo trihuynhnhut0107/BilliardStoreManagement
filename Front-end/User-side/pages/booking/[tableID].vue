@@ -1,11 +1,8 @@
 <template>
   <div class="flex flex-col h-full w-full py-6 px-2">
     <div class="w-full px-6 py-2">
-      <NuxtLink
-        to="/"
-        class="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600">
-        Cancel</NuxtLink
-      >
+      <NuxtLink to="/" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600">
+        Cancel</NuxtLink>
     </div>
     <div class="w-full h-full flex flex-col sm:flex-row p-4">
       <!-- Left Panel: Booking Form -->
@@ -19,65 +16,48 @@
             <img src="/Image/img_1.jpg" alt="" class="h-fit w-fit" />
           </div>
           <div class="flex flex-col mb-4">
-            <label for="table-number" class="text-sm font-medium mb-2"
-              >Table Number: {{ tableInfo.id }}</label
-            >
+            <label for="table-number" class="text-sm font-medium mb-2">Table Number: {{ tableInfo.id }}</label>
           </div>
           <div class="flex flex-col mb-4">
-            <label for="table-type" class="text-sm font-medium mb-2"
-              >Table Type: {{ tableInfo.table_type }}</label
-            >
+            <label for="table-type" class="text-sm font-medium mb-2">Table Type: {{ tableInfo.table_type }}</label>
           </div>
           <div class="flex flex-col mb-4">
-            <label for="price" class="text-sm font-medium mb-2"
-              >Price:
+            <label for="price" class="text-sm font-medium mb-2">Price:
               {{ Intl.NumberFormat("de-DE").format(tableInfo.price) }} VNĐ /
-              hour</label
-            >
+              hour</label>
           </div>
         </div>
         <!-- Date Picker -->
         <div class="flex flex-col w-1/2">
           <div class="flex flex-col mb-4">
-            <label for="date" class="text-sm font-medium mb-2"
-              >Choose Date:</label
-            >
-            <input
-              type="date"
-              id="date"
-              class="w-full max-w-xs border border-gray-300 rounded p-2"
+            <label for="date" class="text-sm font-medium mb-2">Choose Date:</label>
+            <input type="date" id="date" class="w-full max-w-xs border border-gray-300 rounded p-2"
               v-model="bookingInfo.date" />
           </div>
           <!-- Start Time Picker -->
           <div class="flex flex-col mb-4">
-            <label for="start-time" class="text-sm font-medium mb-2"
-              >Choose Start Time:</label
-            >
-            <input
-              type="time"
-              id="start-time"
-              class="w-full max-w-xs border border-gray-300 rounded p-2"
+            <label for="start-time" class="text-sm font-medium mb-2">Choose Start Time:</label>
+            <input type="time" id="start-time" class="w-full max-w-xs border border-gray-300 rounded p-2"
               v-model="bookingInfo.startTime" />
           </div>
           <!-- End Time Picker -->
           <div class="flex flex-col mb-4">
-            <label for="end-time" class="text-sm font-medium mb-2"
-              >Choose End Time:</label
-            >
-            <input
-              type="time"
-              id="end-time"
-              class="w-full max-w-xs border border-gray-300 rounded p-2"
+            <label for="end-time" class="text-sm font-medium mb-2">Choose End Time:</label>
+            <input type="time" id="end-time" class="w-full max-w-xs border border-gray-300 rounded p-2"
               v-model="bookingInfo.endTime" />
           </div>
+          <div class="flex flex-col mb-4">
+            <label for="promotion" class="text-sm font-medium mb-2">Promotion:</label>
+            <input placeholder="Promotion Code" type="text" id="promotion"
+              class="w-full max-w-xs border border-gray-300 rounded p-2" v-model="bookingInfo.promotion" />
+          </div>
           <div v-if="bookingInfo.startTime && bookingInfo.endTime" class="mb-4">
-            <div
-              v-if="
-                !validateBookingTimes(
-                  bookingInfo.startTime,
-                  bookingInfo.endTime
-                )
-              ">
+            <div v-if="
+              !validateBookingTimes(
+                bookingInfo.startTime,
+                bookingInfo.endTime
+              )
+            ">
               <p class="text-sm text-red-600">
                 End time must be after start time
               </p>
@@ -95,23 +75,17 @@
             </p>
           </div>
           <div class="mb-4">
-            <button
-              :disabled="
-                !validateBookingTimes(
-                  bookingInfo.startTime,
-                  bookingInfo.endTime
-                )
-              "
-              class="bg-[#3A6351] text-white px-4 py-2 rounded-md shadow-md hover:bg-[#3A6351]"
-              :class="`${
-                !validateBookingTimes(
-                  bookingInfo.startTime,
-                  bookingInfo.endTime
-                )
-                  ? 'cursor-not-allowed'
-                  : ''
-              }`"
-              @click="confirmSubmit">
+            <button :disabled="!validateBookingTimes(
+              bookingInfo.startTime,
+              bookingInfo.endTime
+            )
+              " class="bg-[#3A6351] text-white px-4 py-2 rounded-md shadow-md hover:bg-[#3A6351]" :class="`${!validateBookingTimes(
+                bookingInfo.startTime,
+                bookingInfo.endTime
+              )
+                ? 'cursor-not-allowed'
+                : ''
+                }`" @click="confirmSubmit">
               Booking
             </button>
           </div>
@@ -123,18 +97,11 @@
         <div>
           <h3 class="text-lg font-semibold mb-4">Current booked timeslots</h3>
           <div class="flex flex-col mb-4">
-            <label for="input-date" class="text-sm font-medium mb-2"
-              >Choose a Date:</label
-            >
-            <input
-              type="date"
-              id="input-date"
-              class="w-full max-w-xs border border-gray-300 rounded p-2"
+            <label for="input-date" class="text-sm font-medium mb-2">Choose a Date:</label>
+            <input type="date" id="input-date" class="w-full max-w-xs border border-gray-300 rounded p-2"
               v-model="chosenDate" />
           </div>
-          <div
-            v-for="(booking, index) in bookingList"
-            :key="index"
+          <div v-for="(booking, index) in bookingList" :key="index"
             class="border border-gray-300 rounded mb-4 p-4 bg-white shadow">
             <p class="text-sm">
               Start Time: {{ formatTime(booking.start_time) }}
@@ -169,6 +136,7 @@ const bookingInfo = ref({
   date: "",
   startTime: "",
   endTime: "",
+  promotion: "",
 });
 
 function formatDate(date: string) {
@@ -194,6 +162,7 @@ const confirmSubmit = async () => {
         end_time: `${bookingInfo.value.endTime}:00 ${formatDate(
           bookingInfo.value.date
         )}`,
+        promotion_code: bookingInfo.value.promotion,
       }),
       onResponse({ response }) {
         if (response._data.status !== 201) {
@@ -282,7 +251,7 @@ const getBookingList = async () => {
     return booking.status === "booked";
   });
 };
-const filterBookingList = () => {};
+const filterBookingList = () => { };
 
 // Convert Date Format
 function convertDateFormat(yyyyMMdd: string) {
